@@ -3,15 +3,18 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import requests
 
-# Binance publishes several equivalent Futures API base domains.
-# GitHub-hosted runners can occasionally be unable to reach one of them.
-BASES = [
+# Binance can return HTTP 451 to GitHub-hosted runners because runner IPs are
+# shared and region/reputation policies can vary. Keep Binance as the preferred
+# source, but use Bybit public linear-perpetual market data as a real futures
+# fallback rather than inventing neutral values.
+BINANCE_BASES = [
     "https://fapi.binance.com",
     "https://fapi1.binance.com",
     "https://fapi2.binance.com",
     "https://fapi3.binance.com",
     "https://fapi4.binance.com",
 ]
+BYBIT_BASE = "https://api.bybit.com"
 
 CAPITAL_IDR = 900_000
 RISK_PCT = 0.02
@@ -19,135 +22,263 @@ MAX_SYMBOLS = 15
 SYMBOLS = [
     "BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT",
     "SUIUSDT", "IOTAUSDT", "TAOUSDT", "AXLUSDT", "BNBUSDT",
-    "ADAUSDT", "LINKUSDT", "AVAXUSDT", "APTUSDT", "SEIUSDT"
+    "ADAUSDT", "LINKUSDT", "AVAXUSDT", "APTUSDT", "SEIUSDT",
 ]
 TIMEOUT = 12
 
 S = requests.Session()
-S.headers.update({"User-Agent": "Zorathvael-Crypto-Scanner/1.2"})
-ACTIVE_BASE = None
+S.headers.update({"User-Agent": "Zorathvael-Crypto-Scanner/1.3"})
+ACTIVE_BINANCE_BASE = None
+ACTIVE_PROVIDER = None
 
 
 def clamp(x, lo=0.0, hi=1.0):
     return max(lo, min(hi, x))
 
 
-def request(path, params=None):
-    global ACTIVE_BASE
-    bases = [ACTIVE_BASE] if ACTIVE_BASE else []
-    bases += [b for b in BASES if b != ACTIVE_BASE]
+def binance_request(path, params=None):
+    global ACTIVE_BINANCE_BASE
+    bases = [ACTIVE_BINANCE_BASE] if ACTIVE_BINANCE_BASE else []
+    bases += [b for b in BINANCE_BASES if b != ACTIVE_BINANCE_BASE]
     errors = []
 
     for base in bases:
         try:
             r = S.get(base + path, params=params, timeout=TIMEOUT)
             if r.ok:
-                ACTIVE_BASE = base
+                ACTIVE_BINANCE_BASE = base
                 return r.json()
-            errors.append(f"{base}: HTTP {r.status_code} {r.text[:120]}")
+            errors.append(f"{base}: HTTP {r.status_code} {r.text[:160]}")
         except Exception as e:
             errors.append(f"{base}: {type(e).__name__}: {e}")
 
-    raise RuntimeError(f"Binance API unavailable for {path}; " + " | ".join(errors))
+    raise RuntimeError(f"Binance unavailable for {path}; " + " | ".join(errors))
 
 
-def ticker(symbol):
-    return request("/fapi/v1/ticker/24hr", {"symbol": symbol})
+def bybit_request(path, params=None):
+    r = S.get(BYBIT_BASE + path, params=params, timeout=TIMEOUT)
+    if not r.ok:
+        raise RuntimeError(f"Bybit HTTP {r.status_code}: {r.text[:200]}")
+    data = r.json()
+    if data.get("retCode") not in (0, None):
+        raise RuntimeError(f"Bybit retCode {data.get('retCode')}: {data.get('retMsg')}")
+    return data
 
 
-def optional(path, params=None, default=None):
+def score_to_signal(score):
+    return (
+        "STRONG SETUP" if score >= 80 else
+        "BUY / WATCH" if score >= 70 else
+        "WATCH" if score >= 60 else
+        "AVOID"
+    )
+
+
+def risk_plan(price):
+    # Conservative fixed 5% structural placeholder for V1.3.
+    # The scanner does not promise that the entry is support/resistance.
+    entry_low, entry_high = price * 0.985, price * 0.995
+    sl = entry_low * 0.95
+    risk_amount = CAPITAL_IDR * RISK_PCT
+    position = risk_amount / 0.05
+    r = entry_low - sl
+    return entry_low, entry_high, sl, position, r
+
+
+def make_result(symbol, provider, price, change24, momentum6, vol_ratio,
+                oi_change, taker_ratio, book_ratio, funding, ls_ratio, btc_change):
+    # Same 100-point framework across providers, using only data actually
+    # available from the selected provider. No missing metric is silently
+    # converted into a bullish/neutral score.
+    parts = {
+        "momentum": 20 * clamp((momentum6 + 2) / 8),
+        "volume": 15 * clamp((vol_ratio - 0.8) / 1.7),
+        "oi": 15 * clamp((oi_change + 1) / 9),
+        "taker": 15 * clamp((taker_ratio - 0.95) / 0.35),
+        "book": 10 * clamp((book_ratio - 0.9) / 0.35),
+        "funding": 10 * (1 - clamp(abs(funding) / 0.0015)),
+        "long_short": 10 * (1 - clamp(abs(ls_ratio - 1.35) / 1.5)),
+        "btc": 5 * clamp((btc_change + 3) / 9),
+    }
+    score = round(sum(parts.values()), 1)
+    entry_low, entry_high, sl, position, r = risk_plan(price)
+    return {
+        "symbol": symbol,
+        "provider": provider,
+        "price": price,
+        "score": score,
+        "signal": score_to_signal(score),
+        "change24": change24,
+        "momentum6": momentum6,
+        "vol_ratio": vol_ratio,
+        "oi_change": oi_change,
+        "taker": taker_ratio,
+        "funding": funding,
+        "book": book_ratio,
+        "ls_ratio": ls_ratio,
+        "entry_low": entry_low,
+        "entry_high": entry_high,
+        "sl": sl,
+        "position_idr": position,
+        "tp1": entry_low + 1.5 * r,
+        "tp2": entry_low + 3 * r,
+        "tp3": entry_low + 5 * r,
+        "parts": parts,
+    }
+
+
+def score_binance(symbol, btc_change):
+    t = binance_request("/fapi/v1/ticker/24hr", {"symbol": symbol})
+    price = float(t["lastPrice"])
+    change24 = float(t.get("priceChangePercent", 0))
+
+    kl = binance_request("/fapi/v1/klines", {"symbol": symbol, "interval": "1h", "limit": 25})
+    oi = binance_request("/futures/data/openInterestHist", {"symbol": symbol, "period": "1h", "limit": 2})
+    taker = binance_request("/futures/data/takerlongshortRatio", {"symbol": symbol, "period": "1h", "limit": 1})
+    gls = binance_request("/futures/data/globalLongShortAccountRatio", {"symbol": symbol, "period": "1h", "limit": 1})
+    funding = binance_request("/fapi/v1/fundingRate", {"symbol": symbol, "limit": 1})
+    depth = binance_request("/fapi/v1/depth", {"symbol": symbol, "limit": 20})
+
+    if len(kl) < 13 or len(oi) < 2 or not taker or not gls or not funding:
+        raise RuntimeError("Incomplete Binance market data")
+
+    closes = [float(x[4]) for x in kl]
+    vols = [float(x[5]) for x in kl]
+    momentum6 = ((closes[-1] / closes[-7]) - 1) * 100
+    baseline_vol = sum(vols[-13:-1]) / 12
+    vol_ratio = vols[-1] / baseline_vol if baseline_vol else 1
+
+    a = float(oi[-2]["sumOpenInterest"])
+    b = float(oi[-1]["sumOpenInterest"])
+    oi_change = (b / a - 1) * 100 if a else 0
+    taker_ratio = float(taker[-1]["buySellRatio"])
+    ls_ratio = float(gls[-1]["longShortRatio"])
+    funding_rate = float(funding[-1]["fundingRate"])
+
+    bids = sum(float(x[1]) for x in depth.get("bids", [])[:20])
+    asks = sum(float(x[1]) for x in depth.get("asks", [])[:20])
+    if bids <= 0 or asks <= 0:
+        raise RuntimeError("Invalid Binance orderbook")
+    book_ratio = bids / asks
+
+    return make_result(symbol, "Binance", price, change24, momentum6, vol_ratio,
+                       oi_change, taker_ratio, book_ratio, funding_rate, ls_ratio,
+                       btc_change)
+
+
+def score_bybit(symbol, btc_change):
+    ticker_data = bybit_request("/v5/market/tickers", {
+        "category": "linear", "symbol": symbol
+    })["result"]["list"]
+    if not ticker_data:
+        raise RuntimeError("Bybit symbol unavailable")
+    t = ticker_data[0]
+    price = float(t["lastPrice"])
+    change24 = float(t.get("price24hPcnt", 0)) * 100
+
+    kl_raw = bybit_request("/v5/market/kline", {
+        "category": "linear", "symbol": symbol, "interval": "60", "limit": 25
+    })["result"]["list"]
+    # Bybit returns newest first.
+    kl = list(reversed(kl_raw))
+    if len(kl) < 13:
+        raise RuntimeError(f"Insufficient Bybit kline data: {len(kl)}")
+
+    closes = [float(x[4]) for x in kl]
+    vols = [float(x[5]) for x in kl]
+    momentum6 = ((closes[-1] / closes[-7]) - 1) * 100
+    baseline_vol = sum(vols[-13:-1]) / 12
+    vol_ratio = vols[-1] / baseline_vol if baseline_vol else 1
+
+    oi_raw = bybit_request("/v5/market/open-interest", {
+        "category": "linear", "symbol": symbol,
+        "intervalTime": "1h", "limit": 2
+    })["result"]["list"]
+    if len(oi_raw) < 2:
+        raise RuntimeError("Insufficient Bybit open-interest data")
+    oi = list(reversed(oi_raw))
+    a = float(oi[-2]["openInterest"])
+    b = float(oi[-1]["openInterest"])
+    oi_change = (b / a - 1) * 100 if a else 0
+
+    funding_raw = bybit_request("/v5/market/funding/history", {
+        "category": "linear", "symbol": symbol, "limit": 1
+    })["result"]["list"]
+    if not funding_raw:
+        raise RuntimeError("No Bybit funding data")
+    funding_rate = float(funding_raw[0]["fundingRate"])
+
+    ls_raw = bybit_request("/v5/market/account-ratio", {
+        "category": "linear", "symbol": symbol, "period": "1h", "limit": 1
+    })["result"]["list"]
+    if not ls_raw:
+        raise RuntimeError("No Bybit long-short data")
+    ls_ratio = float(ls_raw[0]["buyRatio"]) / max(float(ls_raw[0]["sellRatio"]), 1e-9)
+
+    depth = bybit_request("/v5/market/orderbook", {
+        "category": "linear", "symbol": symbol, "limit": 25
+    })["result"]
+    bids = sum(float(x[1]) for x in depth.get("b", []))
+    asks = sum(float(x[1]) for x in depth.get("a", []))
+    if bids <= 0 or asks <= 0:
+        raise RuntimeError("Invalid Bybit orderbook")
+    book_ratio = bids / asks
+
+    # Approximate taker pressure from the latest public trade sample.
+    trades = bybit_request("/v5/market/recent-trade", {
+        "category": "linear", "symbol": symbol, "limit": 500
+    })["result"]["list"]
+    buy_value = sum(float(x[1]) * float(x[2]) for x in trades if x.get("side") == "Buy")
+    sell_value = sum(float(x[1]) * float(x[2]) for x in trades if x.get("side") == "Sell")
+    if buy_value <= 0 or sell_value <= 0:
+        raise RuntimeError("Invalid Bybit trade-flow sample")
+    taker_ratio = buy_value / sell_value
+
+    return make_result(symbol, "Bybit", price, change24, momentum6, vol_ratio,
+                       oi_change, taker_ratio, book_ratio, funding_rate, ls_ratio,
+                       btc_change)
+
+
+def score_symbol(symbol, provider, btc_change):
     try:
-        return request(path, params)
-    except Exception as e:
-        print(f"WARN {path}: {e}")
-        return default
-
-
-def score_symbol(symbol, btc_change):
-    try:
-        t = ticker(symbol)
-        price = float(t["lastPrice"])
-        change24 = float(t.get("priceChangePercent", 0))
-
-        kl = optional("/fapi/v1/klines", {"symbol": symbol, "interval": "1h", "limit": 25}, []) or []
-        oi = optional("/futures/data/openInterestHist", {"symbol": symbol, "period": "1h", "limit": 2}, []) or []
-        taker = optional("/futures/data/takerlongshortRatio", {"symbol": symbol, "period": "1h", "limit": 1}, []) or []
-        gls = optional("/futures/data/globalLongShortAccountRatio", {"symbol": symbol, "period": "1h", "limit": 1}, []) or []
-        top = optional("/futures/data/topLongShortAccountRatio", {"symbol": symbol, "period": "1h", "limit": 1}, []) or []
-        funding = optional("/fapi/v1/fundingRate", {"symbol": symbol, "limit": 1}, []) or []
-        depth = optional("/fapi/v1/depth", {"symbol": symbol, "limit": 20}, {}) or {}
-
-        if len(kl) < 7:
-            raise RuntimeError(f"Insufficient 1h kline data: {len(kl)} candles")
-
-        closes = [float(x[4]) for x in kl]
-        vols = [float(x[5]) for x in kl]
-        momentum6 = ((closes[-1] / closes[-7]) - 1) * 100
-        baseline_vol = sum(vols[-13:-1]) / 12 if len(vols) >= 13 else 0
-        vol_ratio = vols[-1] / baseline_vol if baseline_vol else 1
-
-        oi_change = 0
-        if len(oi) >= 2:
-            a = float(oi[-2]["sumOpenInterest"])
-            b = float(oi[-1]["sumOpenInterest"])
-            oi_change = (b / a - 1) * 100 if a else 0
-
-        taker_ratio = float(taker[-1].get("buySellRatio", 1)) if taker else 1
-        gls_ratio = float(gls[-1].get("longShortRatio", 1)) if gls else 1
-        top_ratio = float(top[-1].get("longShortRatio", 1)) if top else 1
-        fr = float(funding[-1].get("fundingRate", 0)) if funding else 0
-
-        bids = sum(float(x[1]) for x in depth.get("bids", [])[:20])
-        asks = sum(float(x[1]) for x in depth.get("asks", [])[:20])
-        book_ratio = bids / asks if asks else 1
-
-        parts = {
-            "momentum": 15 * clamp((momentum6 + 2) / 8),
-            "volume": 15 * clamp((vol_ratio - 0.8) / 1.7),
-            "oi": 15 * clamp((oi_change + 1) / 9),
-            "taker": 15 * clamp((taker_ratio - 0.95) / 0.35),
-            "book": 10 * clamp((book_ratio - 0.9) / 0.35),
-            "funding": 10 * (1 - clamp(abs(fr) / 0.0015)),
-            "global_ls": 10 * (1 - clamp(abs(gls_ratio - 1.35) / 1.5)),
-            "top_ls": 5 * (1 - clamp(abs(top_ratio - 1.25) / 1.5)),
-            "btc": 5 * clamp((btc_change + 3) / 9),
-        }
-        score = round(sum(parts.values()), 1)
-        signal = "STRONG SETUP" if score >= 80 else "BUY / WATCH" if score >= 70 else "WATCH" if score >= 60 else "AVOID"
-
-        entry_low, entry_high = price * 0.985, price * 0.995
-        sl = entry_low * 0.95
-        risk = CAPITAL_IDR * RISK_PCT
-        position = risk / 0.05
-        r = entry_low - sl
-
-        return {
-            "symbol": symbol,
-            "price": price,
-            "score": score,
-            "signal": signal,
-            "change24": change24,
-            "momentum6": momentum6,
-            "oi_change": oi_change,
-            "taker": taker_ratio,
-            "funding": fr,
-            "book": book_ratio,
-            "entry_low": entry_low,
-            "entry_high": entry_high,
-            "sl": sl,
-            "position_idr": position,
-            "tp1": entry_low + 1.5 * r,
-            "tp2": entry_low + 3 * r,
-            "tp3": entry_low + 5 * r,
-            "parts": parts,
-        }
+        if provider == "Binance":
+            return score_binance(symbol, btc_change)
+        return score_bybit(symbol, btc_change)
     except Exception as e:
         return {"symbol": symbol, "score": -1, "signal": "ERROR", "error": str(e)}
+
+
+def discover_provider():
+    global ACTIVE_PROVIDER
+    try:
+        t = binance_request("/fapi/v1/ticker/24hr", {"symbol": "BTCUSDT"})
+        btc_change = float(t.get("priceChangePercent", 0))
+        ACTIVE_PROVIDER = "Binance"
+        return "Binance", btc_change
+    except Exception as binance_error:
+        print(f"WARN: Binance unavailable, switching to Bybit: {binance_error}")
+
+    try:
+        data = bybit_request("/v5/market/tickers", {
+            "category": "linear", "symbol": "BTCUSDT"
+        })
+        items = data["result"]["list"]
+        if not items:
+            raise RuntimeError("BTCUSDT unavailable")
+        btc_change = float(items[0].get("price24hPcnt", 0)) * 100
+        ACTIVE_PROVIDER = "Bybit"
+        return "Bybit", btc_change
+    except Exception as bybit_error:
+        raise SystemExit(
+            "FATAL: Binance and Bybit public Futures APIs are unreachable. "
+            f"Binance={binance_error}; Bybit={bybit_error}"
+        )
 
 
 def send_telegram(text):
     token, chat = os.getenv("TELEGRAM_BOT_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
     if not token or not chat:
+        print("INFO: Telegram secrets not configured; console output only.")
         return False
     try:
         r = S.post(
@@ -155,27 +286,27 @@ def send_telegram(text):
             json={"chat_id": chat, "text": text},
             timeout=TIMEOUT,
         )
+        if not r.ok:
+            print(f"WARN: Telegram HTTP {r.status_code}: {r.text[:200]}")
         return r.ok
-    except Exception:
+    except Exception as e:
+        print(f"WARN: Telegram unavailable: {e}")
         return False
 
 
 def main():
-    print("ZORATHVAEL CRYPTO SCANNER V1.2")
-    print(f"Binance endpoint candidates: {len(BASES)}")
+    print("ZORATHVAEL CRYPTO SCANNER V1.3")
+    print("Provider strategy: Binance primary -> Bybit Futures fallback")
 
-    try:
-        btc = ticker("BTCUSDT")
-        btc_change = float(btc.get("priceChangePercent", 0))
-    except Exception as e:
-        raise SystemExit(f"FATAL: Binance Futures API is unreachable. {e}")
+    provider, btc_change = discover_provider()
+    print(f"Active provider: {provider}")
 
     symbols = SYMBOLS[:MAX_SYMBOLS]
     results = []
     errors = []
 
     with ThreadPoolExecutor(max_workers=5) as ex:
-        jobs = [ex.submit(score_symbol, s, btc_change) for s in symbols]
+        jobs = [ex.submit(score_symbol, s, provider, btc_change) for s in symbols]
         for j in as_completed(jobs):
             x = j.result()
             if x.get("score", -1) >= 0:
@@ -184,14 +315,14 @@ def main():
                 errors.append(f"{x['symbol']}: {x.get('error', 'unknown error')}")
 
     if not results:
-        raise SystemExit("FATAL: No symbols returned valid market data.")
+        raise SystemExit(f"FATAL: No symbols returned valid {provider} Futures data.")
 
     results.sort(key=lambda x: x["score"], reverse=True)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [
-        "ZORATHVAEL CRYPTO SCANNER V1.2",
+        "ZORATHVAEL CRYPTO SCANNER V1.3",
         now,
-        f"Binance endpoint: {ACTIVE_BASE}",
+        f"Provider: {provider}",
         f"BTC 24h: {btc_change:.2f}%",
         "",
     ]
@@ -200,16 +331,18 @@ def main():
         lines.append(f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']}")
         lines.append(
             f"   Price {x['price']:.8g} | 24h {x['change24']:.2f}% | "
-            f"OI {x['oi_change']:.2f}% | Taker {x['taker']:.2f}"
+            f"OI {x['oi_change']:.2f}% | Taker {x['taker']:.2f} | LS {x['ls_ratio']:.2f}"
         )
-        lines.append(f"   Entry {x['entry_low']:.8g}-{x['entry_high']:.8g} | SL {x['sl']:.8g}")
+        lines.append(
+            f"   Entry {x['entry_low']:.8g}-{x['entry_high']:.8g} | SL {x['sl']:.8g}"
+        )
         lines.append(
             f"   Position max Rp{x['position_idr']:,.0f} | "
             f"TP1 {x['tp1']:.8g} | TP2 {x['tp2']:.8g} | TP3 {x['tp3']:.8g}"
         )
 
     if errors:
-        lines += ["", f"Warnings: {len(errors)} symbol(s) had incomplete data."]
+        lines += ["", f"Warnings: {len(errors)} symbol(s) failed data validation."]
         lines.extend(f"- {e}" for e in errors[:5])
 
     text = "\n".join(lines)
