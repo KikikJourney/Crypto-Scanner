@@ -21,6 +21,14 @@ class ExtremeReversalTests(unittest.TestCase):
         r=classify(extreme(h1_pos_48=.50,h1_pos_24=.50,dist_low_atr=3.0,dist_high_atr=3.0,move_into_low_atr=2.0,move_into_high_atr=2.0))
         self.assertFalse(r['status'].startswith('EXTREME REVERSAL'))
 
+    def test_weak_turn_blocked(self):
+        self.assertFalse(classify(extreme(turn_long=.05))['status'].startswith('EXTREME REVERSAL'))
+        self.assertFalse(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=.2,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.05))['status'].startswith('EXTREME REVERSAL'))
+
+    def test_negative_distance_blocked(self):
+        self.assertFalse(classify(extreme(dist_low_atr=-5.0))['status'].startswith('EXTREME REVERSAL'))
+        self.assertFalse(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=-5.0,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.8))['status'].startswith('EXTREME REVERSAL'))
+
     def test_missing_data_blocked(self):
         self.assertEqual(classify({'data_ok':False})['status'],'DATA-LIMITED')
 
@@ -36,8 +44,8 @@ class ExtremeMarketDataTests(unittest.TestCase):
         return rows
 
     def test_low_market_features(self):
-        f=build_features(self._rows('low'),self._rows('low')[-1][4])
-        self.assertTrue(f['data_ok']); self.assertLess(f['h1_pos_24'],.30); self.assertLess(f['dist_low_atr'],1.0)
+        rows=self._rows('low'); f=build_features(rows,rows[-1][4])
+        self.assertTrue(f['data_ok']); self.assertLess(f['h1_pos_24'],.30); self.assertLess(f['dist_low_atr'],1.0); self.assertGreaterEqual(f['dist_low_atr'],0); self.assertIn('price',f); self.assertIn('atr_pct',f)
 
     def test_mid_market_features(self):
         rows=self._rows('mid'); f=build_features(rows,150)
@@ -45,7 +53,14 @@ class ExtremeMarketDataTests(unittest.TestCase):
 
     def test_high_market_features(self):
         rows=self._rows('high'); f=build_features(rows,rows[-1][4])
-        self.assertTrue(f['data_ok']); self.assertGreater(f['h1_pos_24'],.70); self.assertLess(f['dist_high_atr'],1.0)
+        self.assertTrue(f['data_ok']); self.assertGreater(f['h1_pos_24'],.70); self.assertLess(f['dist_high_atr'],1.0); self.assertGreaterEqual(f['dist_high_atr'],0)
+
+    def test_live_price_outside_closed_range_does_not_create_negative_distance(self):
+        rows=self._rows('low')
+        f=build_features(rows,rows[-1][4]-100)
+        self.assertGreaterEqual(f['dist_low_atr'],0)
+        self.assertGreaterEqual(f['dist_high_atr'],0)
+        self.assertEqual(f['price'],rows[-1][4])
 
 
 if __name__=='__main__': unittest.main(verbosity=2)
