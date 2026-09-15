@@ -8,17 +8,39 @@ from diagnostic_v21 import diagnostic_status
 
 PRODUCT = 'USDT-FUTURES'
 WATCHLIST_FILE = Path('data/universe_watchlist.csv')
-# Keep the dynamic universe broad, but only deep-scan the most liquid / active contracts.
-# This removes hundreds of per-symbol API calls while retaining a separate momentum-mover bucket.
 LIQUIDITY_BUCKET = 220
 MOVER_BUCKET = 80
 MAX_SCAN_SYMBOLS = LIQUIDITY_BUCKET + MOVER_BUCKET
 SCAN_WORKERS = 16
 
+# scanner_v2 already computes both LONG and SHORT component sets internally.
+# Capture them at result creation without duplicating the scoring math or adding API calls.
+_ORIGINAL_MAKE_RESULT = core.make_result
+
+def _make_result_with_components(sym, provider, price, f, tf, book, funding, change):
+    result = _ORIGINAL_MAKE_RESULT(sym, provider, price, f, tf, book, funding, change)
+    result.update({
+        'long_location': f['long_location'],
+        'long_exhaustion': f['long_exhaust'],
+        'long_flow': result['flow'] if result['direction'] == 'LONG' else core.taker_flow(tf['agg']),
+        'long_reclaim': f['long_reclaim'],
+        'long_expansion': result['expansion'],
+        'short_location': f['short_location'],
+        'short_exhaustion': f['short_exhaust'],
+        'short_flow': 1.0 - core.taker_flow(tf['agg']),
+        'short_reject': f['short_reject'],
+        'short_expansion': result['expansion'],
+    })
+    return result
+
+core.make_result = _make_result_with_components
+
 WATCHLIST_FIELDS = [
-    'timestamp','rank','symbol','score','long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker',
-    'direction','signal','location','exhaustion','flow','reclaim','expansion','price','range_pos','atr_pct','volume_ratio',
-    'taker_ratio','taker_stability','taker_fills','book_ratio','funding','24h_change','selection'
+    'timestamp','rank','symbol','score','long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker','long_blocker','short_blocker',
+    'direction','signal','location','exhaustion','flow','reclaim','expansion',
+    'long_location','long_exhaustion','long_flow','long_reclaim','long_expansion',
+    'short_location','short_exhaustion','short_flow','short_reject','short_expansion',
+    'price','range_pos','atr_pct','volume_ratio','taker_ratio','taker_stability','taker_fills','book_ratio','funding','24h_change','selection'
 ]
 
 
@@ -64,17 +86,13 @@ def _num(x):
 
 
 def select_scan_symbols(provider, symbols):
-    """Cheap first-stage universe filter; deep scanner remains unchanged."""
     if provider == 'Bitget':
         raw = core.bitget('/api/v2/mix/market/tickers', {'productType': PRODUCT})['data']
-        ticker = {str(x.get('symbol', '')).upper(): x for x in raw if str(x.get('symbol', '')).upper() in set(symbols)}
+        symbol_set = set(symbols)
+        ticker = {str(x.get('symbol', '')).upper(): x for x in raw if str(x.get('symbol', '')).upper() in symbol_set}
         liquid = sorted(symbols, key=lambda s: _num(ticker.get(s, {}).get('quoteVolume')), reverse=True)[:LIQUIDITY_BUCKET]
         movers = sorted(symbols, key=lambda s: abs(_num(ticker.get(s, {}).get('change24h'))), reverse=True)[:MOVER_BUCKET]
-        selected = sorted(set(liquid) | set(movers))
-        return selected, len(liquid), len(movers)
-
-    # Fallback providers: use their existing all-symbol universe when no reliable
-    # bulk quote-volume filter is available. Concurrency is still increased below.
+        return sorted(set(liquid) | set(movers)), len(liquid), len(movers)
     return symbols, len(symbols), 0
 
 
@@ -91,12 +109,17 @@ def write_watchlist(results, ts):
             'timestamp': ts, 'rank': rank, 'symbol': x['symbol'], 'score': round(x['score'], 1),
             'long_score': d['long_score'], 'short_score': d['short_score'], 'score_gap_to_70': d['score_gap_to_70'],
             'bias': d['bias'], 'diagnostic_status': d['status'], 'blocker': d['blocker'],
+            'long_blocker': d['long_blocker'], 'short_blocker': d['short_blocker'],
             'direction': x['direction'], 'signal': x['signal'], 'location': round(x['location'], 3),
             'exhaustion': round(x['exhaustion'], 3), 'flow': round(x['flow'], 3), 'reclaim': round(x['reclaim'], 3),
-            'expansion': round(x['expansion'], 3), 'price': x['price'], 'range_pos': x['range_pos'],
-            'atr_pct': x['atr_pct'], 'volume_ratio': x['volume_ratio'], 'taker_ratio': x['taker'],
-            'taker_stability': x['taker_stability'], 'taker_fills': x['taker_fills'], 'book_ratio': x['book'],
-            'funding': x['funding'], '24h_change': x['change'], 'selection': selection,
+            'expansion': round(x['expansion'], 3),
+            'long_location': round(x['long_location'], 3), 'long_exhaustion': round(x['long_exhaustion'], 3),
+            'long_flow': round(x['long_flow'], 3), 'long_reclaim': round(x['long_reclaim'], 3), 'long_expansion': round(x['long_expansion'], 3),
+            'short_location': round(x['short_location'], 3), 'short_exhaustion': round(x['short_exhaustion'], 3),
+            'short_flow': round(x['short_flow'], 3), 'short_reject': round(x['short_reject'], 3), 'short_expansion': round(x['short_expansion'], 3),
+            'price': x['price'], 'range_pos': x['range_pos'], 'atr_pct': x['atr_pct'], 'volume_ratio': x['volume_ratio'],
+            'taker_ratio': x['taker'], 'taker_stability': x['taker_stability'], 'taker_fills': x['taker_fills'],
+            'book_ratio': x['book'], 'funding': x['funding'], '24h_change': x['change'], 'selection': selection,
         })
     with WATCHLIST_FILE.open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=WATCHLIST_FIELDS); writer.writeheader(); writer.writerows(rows)
