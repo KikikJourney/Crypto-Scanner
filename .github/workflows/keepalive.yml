@@ -1,0 +1,30 @@
+name: Zorathvael Keep Alive
+
+on:
+  schedule:
+    - cron: "17 3 */14 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: zorathvael-keepalive
+  cancel-in-progress: true
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Write heartbeat
+        run: |
+          mkdir -p data
+          printf 'last_keepalive=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/.keepalive
+      - name: Commit heartbeat
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/.keepalive
+          git commit -m "chore: keep repository active" || echo "Heartbeat unchanged."
+          git push origin HEAD:main
