@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "*/15 * * * *"
 
+concurrency:
+  group: zorathvael-scanner
+  cancel-in-progress: false
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -36,5 +40,5 @@ jobs:
             echo "No forward-test data changes to commit."
           else
             git commit -m "chore: update forward-test data"
-            git push
+            git push origin HEAD:main
           fi
