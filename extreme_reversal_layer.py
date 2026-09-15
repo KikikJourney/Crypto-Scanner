@@ -1,9 +1,4 @@
-"""Extreme-location reversal layer.
-
-Rejects mid-move reversals and only surfaces candidates that are at a
-measurable local extreme on 15m-derived and 1h-derived structure.
-No future data is used.
-"""
+"""Extreme-location reversal layer."""
 import csv
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +14,7 @@ MIN_24H_POS_SHORT=0.75
 MAX_ATR_FROM_LOW=1.0
 MAX_ATR_FROM_HIGH=1.0
 MIN_MOVE_ATR=0.75
+MIN_TURN=0.25
 CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','h1','h4','h12','h24']
 
 
@@ -40,8 +36,8 @@ def classify(features):
     if not features or features.get('data_ok') is not True:
         return {'status':'DATA-LIMITED','direction':'NONE','score':None,'long_score':None,'short_score':None,'blocker':'15m/1h extreme data unavailable'}
     ls=_score_long(features);ss=_score_short(features)
-    long_gate=features['h1_pos_48']<=MAX_1H_POS_LONG and features['h1_pos_24']<=MAX_24H_POS_LONG and features['dist_low_atr']<=MAX_ATR_FROM_LOW and features['move_into_low_atr']>=MIN_MOVE_ATR
-    short_gate=features['h1_pos_48']>=MIN_1H_POS_SHORT and features['h1_pos_24']>=MIN_24H_POS_SHORT and features['dist_high_atr']<=MAX_ATR_FROM_HIGH and features['move_into_high_atr']>=MIN_MOVE_ATR
+    long_gate=features['h1_pos_48']<=MAX_1H_POS_LONG and features['h1_pos_24']<=MAX_24H_POS_LONG and 0<=features['dist_low_atr']<=MAX_ATR_FROM_LOW and features['move_into_low_atr']>=MIN_MOVE_ATR and features['turn_long']>=MIN_TURN
+    short_gate=features['h1_pos_48']>=MIN_1H_POS_SHORT and features['h1_pos_24']>=MIN_24H_POS_SHORT and 0<=features['dist_high_atr']<=MAX_ATR_FROM_HIGH and features['move_into_high_atr']>=MIN_MOVE_ATR and features['turn_short']>=MIN_TURN
     candidates=[]
     if long_gate and ls>=MIN_EXTREME_SCORE:candidates.append(('LONG',ls))
     if short_gate and ss>=MIN_EXTREME_SCORE:candidates.append(('SHORT',ss))
@@ -54,11 +50,10 @@ def classify(features):
 def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
-    return {'id':f'{timestamp}_{result["symbol"]}_EXTREME','timestamp':timestamp,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':result['price'],'atr_pct':result['atr_pct'],'h1':'','h4':'','h12':'','h24':''}
+    return {'id':f'{timestamp}_{result["symbol"]}_EXTREME','timestamp':timestamp,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'h1':'','h4':'','h12':'','h24':''}
 
 
 def _parse_ts(v):return datetime.fromisoformat(v.replace('Z','+00:00'))
-
 
 def _outcome(direction,entry,future,atr_pct):
     move=(future-entry)/entry*100
@@ -112,7 +107,6 @@ def evaluate_forward(snapshot_rows):
                 if outcome:row[key]=outcome;updated+=1;break
     with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(rows)
     return updated
-
 
 def stats():
     _migrate()
