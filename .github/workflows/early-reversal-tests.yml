@@ -2,13 +2,18 @@ name: Early Reversal Tests
 
 on:
   push:
+    branches: [main]
     paths:
       - 'scanner_v2.py'
+      - 'diagnostic_v21.py'
+      - 'early_reversal_layer.py'
       - 'tests/**'
       - '.github/workflows/early-reversal-tests.yml'
   pull_request:
     paths:
       - 'scanner_v2.py'
+      - 'diagnostic_v21.py'
+      - 'early_reversal_layer.py'
       - 'tests/**'
       - '.github/workflows/early-reversal-tests.yml'
   workflow_dispatch:
@@ -23,5 +28,6 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt
-      - run: python -m py_compile scanner_v2.py tests/test_early_reversal.py
+      - run: python -m py_compile scanner_v2.py diagnostic_v21.py early_reversal_layer.py tests/test_early_reversal.py
+      - run: python diagnostic_v21.py
       - run: python tests/test_early_reversal.py
