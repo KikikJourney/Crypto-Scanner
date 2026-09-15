@@ -5,6 +5,7 @@ from pathlib import Path
 from scanner_v2 import clamp
 
 EXTREME_FORWARD_FILE=Path('data/extreme_reversal_forward_test.csv')
+EXTREME_SNAPSHOT_FILE=Path('data/extreme_market_snapshots.csv')
 HORIZONS=(1,4,12,24)
 MIN_EXTREME_SCORE=70.0
 MAX_1H_POS_LONG=0.30
@@ -16,6 +17,7 @@ MAX_ATR_FROM_HIGH=1.0
 MIN_MOVE_ATR=0.75
 MIN_TURN=0.25
 CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','h1','h4','h12','h24']
+SNAPSHOT_FIELDS=['id','timestamp','symbol','provider','price']
 
 
 def _score_long(f):
@@ -50,10 +52,17 @@ def classify(features):
 def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
-    return {'id':f'{timestamp}_{result["symbol"]}_EXTREME','timestamp':timestamp,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'h1':'','h4':'','h12':'','h24':''}
+    ts=features.get('timestamp') or timestamp
+    return {'id':f'{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'h1':'','h4':'','h12':'','h24':''}
+
+
+def snapshot_row(result,features,timestamp):
+    ts=features.get('timestamp') or timestamp
+    return {'id':f'{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'price':features['price']}
 
 
 def _parse_ts(v):return datetime.fromisoformat(v.replace('Z','+00:00'))
+
 
 def _outcome(direction,entry,future,atr_pct):
     move=(future-entry)/entry*100
@@ -74,6 +83,15 @@ def _migrate():
     with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(clean)
 
 
+def _migrate_snapshots():
+    EXTREME_SNAPSHOT_FILE.parent.mkdir(parents=True,exist_ok=True)
+    if not EXTREME_SNAPSHOT_FILE.exists():
+        with EXTREME_SNAPSHOT_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writeheader();return
+    with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
+    clean=[{k:r.get(k,'') for k in SNAPSHOT_FIELDS} for r in rows]
+    with EXTREME_SNAPSHOT_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writeheader();csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writerows(clean)
+
+
 def append_rows(rows):
     _migrate()
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:existing={r['id'] for r in csv.DictReader(f)}
@@ -83,9 +101,21 @@ def append_rows(rows):
     return len(fresh)
 
 
-def evaluate_forward(snapshot_rows):
+def append_snapshots(rows):
+    _migrate_snapshots()
+    with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:existing={r['id'] for r in csv.DictReader(f)}
+    fresh=[r for r in rows if r and r['id'] not in existing]
+    if not fresh:return 0
+    with EXTREME_SNAPSHOT_FILE.open('a',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writerows(fresh)
+    return len(fresh)
+
+
+def evaluate_forward(snapshot_rows=None):
     _migrate()
+    _migrate_snapshots()
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
+    if snapshot_rows is None:
+        with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:snapshot_rows=list(csv.DictReader(f))
     snapshots={}
     for r in snapshot_rows:snapshots.setdefault(r.get('symbol',''),[]).append(r)
     for v in snapshots.values():v.sort(key=lambda r:_parse_ts(r['timestamp']))
@@ -107,6 +137,7 @@ def evaluate_forward(snapshot_rows):
                 if outcome:row[key]=outcome;updated+=1;break
     with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(rows)
     return updated
+
 
 def stats():
     _migrate()
