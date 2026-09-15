@@ -1,6 +1,6 @@
-"""Extreme-location reversal layer."""
+"""Extreme-location reversal layer with event-level forward-test accounting."""
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from scanner_v2 import clamp
 
@@ -16,7 +16,10 @@ MAX_ATR_FROM_LOW=1.0
 MAX_ATR_FROM_HIGH=1.0
 MIN_MOVE_ATR=0.75
 MIN_TURN=0.25
-CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','h1','h4','h12','h24']
+# Accounting rule only: repeated observations inside one continuous opportunity
+# are one event. It does not change the trading signal threshold.
+EVENT_GAP_HOURS=2
+CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','event_id','event_role','h1','h4','h12','h24']
 SNAPSHOT_FIELDS=['id','timestamp','symbol','provider','price']
 
 
@@ -53,7 +56,7 @@ def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
     ts=features.get('timestamp') or timestamp
-    return {'id':f'{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'h1':'','h4':'','h12':'','h24':''}
+    return {'id':f'{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
 
 
 def snapshot_row(result,features,timestamp):
@@ -74,13 +77,42 @@ def _outcome(direction,entry,future,atr_pct):
     return None
 
 
+def _assign_events(rows):
+    """Assign deterministic event IDs and PRIMARY/DUPLICATE roles.
+
+    Same symbol + direction within EVENT_GAP_HOURS is one opportunity.
+    The earliest observation is the only row used for forward-test statistics.
+    """
+    ordered=sorted(rows,key=lambda r:(_parse_ts(r['timestamp']),r.get('symbol',''),r.get('direction','')))
+    last={}
+    for row in ordered:
+        key=(row.get('symbol',''),row.get('direction',''))
+        ts=_parse_ts(row['timestamp'])
+        prev=last.get(key)
+        if prev is None or ts-prev>timedelta(hours=EVENT_GAP_HOURS):
+            event_id=f"{row['symbol']}_{row['direction']}_{row['timestamp']}"
+            row['event_role']='PRIMARY'
+        else:
+            event_id=prev[1]
+            row['event_role']='DUPLICATE'
+        row['event_id']=event_id
+        last[key]=(ts,event_id)
+    return rows
+
+
+def _write_forward(rows):
+    with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:
+        w=csv.DictWriter(f,fieldnames=CSV_FIELDS);w.writeheader();w.writerows(rows)
+
+
 def _migrate():
     EXTREME_FORWARD_FILE.parent.mkdir(parents=True,exist_ok=True)
     if not EXTREME_FORWARD_FILE.exists():
-        with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();return
+        _write_forward([]);return
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
     clean=[{k:r.get(k,'') for k in CSV_FIELDS} for r in rows]
-    with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(clean)
+    _assign_events(clean)
+    _write_forward(clean)
 
 
 def _migrate_snapshots():
@@ -94,10 +126,13 @@ def _migrate_snapshots():
 
 def append_rows(rows):
     _migrate()
-    with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:existing={r['id'] for r in csv.DictReader(f)}
+    with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:existing_rows=list(csv.DictReader(f))
+    existing={r['id'] for r in existing_rows}
     fresh=[r for r in rows if r and r['id'] not in existing]
     if not fresh:return 0
-    with EXTREME_FORWARD_FILE.open('a',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(fresh)
+    combined=existing_rows+fresh
+    _assign_events(combined)
+    _write_forward(combined)
     return len(fresh)
 
 
@@ -111,9 +146,9 @@ def append_snapshots(rows):
 
 
 def evaluate_forward(snapshot_rows=None):
-    _migrate()
-    _migrate_snapshots()
+    _migrate();_migrate_snapshots()
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
+    _assign_events(rows)
     if snapshot_rows is None:
         with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:snapshot_rows=list(csv.DictReader(f))
     snapshots={}
@@ -121,6 +156,7 @@ def evaluate_forward(snapshot_rows=None):
     for v in snapshots.values():v.sort(key=lambda r:_parse_ts(r['timestamp']))
     updated=0
     for row in rows:
+        if row.get('event_role')!='PRIMARY':continue
         try:ts=_parse_ts(row['timestamp']);entry=float(row['price']);atr=float(row['atr_pct']);direction=row['direction'];symbol=row['symbol']
         except (TypeError,ValueError):continue
         futures=[r for r in snapshots.get(symbol,[]) if _parse_ts(r['timestamp'])>ts]
@@ -135,12 +171,14 @@ def evaluate_forward(snapshot_rows=None):
                 except (TypeError,ValueError):continue
                 outcome=_outcome(direction,entry,price,atr)
                 if outcome:row[key]=outcome;updated+=1;break
-    with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(rows)
+    _write_forward(rows)
     return updated
 
 
 def stats():
     _migrate()
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
-    outcomes=[r[h] for r in rows for h in ('h1','h4','h12','h24') if r[h]]
-    return f'Extreme forward-test: {len(rows)} signals / {len(outcomes)} resolved horizon outcomes'
+    events={r['event_id'] for r in rows if r.get('event_id')}
+    primary=[r for r in rows if r.get('event_role')=='PRIMARY']
+    outcomes=[r[h] for r in primary for h in ('h1','h4','h12','h24') if r[h]]
+    return f'Extreme forward-test: {len(rows)} raw signals / {len(events)} independent events / {len(outcomes)} resolved horizon outcomes'
