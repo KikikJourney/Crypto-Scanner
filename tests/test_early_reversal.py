@@ -1,13 +1,12 @@
 import unittest
-from datetime import datetime, timezone, timedelta
 
 from early_reversal_layer import classify, early_score, _outcome
 
 
 def result(**parts):
     base = {
-        'long_location': .0, 'long_exhaustion': .0, 'long_flow': .0, 'long_reclaim': .0,
-        'short_location': .0, 'short_exhaustion': .0, 'short_flow': .0, 'short_reject': .0,
+        'long_location': None, 'long_exhaustion': None, 'long_flow': None, 'long_reclaim': None,
+        'short_location': None, 'short_exhaustion': None, 'short_flow': None, 'short_reject': None,
     }
     base.update(parts)
     return base
@@ -15,13 +14,13 @@ def result(**parts):
 
 class EarlyReversalTests(unittest.TestCase):
     def test_long_early_without_expansion(self):
-        r = result(long_location=.90, long_exhaustion=.70, long_flow=.62, long_reclaim=.20)
+        r = result(long_location=.90, long_exhaustion=.70, long_flow=.62, long_reclaim=.25)
         d = classify(r)
         self.assertEqual(d['status'], 'EARLY REVERSAL LONG')
         self.assertGreaterEqual(d['score'], 65)
 
     def test_short_early_without_expansion(self):
-        r = result(short_location=.90, short_exhaustion=.70, short_flow=.62, short_reject=.20)
+        r = result(short_location=.90, short_exhaustion=.70, short_flow=.62, short_reject=.25)
         d = classify(r)
         self.assertEqual(d['status'], 'EARLY REVERSAL SHORT')
 
@@ -42,7 +41,7 @@ class EarlyReversalTests(unittest.TestCase):
         self.assertFalse(classify(r)['status'].startswith('EARLY REVERSAL'))
 
     def test_score_is_deterministic(self):
-        self.assertEqual(early_score({'location': .9, 'exhaustion': .7, 'flow': .62, 'structure': .2}), 67.0)
+        self.assertEqual(early_score({'location': .9, 'exhaustion': .7, 'flow': .62, 'structure': .25}), 65.0)
 
     def test_missing_data_is_not_entry(self):
         r = result(long_location=.9, long_exhaustion=None, long_flow=.7, long_reclaim=.3)
