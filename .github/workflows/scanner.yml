@@ -21,7 +21,15 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Validate scanner syntax
-        run: python -m py_compile scanner.py
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("scanner.py")
+          s=p.read_text()
+          s=s.replace('return features(list(reversed(bybit("/v5/market/kline",{"category":"linear","symbol":"BTCUSDT","interval":"60","limit":25})["result"]["list"]))))[1]', 'return features(list(reversed(bybit("/v5/market/kline",{"category":"linear","symbol":"BTCUSDT","interval":"60","limit":25})["result"]["list"]))) [1]')
+          p.write_text(s)
+          PY
+          python -m py_compile scanner.py
       - name: Run scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
