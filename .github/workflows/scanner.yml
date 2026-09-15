@@ -24,6 +24,8 @@ jobs:
           cache: "pip"
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
+      - name: Sanitize forward-test CSV
+        run: python tools/sanitize_forward_test.py
       - name: Validate scanner syntax
         run: python -m py_compile scanner.py
       - name: Run scanner
