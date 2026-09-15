@@ -8,7 +8,7 @@ from pathlib import Path
 
 import requests
 
-VERSION = "1.8"
+VERSION = "1.8.1"
 BINANCE_BASES = ["https://fapi.binance.com", "https://fapi1.binance.com", "https://fapi2.binance.com", "https://fapi3.binance.com", "https://fapi4.binance.com"]
 BYBIT_BASE = "https://api.bybit.com"
 BITGET_BASE = "https://api.bitget.com"
@@ -87,7 +87,7 @@ def bitget(path, params=None):
 
 
 def candle_features(rows):
-    """Rows must be chronological: oldest -> newest, and contain closed candles only."""
+    """Rows are chronological (oldest -> newest) and contain closed candles only."""
     if len(rows) < 25:
         raise RuntimeError(f"Need 25+ closed candles, got {len(rows)}")
     c = [float(x[4]) for x in rows]
@@ -171,13 +171,13 @@ def risk_plan(price, atr, bias):
 def result(sym, provider, price, change24h, f, taker, book, funding, btc):
     s, bias, coverage = score(f, taker, book, funding, btc)
     m1, m6, m24, vr, atr = f
-    plan = risk_plan(price, atr, bias)
     if s >= 75 and bias != "NEUTRAL" and coverage >= 0.65:
         signal = "STRONG " + bias
     elif s >= 68 and bias != "NEUTRAL" and coverage >= 0.65:
         signal = bias + " WATCH"
     else:
         signal = "NO SETUP"
+    plan = risk_plan(price, atr, bias) if signal != "NO SETUP" and bias != "NEUTRAL" else (None,) * 8
     return dict(symbol=sym, provider=provider, price=price, score=s, bias=bias, signal=signal, coverage=coverage, change=change24h, m1=m1, m6=m6, m24=m24, vol=vr, atr=atr, taker=taker, book=book, funding=funding, plan=plan)
 
 
@@ -266,22 +266,30 @@ def ensure_signal_file():
             csv.DictWriter(f, fieldnames=CSV_FIELDS).writeheader()
 
 
-def signal_row(x, timestamp, btc24, btc6):
+def signal_row(x, timestamp, btc24, btc6_value):
     p = x["plan"]
+    actionable = x["signal"] != "NO SETUP" and x["bias"] in ("LONG", "SHORT") and p[0] is not None
     return {
-        "id": f"{timestamp}_{x['symbol']}", "timestamp": timestamp, "symbol": x["symbol"], "provider": x["provider"], "price": x["price"], "score": x["score"], "bias": x["bias"], "signal": x["signal"], "change24h": x["change"], "m1": x["m1"], "m6": x["m6"], "m24": x["m24"], "volume_ratio": x["vol"], "atr_pct": x["atr"], "taker_ratio": x["taker"], "book_ratio": x["book"], "funding": x["funding"], "entry_low": p[0] if p[0] is not None else "", "entry_high": p[1] if p[1] is not None else "", "sl": p[2] if p[2] is not None else "", "position_idr": p[3] if p[3] is not None else "", "tp1": p[4] if p[4] is not None else "", "tp2": p[5] if p[5] is not None else "", "tp3": p[6] if p[6] is not None else "", "stop_pct": p[7] if p[7] is not None else "", "btc24": btc24, "btc6": btc6, "h1": "", "h4": "", "h12": "", "h24": ""
+        "id": f"{timestamp}_{x['symbol']}", "timestamp": timestamp, "symbol": x["symbol"], "provider": x["provider"], "price": x["price"], "score": x["score"], "bias": x["bias"], "signal": x["signal"], "change24h": x["change"], "m1": x["m1"], "m6": x["m6"], "m24": x["m24"], "volume_ratio": x["vol"], "atr_pct": x["atr"], "taker_ratio": x["taker"], "book_ratio": x["book"], "funding": x["funding"], "entry_low": p[0] if actionable else "", "entry_high": p[1] if actionable else "", "sl": p[2] if actionable else "", "position_idr": p[3] if actionable else "", "tp1": p[4] if actionable else "", "tp2": p[5] if actionable else "", "tp3": p[6] if actionable else "", "stop_pct": p[7] if actionable else "", "btc24": btc24, "btc6": btc6_value, "h1": "", "h4": "", "h12": "", "h24": ""
     }
 
 
 def append_signals(rows):
     ensure_signal_file()
+    with SIGNAL_FILE.open(newline="", encoding="utf-8") as f:
+        existing_ids = {r.get("id", "") for r in csv.DictReader(f) if r.get("id")}
+    new_rows = [r for r in rows if r.get("id") not in existing_ids]
+    if not new_rows:
+        return 0
     with SIGNAL_FILE.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=CSV_FIELDS)
-        for row in rows:
+        for row in new_rows:
             w.writerow(row)
+    return len(new_rows)
 
 
 def forward_candles(provider, sym):
+    # 15m data gives safer entry/TP/SL ordering than 1h OHLC.
     if provider == "Bitget":
         raw = bitget("/api/v2/mix/market/candles", {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "15m", "limit": 110})["data"]
         return list(reversed(raw))
@@ -301,7 +309,7 @@ def evaluate_forward_test():
     pending = 0
     cache = {}
     for row in rows:
-        if row["bias"] not in ("LONG", "SHORT") or not row["entry_low"]:
+        if row.get("signal") == "NO SETUP" or row.get("bias") not in ("LONG", "SHORT") or not row.get("entry_low"):
             continue
         try:
             ts = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
@@ -312,9 +320,10 @@ def evaluate_forward_test():
             pending += 1
             continue
         try:
-            cache_key = (row["provider"], row["symbol"])
+            provider = row["provider"]
+            cache_key = (provider, row["symbol"])
             if cache_key not in cache:
-                cache[cache_key] = forward_candles(row["provider"], row["symbol"])
+                cache[cache_key] = forward_candles(provider, row["symbol"])
             candles = cache[cache_key]
             base_ms = int(ts.timestamp() * 1000)
             future = [c for c in candles if int(c[0]) >= base_ms]
@@ -325,7 +334,7 @@ def evaluate_forward_test():
             sl, tp1 = float(row["sl"]), float(row["tp1"])
             for h in HORIZONS:
                 key = f"h{h}"
-                if row[key] or age_h < h:
+                if row.get(key) or age_h < h:
                     continue
                 subset = future[: h * 4]
                 entered = False
@@ -337,8 +346,8 @@ def evaluate_forward_test():
                             entered = True
                         elif direction == "SHORT" and high >= entry_low and low <= entry_high:
                             entered = True
-                    if not entered:
-                        continue
+                        if not entered:
+                            continue
                     if direction == "LONG":
                         sl_hit, tp_hit = low <= sl, high >= tp1
                     else:
@@ -373,13 +382,21 @@ def summarize_validation():
         rows = list(csv.DictReader(f))
     out = []
     for label, lo, hi in (("50-59", 50, 60), ("60-67", 60, 68), ("68-74", 68, 75), ("75+", 75, 101)):
-        group = [r for r in rows if lo <= float(r["score"]) < hi and r["bias"] in ("LONG", "SHORT")]
-        h1 = [r["h1"] for r in group if r["h1"] in ("TP1", "SL", "SL_AND_TP_SAME_CANDLE")]
+        group = [r for r in rows if lo <= float(r["score"]) < hi and r.get("signal") != "NO SETUP" and r.get("bias") in ("LONG", "SHORT")]
+        h1 = [r["h1"] for r in group if r.get("h1") in ("TP1", "SL", "SL_AND_TP_SAME_CANDLE")]
         tp = sum(v == "TP1" for v in h1)
-        sl = sum(v != "TP1" for v in h1)
+        non_tp = sum(v != "TP1" for v in h1)
         if h1:
-            out.append(f"Score {label}: {len(group)} tracked | 1h TP1 {tp}/{len(h1)} ({tp/len(h1):.0%}) | non-TP {sl}/{len(h1)} ({sl/len(h1):.0%})")
+            out.append(f"Score {label}: {len(group)} actionable | 1h TP1 {tp}/{len(h1)} ({tp/len(h1):.0%}) | non-TP {non_tp}/{len(h1)} ({non_tp/len(h1):.0%})")
     return out
+
+
+def fmt_ratio(x):
+    return "N/A" if x is None else (">9.99x" if x >= 10 else f"{x:.2f}x")
+
+
+def fmt_num(x):
+    return "N/A" if x is None else f"{x:.2f}"
 
 
 def send(text):
@@ -411,22 +428,24 @@ def main():
                 errors.append(str(e))
     results.sort(key=lambda x: (x["score"], x["coverage"]), reverse=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    append_signals([signal_row(x, timestamp, btc24, btc) for x in results])
+    appended = append_signals([signal_row(x, timestamp, btc24, btc) for x in results])
     evaluated, pending = evaluate_forward_test()
     lines = [f"ZORATHVAEL CRYPTO SCANNER V{VERSION}", datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), f"Provider: {provider}", f"BTC 24h: {btc24:.2f}% | BTC 6h: {btc:.2f}%", f"Coverage: {len(results)}/{len(SYMBOLS)}", ""]
     for i, x in enumerate(results[:10], 1):
         p = x["plan"]
-        lines += [f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core data {x['coverage']:.0%}", f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%", f"   Vol {x['vol']:.2f}x | ATR {x['atr']:.2f}% | Taker {x['taker']:.2f}x | Book {x['book']:.2f}x | Funding {x['funding']:.6g}"]
-        if x["bias"] in ("LONG", "SHORT"):
+        lines += [f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core signal coverage {x['coverage']:.0%}", f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%", f"   Vol {fmt_num(x['vol'])}x | ATR {fmt_num(x['atr'])}% | Taker {fmt_ratio(x['taker'])} | Book {fmt_ratio(x['book'])} | Funding {('N/A' if x['funding'] is None else f'{x['funding']:.6g}')}", "   Optional data: OI N/A | Long/Short N/A"]
+        if x["signal"] != "NO SETUP" and x["bias"] in ("LONG", "SHORT"):
             lines += [f"   Entry {p[0]:.8g}-{p[1]:.8g} | SL {p[2]:.8g} ({p[7]:.2f}%) | Pos Rp{p[3]:,.0f}", f"   TP1 {p[4]:.8g} | TP2 {p[5]:.8g} | TP3 {p[6]:.8g}"]
-        else:
+        elif x["bias"] == "NEUTRAL":
             lines.append("   Trade plan: N/A (NEUTRAL bias)")
+        else:
+            lines.append("   Trade plan: N/A (signal below threshold)")
     if errors:
         lines += [f"\nFailed symbols: {len(errors)}"] + [" - " + e for e in errors[:15]]
-    lines += ["", f"Forward-test store: {SIGNAL_FILE.as_posix()} | outcomes updated: {evaluated}"]
+    lines += ["", f"Forward-test store: {SIGNAL_FILE.as_posix()} | snapshots added: {appended} | outcomes updated: {evaluated} | pending: {pending}"]
     for s in summarize_validation():
         lines.append(s)
-    lines += ["", "Score is setup quality, NOT probability of profit.", "Forward-test results are observational and must not be treated as guaranteed performance.", "OI and Long/Short are intentionally not fabricated when reliable public historical data is unavailable."]
+    lines += ["", "Score is setup quality, NOT probability of profit.", "Forward-test results are observational and must not be treated as guaranteed performance.", "OI and Long/Short are intentionally not fabricated when reliable public historical data is unavailable.", "Forward test uses 15m candles and the original signal provider for outcome evaluation."]
     text = "\n".join(lines)
     print(text)
     send(text)
