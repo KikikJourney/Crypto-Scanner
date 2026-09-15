@@ -104,12 +104,18 @@ jobs:
           required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','h1','h4','h12','h24'}
           assert required.issubset(rows[0] if rows else required), 'extreme forward-test schema invalid'
           print(f'EXTREME FORWARD CSV VALID: {len(rows)} rows')
+          p2 = Path('data/extreme_market_snapshots.csv')
+          assert p2.exists(), 'extreme market snapshot CSV missing'
+          with p2.open(newline='', encoding='utf-8') as f:
+              snapshots = list(csv.DictReader(f))
+          assert required - {'direction','score','signal','atr_pct','h1','h4','h12','h24'} <= set(snapshots[0] if snapshots else {'id','timestamp','symbol','provider','price'}), 'extreme snapshot schema invalid'
+          print(f'EXTREME SNAPSHOT CSV VALID: {len(snapshots)} rows')
           PY
 
       - name: Persist scanner and forward-test data
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/universe_watchlist.csv tests/test_early_reversal.py tests/test_extreme_reversal.py
-          git diff --cached --quiet || git commit -m 'Add V2.2 extreme reversal scanner and forward test'
+          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/universe_watchlist.csv tests/test_early_reversal.py tests/test_extreme_reversal.py
+          git diff --cached --quiet || git commit -m 'Harden V2.2 extreme forward test'
           git push origin HEAD:main
