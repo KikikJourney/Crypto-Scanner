@@ -31,14 +31,14 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scanner.py
-      - name: Persist forward-test data
+      - name: Persist scanner and forward-test data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/forward_test.csv
+          git add scanner.py data/forward_test.csv
           if git diff --cached --quiet; then
-            echo "No forward-test data changes to commit."
+            echo "No scanner/data changes to commit."
           else
-            git commit -m "chore: update forward-test data"
+            git commit -m "chore: persist scanner validation data"
             git push origin HEAD:main
           fi
