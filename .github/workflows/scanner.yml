@@ -9,7 +9,7 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -21,17 +21,20 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Validate scanner syntax
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("scanner.py")
-          s=p.read_text()
-          s=s.replace('return features(list(reversed(bybit("/v5/market/kline",{"category":"linear","symbol":"BTCUSDT","interval":"60","limit":25})["result"]["list"]))))[1]', 'return features(list(reversed(bybit("/v5/market/kline",{"category":"linear","symbol":"BTCUSDT","interval":"60","limit":25})["result"]["list"]))) [1]')
-          p.write_text(s)
-          PY
-          python -m py_compile scanner.py
+        run: python -m py_compile scanner.py
       - name: Run scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scanner.py
+      - name: Persist forward-test data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/forward_test.csv
+          if git diff --cached --quiet; then
+            echo "No forward-test data changes to commit."
+          else
+            git commit -m "chore: update forward-test data"
+            git push
+          fi
