@@ -11,30 +11,24 @@ def _f(x):
 
 
 def _derived_parts(x, side):
-    """Use exact side fields when available; otherwise derive only what the current CSV exposes.
+    """Use exact side fields when available; otherwise derive only exact exposed inputs.
 
-    Missing reclaim/exhaustion is reported as data-limited rather than guessed.
+    Missing reclaim/exhaustion/expansion are reported as data-limited rather than guessed.
     """
     prefix = 'long_' if side == 'LONG' else 'short_'
     parts = {name: _f(x.get(prefix + ('reject' if name == 'reclaim' and side == 'SHORT' else name))) for name in COMPONENTS}
 
-    # Current scanner exposes range_pos, taker aggregate and volume_ratio even
-    # before the side-specific component upgrade. These are mathematically
-    # equivalent to the location/flow/expansion inputs used by reversal_scores.
+    # range_pos is the same input used by scanner_v2's location formulas.
     pos = _f(x.get('range_pos'))
     if parts['location'] is None and pos is not None:
         parts['location'] = max(0.0, min(1.0, (0.38 - pos) / 0.38)) if side == 'LONG' else max(0.0, min(1.0, (pos - 0.62) / 0.38))
 
+    # taker aggregate is the same input used by scanner_v2's taker_flow().
     agg = _f(x.get('taker'))
     if parts['flow'] is None and agg is not None and agg > 0:
-        flow = max(0.0, min(1.0, 0.5 + __import__('math').log(agg) / __import__('math').log(4) * 0.5))
+        import math
+        flow = max(0.0, min(1.0, 0.5 + math.log(agg) / math.log(4) * 0.5))
         parts['flow'] = flow if side == 'LONG' else 1.0 - flow
-
-    vr = _f(x.get('volume_ratio'))
-    if parts['expansion'] is None and vr is not None:
-        # Compression is not present in the current result, so this is a
-        # conservative lower-bound component, not a fabricated full expansion score.
-        parts['expansion'] = 0.55 * max(0.0, min(1.0, (vr - 1.0) / 2.0))
 
     return parts
 
@@ -68,12 +62,11 @@ def _blockers(parts, side):
     elif parts['expansion'] < 0.40:
         missing.append(f'expansion {parts["expansion"]:.2f}<0.40')
 
-    # Never call an unavailable value a blocker. Keep the distinction explicit.
     if missing:
-        return '; '.join(missing[:3]), unknown
+        return '; '.join(missing[:3])
     if unknown:
-        return 'data-limited: ' + '; '.join(unknown[:2]), unknown
-    return 'none', []
+        return 'data-limited: ' + '; '.join(unknown[:2])
+    return 'none'
 
 
 def diagnostic_status(x):
@@ -83,10 +76,8 @@ def diagnostic_status(x):
     score = max(ls, ss)
     gap_to_signal = round(max(0.0, 70.0 - score), 1)
 
-    long_parts = _derived_parts(x, 'LONG')
-    short_parts = _derived_parts(x, 'SHORT')
-    long_blocker, _ = _blockers(long_parts, 'LONG')
-    short_blocker, _ = _blockers(short_parts, 'SHORT')
+    long_blocker = _blockers(_derived_parts(x, 'LONG'), 'LONG')
+    short_blocker = _blockers(_derived_parts(x, 'SHORT'), 'SHORT')
     blocker = long_blocker if side == 'LONG' else short_blocker
 
     if x.get('direction') in ('LONG', 'SHORT'):
@@ -136,8 +127,7 @@ def _test():
     assert r['bias'] == 'SHORT' and r['status'] == 'NEAR SHORT'
     assert 'expansion 0.20<0.40' in r['blocker']
 
-    # Current scanner format: location/flow/expansion can be derived, but the
-    # diagnostic must openly flag unavailable exhaustion/reclaim rather than invent them.
+    # Current scanner format: location/flow are exact; other components stay data-limited.
     x = {
         'long_score': 65, 'short_score': 61, 'direction': 'NONE',
         'range_pos': .20, 'taker': 1.6, 'volume_ratio': 2.0,
