@@ -47,7 +47,8 @@ class EarlyReversalTests(unittest.TestCase):
         r = result(long_location=.9, long_exhaustion=None, long_flow=.7, long_reclaim=.3)
         d = classify(r)
         self.assertNotEqual(d['status'], 'EARLY REVERSAL LONG')
-        self.assertIn('data unavailable', d['blocker'])
+        self.assertIn('data unavailable', d['long_blocker'])
+        self.assertEqual(d['blocker'], 'data-limited: no side data')
 
     def test_future_only_outcome(self):
         self.assertEqual(_outcome('LONG', 100, 102.1, 1.0), 'EXPANSION')
