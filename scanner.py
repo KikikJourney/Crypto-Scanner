@@ -8,7 +8,7 @@ from pathlib import Path
 
 import requests
 
-VERSION = "1.9"
+VERSION = "1.9.1"
 BINANCE_BASES = ["https://fapi.binance.com", "https://fapi1.binance.com", "https://fapi2.binance.com", "https://fapi3.binance.com", "https://fapi4.binance.com"]
 BYBIT_BASE = "https://api.bybit.com"
 BITGET_BASE = "https://api.bitget.com"
@@ -19,12 +19,20 @@ TIMEOUT = 12
 DATA_DIR = Path("data")
 SIGNAL_FILE = DATA_DIR / "forward_test.csv"
 HORIZONS = (1, 4, 12, 24)
-CSV_FIELDS = ["id","timestamp","symbol","provider","price","score","bias","signal","change24h","m1","m6","m24","volume_ratio","atr_pct","taker_ratio","taker_stability","book_ratio","funding","entry_low","entry_high","sl","position_idr","tp1","tp2","tp3","stop_pct","btc24","btc6","h1","h4","h12","h24"]
+TAKER_WINDOWS = (100, 250, 500)
+CSV_FIELDS = [
+    "id","timestamp","symbol","provider","price","score","bias","signal","change24h",
+    "m1","m6","m24","volume_ratio","atr_pct","taker_100","taker_250","taker_500",
+    "taker_ratio","taker_spread_pct","taker_stability","book_ratio","funding","entry_low",
+    "entry_high","sl","position_idr","tp1","tp2","tp3","stop_pct","btc24","btc6","h1","h4","h12","h24"
+]
 
 S = requests.Session()
 S.headers.update({"User-Agent": f"Zorathvael-Crypto-Scanner/{VERSION}"})
 
-def clamp(x, a=-1, b=1): return max(a, min(b, x))
+def clamp(x, a=-1, b=1):
+    return max(a, min(b, x))
+
 def sf(x, default=None):
     try: return float(x)
     except (TypeError, ValueError): return default
@@ -36,7 +44,8 @@ def get(base, path, params=None, retries=2):
             r = S.get(base + path, params=params, timeout=TIMEOUT)
             if r.status_code == 429 or r.status_code >= 500:
                 last = RuntimeError(f"HTTP {r.status_code}: {r.text[:160]}")
-                if i < retries: time.sleep(0.8 * (i + 1)); continue
+                if i < retries:
+                    time.sleep(0.8 * (i + 1)); continue
             if not r.ok: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:160]}")
             try: return r.json()
             except Exception as e: raise RuntimeError(f"Invalid JSON: {e}") from e
@@ -88,33 +97,43 @@ def ratio_score(ratio, scale):
     if ratio is None or ratio<=0: return None
     return 50+25*clamp(math.log(ratio)/math.log(scale))
 
-def taker_pressure(trades, buy_side, sell_side, windows=(100,250,500)):
-    vals=[]
+def _trade_parts(trade):
+    if isinstance(trade, dict):
+        side = str(trade.get("side", ""))
+        price = sf(trade.get("price"))
+        size = sf(trade.get("size"))
+    else:
+        try:
+            side = str(trade[4] if len(trade) > 4 else trade[3])
+            price = sf(trade[1]); size = sf(trade[2])
+        except (IndexError, TypeError):
+            return "", None, None
+    return side, price, size
+
+def taker_pressure(trades, buy_side, sell_side, windows=TAKER_WINDOWS):
+    """Return per-window ratios, geometric aggregate, spread %, and stability."""
+    ratios=[]
+    normalized_buy=str(buy_side).lower(); normalized_sell=str(sell_side).lower()
     for n in windows:
-        part=trades[:n]
         buy=sell=0.0
-        for x in part:
-            try:
-                if isinstance(x, dict):
-                    side = str(x.get("side", ""))
-                    price = float(x.get("price", 0))
-                    size = float(x.get("size", 0))
-                else:
-                    side = str(x[4] if len(x) > 4 else x[3])
-                    price = float(x[1])
-                    size = float(x[2])
-                if side.lower() in (str(buy_side).lower(), "buy"):
-                    buy += price * size
-                elif side.lower() in (str(sell_side).lower(), "sell"):
-                    sell += price * size
-            except (KeyError,TypeError,ValueError,IndexError): continue
-        if buy>0 and sell>0: vals.append(buy/sell)
-    if not vals: return None,None
-    # Geometric mean reduces the impact of one abnormal micro-window.
-    stable=math.exp(sum(math.log(x) for x in vals)/len(vals))
-    spread=max(vals)/min(vals) if len(vals)>1 else 1.0
-    stability=1/(1+max(0,math.log(spread)))
-    return stable,stability
+        for trade in list(trades)[:n]:
+            side, price, size = _trade_parts(trade)
+            if price is None or size is None or price <= 0 or size <= 0: continue
+            side=side.lower()
+            if side in (normalized_buy, "buy"):
+                buy += price * size
+            elif side in (normalized_sell, "sell"):
+                sell += price * size
+        if buy > 0 and sell > 0: ratios.append(buy/sell)
+        else: ratios.append(None)
+    valid=[x for x in ratios if x is not None and math.isfinite(x) and x>0]
+    if not valid: return [None]*len(windows), None, None, None
+    mean_log=sum(math.log(x) for x in valid)/len(valid)
+    aggregate=math.exp(mean_log)
+    spread_pct=(max(valid)/min(valid)-1)*100 if len(valid)>1 else 0.0
+    log_std=math.sqrt(sum((math.log(x)-mean_log)**2 for x in valid)/len(valid)) if len(valid)>1 else 0.0
+    stability=1/(1+log_std)
+    return ratios, aggregate, spread_pct, stability
 
 def score(f,taker,book,funding,btc):
     m1,m6,m24,vr,atr=f
@@ -141,33 +160,33 @@ def risk_plan(price,atr,bias):
         lo,hi=price*.985,price*.995; sl=lo*(1-stop_pct); r=lo-sl; tp=[lo+1.5*r,lo+3*r,lo+5*r]
     return lo,hi,sl,position,*tp,stop_pct*100
 
-def make_result(sym,provider,price,change,f,taker,taker_stability,book,funding,btc):
+def make_result(sym,provider,price,change,f,taker,taker_windows,taker_spread,taker_stability,book,funding,btc):
     s,bias,cov=score(f,taker,book,funding,btc)
     signal="STRONG "+bias if s>=75 and bias!="NEUTRAL" and cov>=.65 else bias+" WATCH" if s>=68 and bias!="NEUTRAL" and cov>=.65 else "NO SETUP"
     plan=risk_plan(price,f[4],bias) if signal!="NO SETUP" and bias!="NEUTRAL" else (None,)*8
-    return dict(symbol=sym,provider=provider,price=price,score=s,bias=bias,signal=signal,coverage=cov,change=change,m1=f[0],m6=f[1],m24=f[2],vol=f[3],atr=f[4],taker=taker,taker_stability=taker_stability,book=book,funding=funding,plan=plan)
+    return dict(symbol=sym,provider=provider,price=price,score=s,bias=bias,signal=signal,coverage=cov,change=change,m1=f[0],m6=f[1],m24=f[2],vol=f[3],atr=f[4],taker=taker,taker_windows=taker_windows,taker_spread=taker_spread,taker_stability=taker_stability,book=book,funding=funding,plan=plan)
 
 def bitget_symbol(sym,btc):
     pt="USDT-FUTURES"; t=bitget("/api/v2/mix/market/ticker",{"symbol":sym,"productType":pt})["data"][0]
     f=bitget_features(sym); d=bitget("/api/v2/mix/market/merge-depth",{"symbol":sym,"productType":pt,"limit":20})["data"]
     bids=sum(float(x[1]) for x in d.get("bids",[])); asks=sum(float(x[1]) for x in d.get("asks",[])); book=bids/asks if bids and asks else None
     trades=bitget("/api/v2/mix/market/fills",{"symbol":sym,"productType":pt,"limit":500})["data"]
-    taker,st=taker_pressure(trades,"buy","sell")
-    return make_result(sym,"Bitget",float(t["lastPr"]),float(t.get("change24h",0))*100,f,taker,st,book,sf(t.get("fundingRate")),btc)
+    tw,taker,spread,st=taker_pressure(trades,"buy","sell")
+    return make_result(sym,"Bitget",float(t["lastPr"]),float(t.get("change24h",0))*100,f,taker,tw,spread,st,book,sf(t.get("fundingRate")),btc)
 
 def bybit_symbol(sym,btc):
     t=bybit("/v5/market/tickers",{"category":"linear","symbol":sym})["result"]["list"][0]; f=bybit_features(sym)
     trades=bybit("/v5/market/recent-trade",{"category":"linear","symbol":sym,"limit":500})["result"]["list"]
-    taker,st=taker_pressure(trades,"Buy","Sell")
+    tw,taker,spread,st=taker_pressure(trades,"Buy","Sell")
     d=bybit("/v5/market/orderbook",{"category":"linear","symbol":sym,"limit":25})["result"]; bids=sum(float(x[1]) for x in d.get("b",[])); asks=sum(float(x[1]) for x in d.get("a",[])); book=bids/asks if bids and asks else None
     fr=bybit("/v5/market/funding/history",{"category":"linear","symbol":sym,"limit":1})["result"]["list"]; funding=float(fr[0]["fundingRate"]) if fr else None
-    return make_result(sym,"Bybit",float(t["lastPrice"]),float(t.get("price24hPcnt",0))*100,f,taker,st,book,funding,btc)
+    return make_result(sym,"Bybit",float(t["lastPrice"]),float(t.get("price24hPcnt",0))*100,f,taker,tw,spread,st,book,funding,btc)
 
 def binance_symbol(sym,btc):
     t=binance("/fapi/v1/ticker/24hr",{"symbol":sym}); f=binance_features(sym); tr=binance("/futures/data/takerlongshortRatio",{"symbol":sym,"period":"1h","limit":1}); taker=float(tr[-1]["buySellRatio"]) if tr else None
     fr=binance("/fapi/v1/fundingRate",{"symbol":sym,"limit":1}); funding=float(fr[-1]["fundingRate"]) if fr else None
     d=binance("/fapi/v1/depth",{"symbol":sym,"limit":20}); bids=sum(float(x[1]) for x in d.get("bids",[])); asks=sum(float(x[1]) for x in d.get("asks",[])); book=bids/asks if bids and asks else None
-    return make_result(sym,"Binance",float(t["lastPrice"]),float(t.get("priceChangePercent",0)),f,taker,1.0,book,funding,btc)
+    tw=[taker,None,None]; return make_result(sym,"Binance",float(t["lastPrice"]),float(t.get("priceChangePercent",0)),f,taker,tw,0.0,1.0,book,funding,btc)
 
 def discover():
     try:
@@ -186,16 +205,33 @@ def ensure_file():
     if not SIGNAL_FILE.exists():
         with SIGNAL_FILE.open("w",newline="",encoding="utf-8") as f: csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader()
 
+def migrate_csv_schema():
+    ensure_file()
+    with SIGNAL_FILE.open(newline="",encoding="utf-8") as f: rows=list(csv.DictReader(f))
+    if not rows: return
+    if list(rows[0].keys()) == CSV_FIELDS: return
+    for row in rows:
+        old=row.get("taker_ratio")
+        row.setdefault("taker_100", old if old else "")
+        row.setdefault("taker_250", "")
+        row.setdefault("taker_500", "")
+        row.setdefault("taker_spread_pct", "")
+        row.setdefault("taker_stability", "")
+        for key in CSV_FIELDS: row.setdefault(key, "")
+    with SIGNAL_FILE.open("w",newline="",encoding="utf-8") as f:
+        w=csv.DictWriter(f,fieldnames=CSV_FIELDS); w.writeheader(); w.writerows(rows)
+
 def signal_row(x,ts,btc24,btc6v):
     p=x["plan"]; actionable=x["signal"]!="NO SETUP" and x["bias"] in ("LONG","SHORT") and p[0] is not None
-    return {"id":f"{ts}_{x['symbol']}","timestamp":ts,"symbol":x["symbol"],"provider":x["provider"],"price":x["price"],"score":x["score"],"bias":x["bias"],"signal":x["signal"],"change24h":x["change"],"m1":x["m1"],"m6":x["m6"],"m24":x["m24"],"volume_ratio":x["vol"],"atr_pct":x["atr"],"taker_ratio":x["taker"],"taker_stability":x["taker_stability"],"book_ratio":x["book"],"funding":x["funding"],"entry_low":p[0] if actionable else "","entry_high":p[1] if actionable else "","sl":p[2] if actionable else "","position_idr":p[3] if actionable else "","tp1":p[4] if actionable else "","tp2":p[5] if actionable else "","tp3":p[6] if actionable else "","stop_pct":p[7] if actionable else "","btc24":btc24,"btc6":btc6v,"h1":"","h4":"","h12":"","h24":""}
+    tw=x.get("taker_windows") or [None,None,None]
+    return {"id":f"{ts}_{x['symbol']}","timestamp":ts,"symbol":x["symbol"],"provider":x["provider"],"price":x["price"],"score":x["score"],"bias":x["bias"],"signal":x["signal"],"change24h":x["change"],"m1":x["m1"],"m6":x["m6"],"m24":x["m24"],"volume_ratio":x["vol"],"atr_pct":x["atr"],"taker_100":tw[0],"taker_250":tw[1],"taker_500":tw[2],"taker_ratio":x["taker"],"taker_spread_pct":x.get("taker_spread"),"taker_stability":x.get("taker_stability"),"book_ratio":x["book"],"funding":x["funding"],"entry_low":p[0] if actionable else "","entry_high":p[1] if actionable else "","sl":p[2] if actionable else "","position_idr":p[3] if actionable else "","tp1":p[4] if actionable else "","tp2":p[5] if actionable else "","tp3":p[6] if actionable else "","stop_pct":p[7] if actionable else "","btc24":btc24,"btc6":btc6v,"h1":"","h4":"","h12":"","h24":""}
 
 def append_rows(new):
-    ensure_file()
+    migrate_csv_schema()
     with SIGNAL_FILE.open(newline="",encoding="utf-8") as f: ids={r.get("id") for r in csv.DictReader(f)}
     fresh=[r for r in new if r["id"] not in ids]
     if fresh:
-        with SIGNAL_FILE.open("a",newline="",encoding="utf-8") as f: csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(fresh)
+        with SIGNAL_FILE.open("a",newline="",encoding="utf-8") as f: csv.DictWriter(f,fieldnames=CSV_FIELDS,extrasaction="ignore").writerows(fresh)
     return len(fresh)
 
 def forward_candles(provider,sym):
@@ -206,7 +242,7 @@ def forward_candles(provider,sym):
     return binance("/fapi/v1/klines",{"symbol":sym,"interval":"15m","limit":110})
 
 def evaluate():
-    if not SIGNAL_FILE.exists(): return 0,0
+    migrate_csv_schema()
     with SIGNAL_FILE.open(newline="",encoding="utf-8") as f: rows=list(csv.DictReader(f))
     now=datetime.now(timezone.utc); changed=pending=0; cache={}
     for row in rows:
@@ -240,7 +276,7 @@ def evaluate():
     return changed,pending
 
 def validation_stats():
-    if not SIGNAL_FILE.exists(): return []
+    migrate_csv_schema()
     with SIGNAL_FILE.open(newline="",encoding="utf-8") as f: rows=list(csv.DictReader(f))
     actionable=[r for r in rows if r.get("signal")!="NO SETUP" and r.get("bias") in ("LONG","SHORT") and r.get("entry_low")]
     out=[f"Validation: {len(actionable)} actionable snapshots / {len(rows)} total snapshots"]
@@ -257,7 +293,8 @@ def validation_stats():
     return out
 
 def fmt_ratio(x): return "N/A" if x is None else ">9.99x" if x>=10 else f"{x:.2f}x"
-def fmt_num(x): return "N/A" if x is None else f"{x:.2f}"
+def fmt_num(x): return "N/A" if x is None else f"{x:.3f}"
+def fmt_taker_windows(xs): return "/".join("N/A" if x is None else (f">9.99x" if x>=10 else f"{x:.2f}x") for x in xs)
 
 def send(text):
     tok,chat=os.getenv("TELEGRAM_BOT_TOKEN"),os.getenv("TELEGRAM_CHAT_ID")
@@ -280,12 +317,13 @@ def main():
     added=append_rows([signal_row(x,ts,btc24,btc) for x in results]); evaluated,pending=evaluate()
     lines=[f"ZORATHVAEL CRYPTO SCANNER V{VERSION}",datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),f"Provider: {provider}",f"BTC 24h: {btc24:.2f}% | BTC 6h: {btc:.2f}%",f"Coverage: {len(results)}/{len(SYMBOLS)}",""]
     for i,x in enumerate(results[:10],1):
-        p=x["plan"]; lines += [f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core signal coverage {x['coverage']:.0%}",f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%",f"   Vol {fmt_num(x['vol'])}x | ATR {fmt_num(x['atr'])}% | Taker {fmt_ratio(x['taker'])} | Taker stability {fmt_num(x['taker_stability'])} | Book {fmt_ratio(x['book'])} | Funding {('N/A' if x['funding'] is None else f'{x['funding']:.6g}')}","   Optional data: OI N/A | Long/Short N/A"]
+        p=x["plan"]; tw=x.get("taker_windows") or [None,None,None]; funding="N/A" if x["funding"] is None else f"{x['funding']:.6g}"
+        lines += [f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core signal coverage {x['coverage']:.0%}",f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%",f"   Vol {fmt_num(x['vol'])}x | ATR {fmt_num(x['atr'])}% | Taker 100/250/500 {fmt_taker_windows(tw)} | Agg {fmt_ratio(x['taker'])} | Spread {fmt_num(x.get('taker_spread'))}% | Stability {fmt_num(x.get('taker_stability'))} | Book {fmt_ratio(x['book'])} | Funding {funding}","   Optional data: OI N/A | Long/Short N/A"]
         if x["signal"]!="NO SETUP" and x["bias"] in ("LONG","SHORT"): lines += [f"   Entry {p[0]:.8g}-{p[1]:.8g} | SL {p[2]:.8g} ({p[7]:.2f}%) | Pos Rp{p[3]:,.0f}",f"   TP1 {p[4]:.8g} | TP2 {p[5]:.8g} | TP3 {p[6]:.8g}"]
         elif x["bias"]=="NEUTRAL": lines.append("   Trade plan: N/A (NEUTRAL bias)")
         else: lines.append("   Trade plan: N/A (signal below threshold)")
     if errors: lines += [f"\nFailed symbols: {len(errors)}"]+[" - "+e for e in errors[:15]]
-    lines += ["",f"Forward-test store: {SIGNAL_FILE.as_posix()} | snapshots added: {added} | outcomes updated: {evaluated} | pending: {pending}"]+validation_stats()+["","Score is setup quality, NOT probability of profit.","Forward-test results are observational and must not be treated as guaranteed performance.","OI and Long/Short are intentionally not fabricated when reliable public historical data is unavailable.","Forward test uses 15m candles and the original signal provider for outcome evaluation.","Taker pressure uses 100/250/500-fill geometric aggregation; stability is a consistency metric, not probability."]
+    lines += ["",f"Forward-test store: {SIGNAL_FILE.as_posix()} | snapshots added: {added} | outcomes updated: {evaluated} | pending: {pending}"]+validation_stats()+["","Score is setup quality, NOT probability of profit.","Forward-test results are observational and must not be treated as guaranteed performance.","OI and Long/Short are intentionally not fabricated when reliable public historical data is unavailable.","Forward test uses 15m candles and the original signal provider for outcome evaluation.","Taker pressure uses 100/250/500-fill geometric aggregation; stability is an auditable consistency metric and is not used in score."]
     text="\n".join(lines); print(text); send(text)
 
 if __name__=="__main__": main()
