@@ -1,6 +1,6 @@
 import unittest
 
-from extreme_reversal_layer import classify
+from extreme_reversal_layer import classify, _outcome
 from extreme_market_data import build_features
 
 
@@ -32,6 +32,11 @@ class ExtremeReversalTests(unittest.TestCase):
     def test_missing_data_blocked(self):
         self.assertEqual(classify({'data_ok':False})['status'],'DATA-LIMITED')
 
+    def test_forward_outcome_uses_two_atr_favorable_and_one_atr_adverse(self):
+        self.assertEqual(_outcome('SHORT',100,97,1.0),'EXPANSION')
+        self.assertEqual(_outcome('SHORT',100,101,1.0),'FAIL')
+        self.assertIsNone(_outcome('SHORT',100,99.5,1.0))
+
 
 class ExtremeMarketDataTests(unittest.TestCase):
     def _rows(self, mode):
@@ -45,7 +50,7 @@ class ExtremeMarketDataTests(unittest.TestCase):
 
     def test_low_market_features(self):
         rows=self._rows('low'); f=build_features(rows,rows[-1][4])
-        self.assertTrue(f['data_ok']); self.assertLess(f['h1_pos_24'],.30); self.assertLess(f['dist_low_atr'],1.0); self.assertGreaterEqual(f['dist_low_atr'],0); self.assertIn('price',f); self.assertIn('atr_pct',f)
+        self.assertTrue(f['data_ok']); self.assertLess(f['h1_pos_24'],.30); self.assertLess(f['dist_low_atr'],1.0); self.assertGreaterEqual(f['dist_low_atr'],0); self.assertIn('price',f); self.assertIn('atr_pct',f); self.assertEqual(f['atr_basis'],'1H')
 
     def test_mid_market_features(self):
         rows=self._rows('mid'); f=build_features(rows,150)
