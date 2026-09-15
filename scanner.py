@@ -136,14 +136,7 @@ def score(f, taker, book, funding, btc):
     vol = None if vr is None else 50 + 20 * clamp((vr - 1) / 2)
     fund = None if funding is None else 50 - 25 * min(abs(funding) / 0.001, 1)
     br = 50 + 25 * clamp(btc / 4)
-    vals = {
-        "momentum": (30, mom),
-        "taker": (20, tak),
-        "orderbook": (15, bk),
-        "volume": (10, vol),
-        "funding": (10, fund),
-        "btc_regime": (15, br),
-    }
+    vals = {"momentum": (30, mom), "taker": (20, tak), "orderbook": (15, bk), "volume": (10, vol), "funding": (10, fund), "btc_regime": (15, br)}
     available = {k: v for k, v in vals.items() if v[1] is not None}
     total = sum(v[0] for v in available.values())
     if total <= 0:
@@ -153,8 +146,7 @@ def score(f, taker, book, funding, btc):
     direction_weight = sum(available[k][0] for k in direction_keys)
     ds = sum(available[k][0] * (available[k][1] - 50) for k in direction_keys) / direction_weight
     bias = "LONG" if ds > 5 else "SHORT" if ds < -5 else "NEUTRAL"
-    core_coverage = total / 100
-    return round(s, 1), bias, core_coverage
+    return round(s, 1), bias, total / 100
 
 
 def risk_plan(price, atr, bias):
@@ -186,8 +178,7 @@ def result(sym, provider, price, change24h, f, taker, book, funding, btc):
         signal = bias + " WATCH"
     else:
         signal = "NO SETUP"
-    return dict(symbol=sym, provider=provider, price=price, score=s, bias=bias, signal=signal, coverage=coverage,
-                change=change24h, m1=m1, m6=m6, m24=m24, vol=vr, atr=atr, taker=taker, book=book, funding=funding, plan=plan)
+    return dict(symbol=sym, provider=provider, price=price, score=s, bias=bias, signal=signal, coverage=coverage, change=change24h, m1=m1, m6=m6, m24=m24, vol=vr, atr=atr, taker=taker, book=book, funding=funding, plan=plan)
 
 
 def bitget_symbol(sym, btc):
@@ -278,14 +269,7 @@ def ensure_signal_file():
 def signal_row(x, timestamp, btc24, btc6):
     p = x["plan"]
     return {
-        "id": f"{timestamp}_{x['symbol']}", "timestamp": timestamp, "symbol": x["symbol"], "provider": x["provider"],
-        "price": x["price"], "score": x["score"], "bias": x["bias"], "signal": x["signal"], "change24h": x["change"],
-        "m1": x["m1"], "m6": x["m6"], "m24": x["m24"], "volume_ratio": x["vol"], "atr_pct": x["atr"],
-        "taker_ratio": x["taker"], "book_ratio": x["book"], "funding": x["funding"],
-        "entry_low": p[0] if p[0] is not None else "", "entry_high": p[1] if p[1] is not None else "", "sl": p[2] if p[2] is not None else "",
-        "position_idr": p[3] if p[3] is not None else "", "tp1": p[4] if p[4] is not None else "", "tp2": p[5] if p[5] is not None else "", "tp3": p[6] if p[6] is not None else "",
-        "stop_pct": p[7] if p[7] is not None else "", "btc24": btc24, "btc6": btc6,
-        "h1": "", "h4": "", "h12": "", "h24": "",
+        "id": f"{timestamp}_{x['symbol']}", "timestamp": timestamp, "symbol": x["symbol"], "provider": x["provider"], "price": x["price"], "score": x["score"], "bias": x["bias"], "signal": x["signal"], "change24h": x["change"], "m1": x["m1"], "m6": x["m6"], "m24": x["m24"], "volume_ratio": x["vol"], "atr_pct": x["atr"], "taker_ratio": x["taker"], "book_ratio": x["book"], "funding": x["funding"], "entry_low": p[0] if p[0] is not None else "", "entry_high": p[1] if p[1] is not None else "", "sl": p[2] if p[2] is not None else "", "position_idr": p[3] if p[3] is not None else "", "tp1": p[4] if p[4] is not None else "", "tp2": p[5] if p[5] is not None else "", "tp3": p[6] if p[6] is not None else "", "stop_pct": p[7] if p[7] is not None else "", "btc24": btc24, "btc6": btc6, "h1": "", "h4": "", "h12": "", "h24": ""
     }
 
 
@@ -297,7 +281,17 @@ def append_signals(rows):
             w.writerow(row)
 
 
-def evaluate_forward_test(provider):
+def forward_candles(provider, sym):
+    if provider == "Bitget":
+        raw = bitget("/api/v2/mix/market/candles", {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "15m", "limit": 110})["data"]
+        return list(reversed(raw))
+    if provider == "Bybit":
+        raw = bybit("/v5/market/kline", {"category": "linear", "symbol": sym, "interval": "15", "limit": 110})["result"]["list"]
+        return list(reversed(raw))
+    return binance("/fapi/v1/klines", {"symbol": sym, "interval": "15m", "limit": 110})
+
+
+def evaluate_forward_test():
     if not SIGNAL_FILE.exists():
         return 0, 0
     with SIGNAL_FILE.open(newline="", encoding="utf-8") as f:
@@ -305,6 +299,7 @@ def evaluate_forward_test(provider):
     now = datetime.now(timezone.utc)
     changed = 0
     pending = 0
+    cache = {}
     for row in rows:
         if row["bias"] not in ("LONG", "SHORT") or not row["entry_low"]:
             continue
@@ -317,14 +312,10 @@ def evaluate_forward_test(provider):
             pending += 1
             continue
         try:
-            if provider == "Bitget":
-                raw = bitget("/api/v2/mix/market/candles", {"symbol": row["symbol"], "productType": "USDT-FUTURES", "granularity": "1H", "limit": 30})["data"]
-                candles = list(reversed(raw))
-            elif provider == "Bybit":
-                raw = bybit("/v5/market/kline", {"category": "linear", "symbol": row["symbol"], "interval": "60", "limit": 30})["result"]["list"]
-                candles = list(reversed(raw))
-            else:
-                candles = binance("/fapi/v1/klines", {"symbol": row["symbol"], "interval": "1h", "limit": 30})
+            cache_key = (row["provider"], row["symbol"])
+            if cache_key not in cache:
+                cache[cache_key] = forward_candles(row["provider"], row["symbol"])
+            candles = cache[cache_key]
             base_ms = int(ts.timestamp() * 1000)
             future = [c for c in candles if int(c[0]) >= base_ms]
             if not future:
@@ -336,7 +327,7 @@ def evaluate_forward_test(provider):
                 key = f"h{h}"
                 if row[key] or age_h < h:
                     continue
-                subset = future[:h]
+                subset = future[: h * 4]
                 entered = False
                 outcome = "NO_ENTRY"
                 for c in subset:
@@ -383,11 +374,11 @@ def summarize_validation():
     out = []
     for label, lo, hi in (("50-59", 50, 60), ("60-67", 60, 68), ("68-74", 68, 75), ("75+", 75, 101)):
         group = [r for r in rows if lo <= float(r["score"]) < hi and r["bias"] in ("LONG", "SHORT")]
-        h1 = [r["h1"] for r in group if r["h1"]]
+        h1 = [r["h1"] for r in group if r["h1"] in ("TP1", "SL", "SL_AND_TP_SAME_CANDLE")]
         tp = sum(v == "TP1" for v in h1)
-        sl = sum(v == "SL" for v in h1)
+        sl = sum(v != "TP1" for v in h1)
         if h1:
-            out.append(f"Score {label}: {len(group)} tracked | 1h TP1 {tp}/{len(h1)} ({tp/len(h1):.0%}) | SL {sl}/{len(h1)} ({sl/len(h1):.0%})")
+            out.append(f"Score {label}: {len(group)} tracked | 1h TP1 {tp}/{len(h1)} ({tp/len(h1):.0%}) | non-TP {sl}/{len(h1)} ({sl/len(h1):.0%})")
     return out
 
 
@@ -421,15 +412,11 @@ def main():
     results.sort(key=lambda x: (x["score"], x["coverage"]), reverse=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     append_signals([signal_row(x, timestamp, btc24, btc) for x in results])
-    evaluated, pending = evaluate_forward_test(provider)
+    evaluated, pending = evaluate_forward_test()
     lines = [f"ZORATHVAEL CRYPTO SCANNER V{VERSION}", datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), f"Provider: {provider}", f"BTC 24h: {btc24:.2f}% | BTC 6h: {btc:.2f}%", f"Coverage: {len(results)}/{len(SYMBOLS)}", ""]
     for i, x in enumerate(results[:10], 1):
         p = x["plan"]
-        lines += [
-            f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core data {x['coverage']:.0%}",
-            f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%",
-            f"   Vol {x['vol']:.2f}x | ATR {x['atr']:.2f}% | Taker {x['taker']:.2f}x | Book {x['book']:.2f}x | Funding {x['funding']:.6g}",
-        ]
+        lines += [f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Core data {x['coverage']:.0%}", f"   Bias {x['bias']} | Price {x['price']:.8g} | 24h {x['change']:.2f}% | 1h {x['m1']:.2f}% | 6h {x['m6']:.2f}% | 24h-trend {x['m24']:.2f}%", f"   Vol {x['vol']:.2f}x | ATR {x['atr']:.2f}% | Taker {x['taker']:.2f}x | Book {x['book']:.2f}x | Funding {x['funding']:.6g}"]
         if x["bias"] in ("LONG", "SHORT"):
             lines += [f"   Entry {p[0]:.8g}-{p[1]:.8g} | SL {p[2]:.8g} ({p[7]:.2f}%) | Pos Rp{p[3]:,.0f}", f"   TP1 {p[4]:.8g} | TP2 {p[5]:.8g} | TP3 {p[6]:.8g}"]
         else:
