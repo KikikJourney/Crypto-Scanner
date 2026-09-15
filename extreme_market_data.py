@@ -24,12 +24,7 @@ def _aggregate_hourly(rows):
 
 
 def build_features(rows,current_price=None):
-    """Build features from CLOSED 15m candles only.
-
-    The extreme reference price is the last closed candle close, not a live
-    ticker. This prevents a live price outside the closed-candle range from
-    producing impossible negative distances and false extreme scores.
-    """
+    """Build features from CLOSED 15m candles only."""
     if not isinstance(rows,list) or len(rows)<192: return {'data_ok':False}
     rows=rows[-192:]; hourly=_aggregate_hourly(rows)
     if len(hourly)<48: return {'data_ok':False}
@@ -43,4 +38,4 @@ def build_features(rows,current_price=None):
     move_low=max(0,(c[-49]-price)/atr) if atr and len(c)>=49 else 0
     move_high=max(0,(price-c[-49])/atr) if atr and len(c)>=49 else 0
     turn_long=clamp((c[-1]-min(c[-4:-1]))/(atr or 1)); turn_short=clamp((max(c[-4:-1])-c[-1])/(atr or 1))
-    return {'data_ok':True,'h1_pos_24':p24,'h1_pos_48':p48,'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short}
+    return {'data_ok':True,'price':price,'atr':atr,'atr_pct':(atr/price*100) if price else 0.0,'h1_pos_24':p24,'h1_pos_48':p48,'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short}
