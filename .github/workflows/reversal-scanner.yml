@@ -1,6 +1,12 @@
 name: Zorathvael Dynamic Futures Scanner
 
 on:
+  push:
+    paths:
+      - 'scanner_v2.py'
+      - 'universe_runner.py'
+      - 'diagnostic_v21.py'
+      - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
   schedule:
     - cron: '*/15 * * * *'
@@ -48,9 +54,14 @@ jobs:
               rows = list(csv.DictReader(f))
           assert rows, 'watchlist CSV is empty'
           assert all(None not in r for r in rows), 'unexpected CSV fields detected'
-          required = {'long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker'}
-          assert required.issubset(rows[0]), 'V2.1 diagnostic fields missing'
-          print(f'WATCHLIST CSV VALID: {len(rows)} rows; V2.1 fields present')
+          required = {
+              'long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker',
+              'long_blocker','short_blocker','long_location','long_exhaustion','long_flow',
+              'long_reclaim','long_expansion','short_location','short_exhaustion','short_flow',
+              'short_reject','short_expansion'
+          }
+          assert required.issubset(rows[0]), 'V2.1 side-component fields missing'
+          print(f'WATCHLIST CSV VALID: {len(rows)} rows; V2.1 side-component diagnostics present')
           PY
 
       - name: Persist scanner and forward-test data
@@ -58,5 +69,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add scanner_v2.py universe_runner.py diagnostic_v21.py data/reversal_forward_test.csv data/universe_watchlist.csv
-          git diff --cached --quiet || git commit -m 'Add V2.1 diagnostics to dynamic scanner'
+          git diff --cached --quiet || git commit -m 'Update dynamic scanner diagnostics and forward-test data'
           git push origin HEAD:main
