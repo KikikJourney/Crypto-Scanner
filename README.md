@@ -2,14 +2,16 @@
 
 Free public-data crypto futures swing scanner for Zorathvael.
 
-## V1.3
+## V1.6
 - Runs every 15 minutes through GitHub Actions.
-- Uses Binance Futures as the preferred data source.
-- Automatically falls back to Bybit linear perpetual Futures when Binance is blocked or unreachable from the GitHub runner.
-- Never converts a failed API request into fake neutral market data.
-- Scores 15 selected USDT-margined futures pairs from 0-100.
-- Uses 1h momentum, volume expansion, open-interest change, taker pressure, order-book imbalance, funding, long/short ratio and BTC regime.
-- Produces a top-5 shortlist plus entry zone, 5% stop-loss model, 1.5R/3R/5R targets and conservative position sizing.
+- Uses Binance Futures as primary, Bybit as fallback, and Bitget as the operational fallback when the first two are geo-blocked.
+- Never converts failed API requests into fake neutral market data.
+- Attempts to score all 15 selected USDT-margined futures pairs instead of discarding a symbol because one optional metric fails.
+- Uses 1h momentum, volume expansion, open-interest change when available, taker pressure, order-book imbalance, funding, long/short ratio when available, and BTC regime.
+- Missing metrics are explicitly reported as `N/A` and their weights are removed from the score denominator rather than penalizing the asset with invented values.
+- Bitget long/short data is treated as optional because its public endpoint has a strict 1 request/sec/IP limit.
+- Retries transient HTTP/network failures and rate-limit responses without hiding permanent errors.
+- Produces a top-10 ranked shortlist plus entry zone, 5% stop-loss model, 1.5R/3R/5R targets and conservative position sizing.
 - Optional Telegram alerts through GitHub Actions Secrets.
 
 ## Provider architecture
@@ -19,23 +21,28 @@ GitHub Actions
       |
       +--> Binance Futures (primary)
       |         |
-      |         +--> if unavailable / HTTP 451
+      |         +--> unavailable / geo restriction
       |                    |
       +--------------------+
                            v
-                    Bybit Futures fallback
+                    Bybit Futures
                            |
-                           v
-                    Scoring engine 0-100
-                           |
-                           v
-                         Top 5
-                           |
-                           v
-                       Telegram
+                           +--> unavailable / geo restriction
+                                      |
+                                      v
+                               Bitget Futures
+                                      |
+                                      v
+                               Scoring engine 0-100
+                                      |
+                                      v
+                                  Top 10
+                                      |
+                                      v
+                                   Telegram
 ```
 
-The Bybit fallback is a real derivatives-data source, not a price-only substitute. It supplies candles, open interest, funding, order book, recent public trades and long/short account ratio through its public V5 market API.
+The Bitget fallback uses public futures market endpoints for ticker, 1h candles, order book and recent public fills. Open-interest change is currently left `N/A` rather than fabricated when historical OI data is unavailable. Long/short ratio is also optional because the public endpoint is rate-limited to 1 request/sec/IP.
 
 ## Setup
 1. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as repository Actions secrets if Telegram alerts are wanted.
@@ -44,7 +51,8 @@ The Bybit fallback is a real derivatives-data source, not a price-only substitut
 
 ## Current limitations
 - Binance may be inaccessible from GitHub-hosted runner IPs because Binance can restrict service by location/network policy.
-- Bybit is therefore the operational fallback for the scanner.
+- Bybit may also be inaccessible from the runner's network location.
+- Bitget is currently the working public-data fallback in this environment.
 - Entry zones are currently a conservative percentage-based model, not automatic support/resistance detection.
 - The scanner is not an auto-trader and does not place orders.
 
