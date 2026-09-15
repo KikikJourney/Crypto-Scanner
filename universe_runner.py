@@ -8,6 +8,13 @@ from diagnostic_v21 import diagnostic_status
 
 PRODUCT = 'USDT-FUTURES'
 WATCHLIST_FILE = Path('data/universe_watchlist.csv')
+# Keep the dynamic universe broad, but only deep-scan the most liquid / active contracts.
+# This removes hundreds of per-symbol API calls while retaining a separate momentum-mover bucket.
+LIQUIDITY_BUCKET = 220
+MOVER_BUCKET = 80
+MAX_SCAN_SYMBOLS = LIQUIDITY_BUCKET + MOVER_BUCKET
+SCAN_WORKERS = 16
+
 WATCHLIST_FIELDS = [
     'timestamp','rank','symbol','score','long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker',
     'direction','signal','location','exhaustion','flow','reclaim','expansion','price','range_pos','atr_pct','volume_ratio',
@@ -51,6 +58,26 @@ def active_symbols(provider):
     return active_bybit_symbols()
 
 
+def _num(x):
+    try: return float(x)
+    except (TypeError, ValueError): return 0.0
+
+
+def select_scan_symbols(provider, symbols):
+    """Cheap first-stage universe filter; deep scanner remains unchanged."""
+    if provider == 'Bitget':
+        raw = core.bitget('/api/v2/mix/market/tickers', {'productType': PRODUCT})['data']
+        ticker = {str(x.get('symbol', '')).upper(): x for x in raw if str(x.get('symbol', '')).upper() in set(symbols)}
+        liquid = sorted(symbols, key=lambda s: _num(ticker.get(s, {}).get('quoteVolume')), reverse=True)[:LIQUIDITY_BUCKET]
+        movers = sorted(symbols, key=lambda s: abs(_num(ticker.get(s, {}).get('change24h'))), reverse=True)[:MOVER_BUCKET]
+        selected = sorted(set(liquid) | set(movers))
+        return selected, len(liquid), len(movers)
+
+    # Fallback providers: use their existing all-symbol universe when no reliable
+    # bulk quote-volume filter is available. Concurrency is still increased below.
+    return symbols, len(symbols), 0
+
+
 def write_watchlist(results, ts):
     WATCHLIST_FILE.parent.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -76,12 +103,15 @@ def write_watchlist(results, ts):
 
 
 def main():
-    provider, btc24 = core.discover(); symbols = active_symbols(provider)
+    provider, btc24 = core.discover()
+    symbols = active_symbols(provider)
     if not symbols: raise RuntimeError('Dynamic futures universe is empty')
+    scan_symbols, liquid_n, mover_n = select_scan_symbols(provider, symbols)
     print(f'Universe: {len(symbols)} active {provider} USDT perpetual symbols')
+    print(f'Deep scan: {len(scan_symbols)} symbols | liquidity bucket={liquid_n} | mover bucket={mover_n} | workers={SCAN_WORKERS}')
     results, errors = [], []
-    with ThreadPoolExecutor(max_workers=min(8, len(symbols))) as executor:
-        futures = {executor.submit(core.fetch_symbol, s, provider, btc24): s for s in symbols}
+    with ThreadPoolExecutor(max_workers=min(SCAN_WORKERS, len(scan_symbols))) as executor:
+        futures = {executor.submit(core.fetch_symbol, s, provider, btc24): s for s in scan_symbols}
         for future in as_completed(futures):
             symbol = futures[future]
             try: results.append(future.result())
@@ -89,7 +119,8 @@ def main():
     results.sort(key=lambda x: x['score'], reverse=True)
     ts = datetime.now(timezone.utc).isoformat()
     core.append_rows([core.signal_row(x, ts) for x in results]); write_watchlist(results, ts)
-    print(f'Coverage: {len(results)}/{len(symbols)}')
+    print(f'Deep-scan coverage: {len(results)}/{len(scan_symbols)}')
+    print(f'Universe coverage retained as discovery: {len(symbols)}/{len(symbols)}')
     print('TOP DIAGNOSTIC CANDIDATES:')
     for rank, x in enumerate(results[:25], 1):
         d = diagnostic_status(x)
