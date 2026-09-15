@@ -1,6 +1,7 @@
 import unittest
+from datetime import datetime, timezone
 
-from extreme_reversal_layer import classify, _outcome
+from extreme_reversal_layer import classify, _outcome, _assign_events
 from extreme_market_data import build_features
 
 
@@ -36,6 +37,24 @@ class ExtremeReversalTests(unittest.TestCase):
         self.assertEqual(_outcome('SHORT',100,97,1.0),'EXPANSION')
         self.assertEqual(_outcome('SHORT',100,101,1.0),'FAIL')
         self.assertIsNone(_outcome('SHORT',100,99.5,1.0))
+
+    def test_repeated_signals_within_event_gap_share_event(self):
+        rows=[]
+        for i,minutes in enumerate((0,15,45,105,150,300)):
+            ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
+            iso=datetime.fromtimestamp(ts,tz=timezone.utc).isoformat()
+            rows.append({'id':str(i),'timestamp':iso,'symbol':'MINAUSDT','direction':'SHORT','event_id':'','event_role':''})
+        _assign_events(rows)
+        self.assertEqual(len({r['event_id'] for r in rows}),2)
+        self.assertEqual([r['event_role'] for r in rows],['PRIMARY','DUPLICATE','DUPLICATE','DUPLICATE','DUPLICATE','PRIMARY'])
+
+    def test_different_symbols_and_directions_are_independent(self):
+        rows=[]
+        for i,(sym,side) in enumerate((('A','SHORT'),('B','SHORT'),('A','LONG'))):
+            ts=datetime(2026,1,1,12,i,tzinfo=timezone.utc).isoformat()
+            rows.append({'id':str(i),'timestamp':ts,'symbol':sym,'direction':side,'event_id':'','event_role':''})
+        _assign_events(rows)
+        self.assertEqual(len({r['event_id'] for r in rows}),3)
 
 
 class ExtremeMarketDataTests(unittest.TestCase):
