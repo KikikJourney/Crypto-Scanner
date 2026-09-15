@@ -72,7 +72,7 @@ def score(f,taker,book,funding,btc):
     br=50+25*clamp(btc/4)
     vals={"momentum":(30,mom),"taker":(20,tak),"orderbook":(15,bk),"volume":(10,vol),"funding":(10,fund),"btc_regime":(15,br)}
     av={k:v for k,v in vals.items() if v[1] is not None}; total=sum(v[0] for v in av.values()); s=sum(w*x for w,x in av.values())/total
-    ds=sum(av[k][0]*(av[k][1]-50) for k in ("momentum","taker","orderbook") if k in av)/sum(av[k][0] for k in ("momentum","taker","orderbook") if k in av)
+    keys=[k for k in ("momentum","taker","orderbook") if k in av]; ds=sum(av[k][0]*(av[k][1]-50) for k in keys)/sum(av[k][0] for k in keys)
     bias="LONG" if ds>5 else "SHORT" if ds<-5 else "NEUTRAL"
     return round(s,1),bias,total/100
 
