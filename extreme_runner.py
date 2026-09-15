@@ -1,8 +1,7 @@
 """V2.2 Extreme Reversal production runner.
 
-Runs after the existing dynamic scanner. It reuses the same dynamic universe,
-then adds closed 15m data to verify that a candidate is actually at a local
-1h/24h/48h extreme instead of merely scoring well in the baseline layer.
+Runs after the existing dynamic scanner, then verifies candidates against
+closed 15m/1h extreme data and a dedicated market-snapshot stream.
 """
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -10,7 +9,7 @@ from datetime import datetime, timezone
 import scanner_v2 as core
 from universe_runner import active_symbols, select_scan_symbols
 from extreme_market_data import build_features
-from extreme_reversal_layer import classify, append_rows, evaluate_forward, signal_row, stats
+from extreme_reversal_layer import classify, append_rows, append_snapshots, evaluate_forward, signal_row, snapshot_row, stats
 
 WORKERS=16
 
@@ -51,7 +50,9 @@ def main():
     results.sort(key=lambda x:(x['extreme']['score'] if x['extreme']['score'] is not None else -1),reverse=True)
     ts=datetime.now(timezone.utc).isoformat()
     rows=[signal_row(x,x['extreme_features'],ts) for x in results]
+    snapshots=[snapshot_row(x,x['extreme_features'],ts) for x in results]
     added=append_rows(rows)
+    snapshot_added=append_snapshots(snapshots)
     print('TOP EXTREME CANDIDATES:')
     extreme=[x for x in results if x['extreme']['status'].startswith('EXTREME REVERSAL')]
     if not extreme: print('NONE — no true-extreme reversal passed the V2.2 gate')
@@ -62,12 +63,8 @@ def main():
     if errors:
         print(f'Extreme symbol errors: {len(errors)}')
         for s,e in errors[:10]:print(f' - {s}: {e}')
-    snapshots=[]
-    try:
-        import csv
-        with core.SIGNAL_FILE.open(newline='',encoding='utf-8') as f:snapshots=list(csv.DictReader(f))
-    except Exception:pass
-    print(f'Extreme forward-test outcomes updated: {evaluate_forward(snapshots)}')
+    print(f'Extreme market snapshots added: {snapshot_added}')
+    print(f'Extreme forward-test outcomes updated: {evaluate_forward()}')
     print(f'Extreme forward-test rows added: {added}')
     print(stats())
 
