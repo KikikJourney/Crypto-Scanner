@@ -2,10 +2,12 @@ name: Zorathvael Dynamic Futures Scanner
 
 on:
   push:
+    branches: [main]
     paths:
       - 'scanner_v2.py'
       - 'universe_runner.py'
       - 'diagnostic_v21.py'
+      - 'early_reversal_layer.py'
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
   schedule:
@@ -35,10 +37,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate scanner syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py
 
       - name: Validate diagnostic layer
         run: python diagnostic_v21.py
+
+      - name: Validate Early Reversal layer
+        run: python -m unittest discover -s tests -p 'test_early_reversal.py' -v
 
       - name: Run dynamic futures scanner
         run: python universe_runner.py
@@ -58,16 +63,30 @@ jobs:
               'long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker',
               'long_blocker','short_blocker','long_location','long_exhaustion','long_flow',
               'long_reclaim','long_expansion','short_location','short_exhaustion','short_flow',
-              'short_reject','short_expansion'
+              'short_reject','short_expansion','early_status','early_score','early_direction','early_blocker'
           }
-          assert required.issubset(rows[0]), 'V2.1 side-component fields missing'
-          print(f'WATCHLIST CSV VALID: {len(rows)} rows; V2.1 side-component diagnostics present')
+          assert required.issubset(rows[0]), 'V2.1 diagnostic/Early fields missing'
+          print(f'WATCHLIST CSV VALID: {len(rows)} rows; V2.1 + Early Reversal fields present')
+          PY
+
+      - name: Validate Early forward-test CSV
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          p = Path('data/early_reversal_forward_test.csv')
+          assert p.exists(), 'early forward-test CSV missing'
+          with p.open(newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+          required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','h1','h4','h12','h24'}
+          assert required.issubset(rows[0] if rows else required), 'early forward-test schema invalid'
+          print(f'EARLY FORWARD CSV VALID: {len(rows)} rows')
           PY
 
       - name: Persist scanner and forward-test data
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py data/reversal_forward_test.csv data/universe_watchlist.csv
-          git diff --cached --quiet || git commit -m 'Update dynamic scanner diagnostics and forward-test data'
+          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/universe_watchlist.csv tests/test_early_reversal.py
+          git diff --cached --quiet || git commit -m 'Update dynamic scanner diagnostics and early reversal data'
           git push origin HEAD:main
