@@ -95,8 +95,18 @@ def taker_pressure(trades, buy_side, sell_side, windows=(100,250,500)):
         buy=sell=0.0
         for x in part:
             try:
-                if x.get("side")==buy_side or x.get("side","").lower()=="buy": buy += float(x.get("price",x[1]))*float(x.get("size",x[2]))
-                elif x.get("side")==sell_side or x.get("side","").lower()=="sell": sell += float(x.get("price",x[1]))*float(x.get("size",x[2]))
+                if isinstance(x, dict):
+                    side = str(x.get("side", ""))
+                    price = float(x.get("price", 0))
+                    size = float(x.get("size", 0))
+                else:
+                    side = str(x[4] if len(x) > 4 else x[3])
+                    price = float(x[1])
+                    size = float(x[2])
+                if side.lower() in (str(buy_side).lower(), "buy"):
+                    buy += price * size
+                elif side.lower() in (str(sell_side).lower(), "sell"):
+                    sell += price * size
             except (KeyError,TypeError,ValueError,IndexError): continue
         if buy>0 and sell>0: vals.append(buy/sell)
     if not vals: return None,None
