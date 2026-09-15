@@ -128,13 +128,15 @@ def _test():
     assert 'expansion 0.20<0.40' in r['blocker']
 
     # Current scanner format: location/flow are exact; other components stay data-limited.
+    # range_pos=.10 gives LONG location=.737, so there is no known location blocker.
+    # This isolates the intended data-limited condition for unavailable components.
     x = {
         'long_score': 65, 'short_score': 61, 'direction': 'NONE',
-        'range_pos': .20, 'taker': 1.6, 'volume_ratio': 2.0,
+        'range_pos': .10, 'taker': 1.6, 'volume_ratio': 2.0,
     }
     r = diagnostic_status(x)
     assert r['bias'] == 'LONG' and r['status'] == 'NEAR LONG'
-    assert 'data-limited' in r['blocker']
+    assert r['blocker'].startswith('data-limited:')
     assert 'exhaustion data unavailable' in r['blocker'] or 'reclaim/rejection data unavailable' in r['blocker']
 
     # Equal scores are deterministic and prefer LONG.
