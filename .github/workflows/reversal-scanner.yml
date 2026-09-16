@@ -29,7 +29,7 @@ permissions:
   contents: write
 concurrency:
   group: zorathvael-dynamic-scanner
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -57,8 +57,6 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_actionable_forward_test.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
-      - name: Run dynamic futures scanner
-        run: python universe_runner.py
       - name: Run V2.2 extreme reversal scanner
         run: python extreme_runner.py
       - name: Send confirmed actions to Telegram
@@ -94,7 +92,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_actionable_forward_test.py tests/test_telegram_notifier.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv
-          git diff --cached --quiet || git commit -m 'Measure confirmed fixed-entry actions'
+          git diff --cached --quiet || git commit -m 'Persist scanner and forward-test data'
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
