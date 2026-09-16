@@ -34,19 +34,19 @@ def _timestamp_iso(value):
 
 
 def build_features(rows,current_price=None):
-    """Build features from CLOSED 15m candles only.
+    """Build structure from CLOSED candles and evaluate location/actionability at live price.
 
-    Location is measured against the 24h/48h closed 1h range. ATR is also
-    1h ATR so distance, turn and forward-test thresholds use one market scale.
-    The action trigger is based on the four completed hourly bars BEFORE the
-    current bar, avoiding look-ahead bias.
+    Structural range, ATR, triggers and reversal evidence come only from closed
+    candles. When ``current_price`` is supplied it is the live reference, so
+    confirmation and stale-trigger decisions cannot rely on an old candle.
     """
     if not isinstance(rows,list) or len(rows)<192: return {'data_ok':False}
     rows=rows[-192:]; hourly=_aggregate_hourly(rows)
     if len(hourly)<48: return {'data_ok':False}
     h24=hourly[-24:]; h48=hourly[-48:]
     hi24=max(_high(x) for x in h24); lo24=min(_low(x) for x in h24); hi48=max(_high(x) for x in h48); lo48=min(_low(x) for x in h48)
-    price=_close(rows[-1])
+    price=float(current_price) if current_price is not None else _close(rows[-1])
+    if price<=0: return {'data_ok':False}
     p24=clamp((price-lo24)/(hi24-lo24)) if hi24>lo24 else .5
     p48=clamp((price-lo48)/(hi48-lo48)) if hi48>lo48 else .5
     atr=_atr(hourly)
