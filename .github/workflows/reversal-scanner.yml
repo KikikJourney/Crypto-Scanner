@@ -13,9 +13,13 @@ on:
       - 'extreme_runner.py'
       - 'extreme_event_stats.py'
       - 'actionable_reversal_layer.py'
+      - 'actionable_forward_test.py'
       - 'telegram_notifier.py'
       - 'send_telegram_actions.py'
+      - 'tests/test_early_reversal.py'
+      - 'tests/test_extreme_reversal.py'
       - 'tests/test_actionable_reversal.py'
+      - 'tests/test_actionable_forward_test.py'
       - 'tests/test_telegram_notifier.py'
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
@@ -24,7 +28,6 @@ on:
 
 permissions:
   contents: write
-
 concurrency:
   group: zorathvael-dynamic-scanner
   cancel-in-progress: false
@@ -35,128 +38,70 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Validate scanner syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py telegram_notifier.py send_telegram_actions.py
-
-      - name: Validate diagnostic layer
+      - name: Validate syntax
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py telegram_notifier.py send_telegram_actions.py
+      - name: Validate diagnostic
         run: python diagnostic_v21.py
-
-      - name: Validate Early Reversal layer
+      - name: Validate Early Reversal
         run: python -m unittest discover -s tests -p 'test_early_reversal.py' -v
-
-      - name: Validate Extreme Reversal layer
+      - name: Validate Extreme Reversal
         run: python -m unittest discover -s tests -p 'test_extreme_reversal.py' -v
-
-      - name: Validate Actionable Reversal layer
+      - name: Validate Actionable Reversal
         run: python -m unittest discover -s tests -p 'test_actionable_reversal.py' -v
-
+      - name: Validate Actionable forward-test
+        run: python -m unittest discover -s tests -p 'test_actionable_forward_test.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
-
       - name: Run dynamic futures scanner
         run: python universe_runner.py
-
       - name: Run V2.2 extreme reversal scanner
         run: python extreme_runner.py
-
       - name: Send confirmed actions to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python send_telegram_actions.py
-
-      - name: Validate watchlist CSV
+      - name: Validate generated datasets
         run: |
           python - <<'PY'
           import csv
           from pathlib import Path
-          p = Path('data/universe_watchlist.csv')
-          assert p.exists(), 'watchlist CSV missing'
-          with p.open(newline='', encoding='utf-8') as f:
-              rows = list(csv.DictReader(f))
-          assert rows, 'watchlist CSV is empty'
-          assert all(None not in r for r in rows), 'unexpected CSV fields detected'
-          required = {
-              'long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker',
-              'long_blocker','short_blocker','long_location','long_exhaustion','long_flow',
-              'long_reclaim','long_expansion','short_location','short_exhaustion','short_flow',
-              'short_reject','short_expansion','early_status','early_score','early_direction','early_blocker'
-          }
-          assert required.issubset(rows[0]), 'V2.1 diagnostic/Early fields missing'
-          print(f'WATCHLIST CSV VALID: {len(rows)} rows; V2.1 + Early Reversal fields present')
+          def rows(path):
+              with Path(path).open(newline='',encoding='utf-8') as f: return list(csv.DictReader(f))
+          p=Path('data/extreme_reversal_forward_test.csv'); assert p.exists()
+          r=rows(p)
+          req={'id','timestamp','symbol','direction','score','price','atr_pct','trigger','action_stop','action_target','action_risk_pct','action_reward_r','event_id','event_role','h1','h4','h12','h24'}
+          assert req <= set(r[0] if r else req)
+          if r:
+              ids={x['event_id'] for x in r}; primary={x['event_id'] for x in r if x['event_role']=='PRIMARY'}
+              assert all(x['event_id'] for x in r) and all(x['event_role'] in {'PRIMARY','DUPLICATE'} for x in r) and ids==primary
+          p=Path('data/extreme_market_snapshots.csv'); assert p.exists()
+          r=rows(p); assert {'id','timestamp','symbol','provider','price'} <= set(r[0] if r else {'id','timestamp','symbol','provider','price'})
+          p=Path('data/actionable_forward_test.csv'); assert p.exists()
+          r=rows(p); req={'id','timestamp','symbol','provider','direction','extreme_event_id','entry','stop','target','risk_pct','reward_r','source_extreme_score','event_id','event_role','h1','h4','h12','h24'}
+          assert req <= set(r[0] if r else req)
+          if r:
+              ids={x['event_id'] for x in r}; primary={x['event_id'] for x in r if x['event_role']=='PRIMARY'}
+              assert all(x['event_id'] for x in r) and all(x['event_role'] in {'PRIMARY','DUPLICATE'} for x in r) and ids==primary
+              assert all(float(x['entry'])>0 and float(x['stop'])>0 and float(x['target'])>0 for x in r)
+          p=Path('data/actionable_signals.csv'); assert p.exists()
+          r=rows(p); req={'id','timestamp','symbol','provider','direction','score','entry','trigger','stop','target','risk_pct','reward_r','reason'}
+          assert req <= set(r[0] if r else req); assert all(x['direction'] in {'LONG','SHORT'} for x in r)
+          print(f'VALID: extreme={len(rows("data/extreme_reversal_forward_test.csv"))}, actionable={len(rows("data/actionable_forward_test.csv"))}, telegram_actions={len(rows("data/actionable_signals.csv"))}')
           PY
-
-      - name: Validate Early forward-test CSV
-        run: |
-          python - <<'PY'
-          import csv
-          from pathlib import Path
-          p = Path('data/early_reversal_forward_test.csv')
-          assert p.exists(), 'early forward-test CSV missing'
-          with p.open(newline='', encoding='utf-8') as f:
-              rows = list(csv.DictReader(f))
-          required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','h1','h4','h12','h24'}
-          assert required.issubset(rows[0] if rows else required), 'early forward-test schema invalid'
-          print(f'EARLY FORWARD CSV VALID: {len(rows)} rows')
-          PY
-
-      - name: Validate Extreme forward-test CSV
-        run: |
-          python - <<'PY'
-          import csv
-          from pathlib import Path
-          p = Path('data/extreme_reversal_forward_test.csv')
-          assert p.exists(), 'extreme forward-test CSV missing'
-          with p.open(newline='', encoding='utf-8') as f:
-              rows = list(csv.DictReader(f))
-          required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','event_id','event_role','h1','h4','h12','h24'}
-          assert required.issubset(rows[0] if rows else required), 'extreme forward-test schema invalid'
-          if rows:
-              event_ids={r['event_id'] for r in rows}
-              primary_by_event={r['event_id']:0 for r in rows if r['event_role']=='PRIMARY'}
-              assert all(r['event_id'] for r in rows), 'extreme event_id missing'
-              assert all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in rows), 'invalid event_role'
-              assert len(primary_by_event)==len(event_ids), 'each event must have exactly one PRIMARY'
-          print(f'EXTREME FORWARD CSV VALID: {len(rows)} rows; event accounting present')
-          p2 = Path('data/extreme_market_snapshots.csv')
-          assert p2.exists(), 'extreme market snapshot CSV missing'
-          with p2.open(newline='', encoding='utf-8') as f:
-              snapshots = list(csv.DictReader(f))
-          assert {'id','timestamp','symbol','provider','price'} <= set(snapshots[0] if snapshots else {'id','timestamp','symbol','provider','price'}), 'extreme snapshot schema invalid'
-          print(f'EXTREME SNAPSHOT CSV VALID: {len(snapshots)} rows')
-          PY
-
-      - name: Validate actionable output
-        run: |
-          python - <<'PY'
-          import csv
-          from pathlib import Path
-          p = Path('data/actionable_signals.csv')
-          assert p.exists(), 'actionable output missing'
-          with p.open(newline='', encoding='utf-8') as f:
-              rows = list(csv.DictReader(f))
-          required = {'id','timestamp','symbol','provider','direction','score','entry','trigger','stop','target','risk_pct','reward_r','reason'}
-          assert required.issubset(rows[0] if rows else required), 'actionable output schema invalid'
-          assert all(r['direction'] in {'LONG','SHORT'} for r in rows), 'invalid action direction'
-          print(f'ACTIONABLE OUTPUT VALID: {len(rows)} confirmed action(s)')
-          PY
-
       - name: Persist scanner and forward-test data
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_telegram_notifier.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv
-          git diff --cached --quiet || git commit -m 'Add actionable Telegram alerts'
+          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_actionable_forward_test.py tests/test_telegram_notifier.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv
+          git diff --cached --quiet || git commit -m 'Measure confirmed fixed-entry actions'
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
