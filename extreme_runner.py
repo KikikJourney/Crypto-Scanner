@@ -11,10 +11,9 @@ from universe_runner import active_symbols, select_scan_symbols
 from extreme_market_data import build_features
 from extreme_reversal_layer import classify, append_rows, append_snapshots, evaluate_forward, signal_row, snapshot_row
 from extreme_event_stats import format_summary
+from actionable_reversal_layer import build_action_plan
 
 # Bitget rate limits are more important than shaving a small amount of scan time.
-# Eight concurrent symbols still gives substantial throughput while reducing
-# burst pressure from the multiple API calls required per symbol.
 WORKERS=8
 
 
@@ -36,6 +35,17 @@ def scan_one(sym,provider,btc24):
     result['extreme_features']=features
     result['extreme']=extreme
     return result
+
+
+def _print_action_candidates(extreme_results):
+    print('ACTIONABLE EXTREME OUTPUT:')
+    if not extreme_results:
+        print('NONE — no extreme candidate reached the V2.2 gate')
+        return
+    for x in extreme_results[:20]:
+        f=x['extreme_features']; e=x['extreme']; plan=build_action_plan(f,e['direction'])
+        trigger=plan.get('trigger','-'); stop=plan.get('stop','-'); target=plan.get('target','-'); risk=plan.get('risk_pct','-')
+        print(f"{x['symbol']} | {plan['status']} | trigger {trigger} | stop {stop} | target {target} | risk {risk}% | {plan.get('reason','')}")
 
 
 def main():
@@ -63,6 +73,7 @@ def main():
     for rank,x in enumerate(extreme[:20],1):
         e=x['extreme']; f=x['extreme_features']
         print(f"{rank}. {x['symbol']} | {e['status']} | score {e['score']:.1f} | 24hPos {f['h1_pos_24']:.2f} | 48hPos {f['h1_pos_48']:.2f} | lowDist {f['dist_low_atr']:.2f}ATR | highDist {f['dist_high_atr']:.2f}ATR")
+    _print_action_candidates(extreme)
     print(f'Extreme scan coverage: {len(results)}/{len(scan_symbols)}')
     if errors:
         print(f'Extreme symbol errors: {len(errors)}')
