@@ -16,6 +16,12 @@ class ExtremeReversalTests(unittest.TestCase):
         self.assertFalse(classify(extreme(turn_long=.05))['status'].startswith('EXTREME REVERSAL')); self.assertFalse(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=.2,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.05))['status'].startswith('EXTREME REVERSAL'))
     def test_negative_distance_blocked(self):
         self.assertFalse(classify(extreme(dist_low_atr=-5.0))['status'].startswith('EXTREME REVERSAL')); self.assertFalse(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=-5.0,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.8))['status'].startswith('EXTREME REVERSAL'))
+    def test_overshoot_beyond_extreme_is_blocked(self):
+        self.assertFalse(classify(extreme(h1_pos_48=0.0,h1_pos_24=0.0,dist_low_atr=1.01,move_into_low_atr=2.0))['status'].startswith('EXTREME REVERSAL'))
+        self.assertFalse(classify(extreme(h1_pos_48=1.0,h1_pos_24=1.0,dist_high_atr=1.01,move_into_high_atr=2.0,turn_short=.8))['status'].startswith('EXTREME REVERSAL'))
+    def test_small_extreme_overshoot_remains_eligible(self):
+        self.assertEqual(classify(extreme(h1_pos_48=0.0,h1_pos_24=0.0,dist_low_atr=.5,move_into_low_atr=2.0))['status'],'EXTREME REVERSAL LONG')
+        self.assertEqual(classify(extreme(h1_pos_48=1.0,h1_pos_24=1.0,dist_high_atr=.5,move_into_high_atr=2.0,turn_short=.8))['status'],'EXTREME REVERSAL SHORT')
     def test_missing_data_blocked(self): self.assertEqual(classify({'data_ok':False})['status'],'DATA-LIMITED')
     def test_forward_outcome_uses_two_atr_favorable_and_one_atr_adverse(self):
         self.assertEqual(_outcome('SHORT',100,97,1.0),'EXPANSION'); self.assertEqual(_outcome('SHORT',100,101,1.0),'FAIL'); self.assertIsNone(_outcome('SHORT',100,99.5,1.0))
@@ -62,7 +68,7 @@ class ExtremeMarketDataTests(unittest.TestCase):
     def test_high_market_features(self):
         rows=self._rows('high'); f=build_features(rows,rows[-1][4]); self.assertTrue(f['data_ok']); self.assertGreater(f['h1_pos_24'],.70); self.assertLess(f['dist_high_atr'],1.0); self.assertGreaterEqual(f['dist_high_atr'],0)
     def test_live_price_is_used_for_location_and_actionability(self):
-        rows=self._rows('low'); live=rows[-1][4]-20; f=build_features(rows,live); self.assertTrue(f['data_ok']); self.assertEqual(f['price'],live); self.assertNotEqual(f['price'],rows[-1][4]); self.assertGreaterEqual(f['dist_low_atr'],0); self.assertGreaterEqual(f['dist_high_atr'],0); self.assertEqual(f['dist_low_atr'],0)
+        rows=self._rows('low'); live=rows[-1][4]-20; f=build_features(rows,live); self.assertTrue(f['data_ok']); self.assertEqual(f['price'],live); self.assertNotEqual(f['price'],rows[-1][4]); self.assertGreater(f['dist_low_atr'],0); self.assertGreaterEqual(f['dist_high_atr'],0)
     def test_default_price_remains_last_closed_candle(self): self.assertEqual(build_features(self._rows('low'))['price'],self._rows('low')[-1][4])
 
 if __name__=='__main__': unittest.main(verbosity=2)
