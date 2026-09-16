@@ -1,4 +1,4 @@
-"""Build 15m/1h extreme-location features from closed candles."""
+"""Build 15m/1h extreme-location and confirmation features from closed candles."""
 from scanner_v2 import clamp
 
 
@@ -37,8 +37,9 @@ def build_features(rows,current_price=None):
     """Build features from CLOSED 15m candles only.
 
     Location is measured against the 24h/48h closed 1h range. ATR is also
-    1h ATR so distance, turn and forward-test thresholds use the same market
-    scale instead of a much smaller 15m ATR.
+    1h ATR so distance, turn and forward-test thresholds use one market scale.
+    The action trigger is based on the four completed hourly bars BEFORE the
+    current bar, avoiding look-ahead bias.
     """
     if not isinstance(rows,list) or len(rows)<192: return {'data_ok':False}
     rows=rows[-192:]; hourly=_aggregate_hourly(rows)
@@ -56,4 +57,13 @@ def build_features(rows,current_price=None):
     move_high=max(0,(price-hourly_closes[-13])/atr) if atr and len(hourly_closes)>=13 else 0
     recent=[_close(x) for x in hourly[-4:]]
     turn_long=clamp((recent[-1]-min(recent[:-1]))/(atr or 1)); turn_short=clamp((max(recent[:-1])-recent[-1])/(atr or 1))
-    return {'data_ok':True,'price':price,'atr':atr,'atr_pct':(atr/price*100) if price else 0.0,'atr_basis':'1H','timestamp':_timestamp_iso(rows[-1][0]),'h1_pos_24':p24,'h1_pos_48':p48,'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short}
+    prior4=hourly[-5:-1]
+    long_trigger=max(_high(x) for x in prior4)
+    short_trigger=min(_low(x) for x in prior4)
+    return {
+        'data_ok':True,'price':price,'atr':atr,'atr_pct':(atr/price*100) if price else 0.0,'atr_basis':'1H',
+        'timestamp':_timestamp_iso(rows[-1][0]),'h1_pos_24':p24,'h1_pos_48':p48,
+        'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,
+        'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short,
+        'extreme_low_24':lo24,'extreme_high_24':hi24,'long_trigger':long_trigger,'short_trigger':short_trigger,
+    }
