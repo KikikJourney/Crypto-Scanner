@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 from extreme_reversal_layer import classify, _outcome, _assign_events
 from extreme_market_data import build_features
+from extreme_event_stats import summarize
 
 
 def extreme(**overrides):
@@ -49,7 +50,6 @@ class ExtremeReversalTests(unittest.TestCase):
         self.assertEqual([r['event_role'] for r in rows],['PRIMARY','DUPLICATE','DUPLICATE','DUPLICATE','DUPLICATE','PRIMARY'])
 
     def test_event_assignment_handles_unsorted_rows_and_exact_gap(self):
-        # Exact 2-hour gaps remain in the same event; a gap greater than 2h starts a new event.
         rows=[]
         for i,minutes in ((2,120),(0,0),(1,119),(3,121),(4,242)):
             ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
@@ -79,6 +79,22 @@ class ExtremeReversalTests(unittest.TestCase):
             rows.append({'id':str(i),'timestamp':ts,'symbol':sym,'direction':side,'event_id':'','event_role':''})
         _assign_events(rows)
         self.assertEqual(len({r['event_id'] for r in rows}),3)
+
+    def test_event_stats_do_not_double_count_horizons(self):
+        rows=[
+            {'event_id':'E1','event_role':'PRIMARY','h1':'','h4':'','h12':'EXPANSION','h24':'EXPANSION'},
+            {'event_id':'E1','event_role':'DUPLICATE','h1':'FAIL','h4':'FAIL','h12':'FAIL','h24':'FAIL'},
+            {'event_id':'E2','event_role':'PRIMARY','h1':'','h4':'FAIL','h12':'FAIL','h24':'FAIL'},
+            {'event_id':'E3','event_role':'PRIMARY','h1':'','h4':'','h12':'','h24':''},
+        ]
+        s=summarize(rows)
+        self.assertEqual(s['raw_signals'],4)
+        self.assertEqual(s['independent_events'],3)
+        self.assertEqual(s['resolved_events'],2)
+        self.assertEqual(s['unresolved_events'],1)
+        self.assertEqual(s['event_outcomes'],{'EXPANSION':1,'FAIL':1,'AMBIGUOUS':0})
+        self.assertEqual(s['horizon_outcomes']['h12']['EXPANSION'],1)
+        self.assertEqual(s['horizon_outcomes']['h24']['EXPANSION'],1)
 
 
 class ExtremeMarketDataTests(unittest.TestCase):
