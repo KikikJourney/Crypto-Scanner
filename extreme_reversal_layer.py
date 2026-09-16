@@ -89,7 +89,7 @@ def _assign_events(rows):
         key=(row.get('symbol',''),row.get('direction',''))
         ts=_parse_ts(row['timestamp'])
         prev=last.get(key)
-        if prev is None or ts-prev>timedelta(hours=EVENT_GAP_HOURS):
+        if prev is None or ts-prev[0]>timedelta(hours=EVENT_GAP_HOURS):
             event_id=f"{row['symbol']}_{row['direction']}_{row['timestamp']}"
             row['event_role']='PRIMARY'
         else:
