@@ -51,7 +51,7 @@ class ActionableReversalTests(unittest.TestCase):
         self.assertIsNone(_action_outcome('LONG', 92, 93, 90, 96))
 
     def test_invalid_risk_is_not_action(self):
-        f = self.features(); f['long_trigger'] = 105.0
+        f = self.features(); f['long_trigger'] = 105.0; f['price'] = 100.0
         r = build_action_plan(f, 'LONG')
         self.assertEqual(r['status'], 'WAIT')
         self.assertGreater(r['risk_pct'], 8.0)
