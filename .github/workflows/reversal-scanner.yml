@@ -25,13 +25,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '*/15 * * * *'
-
 permissions:
   contents: write
 concurrency:
   group: zorathvael-dynamic-scanner
   cancel-in-progress: false
-
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -55,7 +53,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_extreme_reversal.py' -v
       - name: Validate Actionable Reversal
         run: python -m unittest discover -s tests -p 'test_actionable_reversal.py' -v
-      - name: Validate Actionable forward-test
+      - name: Validate Actionable forward-test logic
         run: python -m unittest discover -s tests -p 'test_actionable_forward_test.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
@@ -73,28 +71,23 @@ jobs:
           python - <<'PY'
           import csv
           from pathlib import Path
-          def rows(path):
+          def read(path):
               with Path(path).open(newline='',encoding='utf-8') as f: return list(csv.DictReader(f))
-          p=Path('data/extreme_reversal_forward_test.csv'); assert p.exists()
-          r=rows(p)
-          req={'id','timestamp','symbol','direction','score','price','atr_pct','trigger','action_stop','action_target','action_risk_pct','action_reward_r','event_id','event_role','h1','h4','h12','h24'}
-          assert req <= set(r[0] if r else req)
-          if r:
-              ids={x['event_id'] for x in r}; primary={x['event_id'] for x in r if x['event_role']=='PRIMARY'}
-              assert all(x['event_id'] for x in r) and all(x['event_role'] in {'PRIMARY','DUPLICATE'} for x in r) and ids==primary
-          p=Path('data/extreme_market_snapshots.csv'); assert p.exists()
-          r=rows(p); assert {'id','timestamp','symbol','provider','price'} <= set(r[0] if r else {'id','timestamp','symbol','provider','price'})
-          p=Path('data/actionable_forward_test.csv'); assert p.exists()
-          r=rows(p); req={'id','timestamp','symbol','provider','direction','extreme_event_id','entry','stop','target','risk_pct','reward_r','source_extreme_score','event_id','event_role','h1','h4','h12','h24'}
-          assert req <= set(r[0] if r else req)
-          if r:
-              ids={x['event_id'] for x in r}; primary={x['event_id'] for x in r if x['event_role']=='PRIMARY'}
-              assert all(x['event_id'] for x in r) and all(x['event_role'] in {'PRIMARY','DUPLICATE'} for x in r) and ids==primary
-              assert all(float(x['entry'])>0 and float(x['stop'])>0 and float(x['target'])>0 for x in r)
-          p=Path('data/actionable_signals.csv'); assert p.exists()
-          r=rows(p); req={'id','timestamp','symbol','provider','direction','score','entry','trigger','stop','target','risk_pct','reward_r','reason'}
-          assert req <= set(r[0] if r else req); assert all(x['direction'] in {'LONG','SHORT'} for x in r)
-          print(f'VALID: extreme={len(rows("data/extreme_reversal_forward_test.csv"))}, actionable={len(rows("data/actionable_forward_test.csv"))}, telegram_actions={len(rows("data/actionable_signals.csv"))}')
+          def check(path, required):
+              p=Path(path); assert p.exists(), f'{path} missing'; rows=read(path); assert required <= set(rows[0] if rows else required); return rows
+          extreme=check('data/extreme_reversal_forward_test.csv', {'id','timestamp','symbol','direction','score','price','atr_pct','trigger','action_stop','action_target','action_risk_pct','action_reward_r','event_id','event_role','h1','h4','h12','h24'})
+          if extreme:
+              ids={r['event_id'] for r in extreme}; primary={r['event_id'] for r in extreme if r['event_role']=='PRIMARY'}
+              assert all(r['event_id'] for r in extreme) and all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in extreme) and ids==primary
+          snapshots=check('data/extreme_market_snapshots.csv', {'id','timestamp','symbol','provider','price'})
+          actionable=check('data/actionable_forward_test.csv', {'id','timestamp','symbol','provider','direction','extreme_event_id','entry','stop','target','risk_pct','reward_r','source_extreme_score','event_id','event_role','h1','h4','h12','h24'})
+          if actionable:
+              ids={r['event_id'] for r in actionable}; primary={r['event_id'] for r in actionable if r['event_role']=='PRIMARY'}
+              assert all(r['event_id'] for r in actionable) and all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in actionable) and ids==primary
+              assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in actionable)
+          actions=check('data/actionable_signals.csv', {'id','timestamp','symbol','provider','direction','score','entry','trigger','stop','target','risk_pct','reward_r','reason'})
+          assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
+          print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}')
           PY
       - name: Persist scanner and forward-test data
         run: |
