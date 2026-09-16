@@ -1,10 +1,10 @@
-import csv, math, os, statistics, time
+import csv, math, os, random, statistics, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 import requests
 
-VERSION='2.0.0'
+VERSION='2.0.1'
 BINANCE_BASES=['https://fapi.binance.com','https://fapi1.binance.com','https://fapi2.binance.com','https://fapi3.binance.com','https://fapi4.binance.com']
 BYBIT_BASE='https://api.bybit.com'; BITGET_BASE='https://api.bitget.com'
 SYMBOLS=['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT','SUIUSDT','IOTAUSDT','TAOUSDT','AXLUSDT','BNBUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','APTUSDT','SEIUSDT']
@@ -20,19 +20,31 @@ def sf(x,d=None):
     except (TypeError,ValueError):return d
 def avg(xs):return sum(xs)/len(xs) if xs else None
 
-def get(base,path,params=None,retries=2):
+def _retry_delay(response, attempt):
+    """Return bounded retry delay; honor Retry-After when supplied."""
+    retry_after=response.headers.get('Retry-After') if response is not None else None
+    try:
+        if retry_after is not None:
+            return min(8.0,max(0.0,float(retry_after)))
+    except (TypeError,ValueError):
+        pass
+    base=1.0 if response is not None and response.status_code==429 else 0.5
+    return min(8.0,base*(2**attempt)+random.uniform(0.0,0.35))
+
+def get(base,path,params=None,retries=3):
     last=None
     for i in range(retries+1):
         try:
             r=S.get(base+path,params=params,timeout=TIMEOUT)
             if r.status_code==429 or r.status_code>=500:
                 last=RuntimeError(f'HTTP {r.status_code}: {r.text[:160]}')
-                if i<retries: time.sleep(.8*(i+1)); continue
+                if i<retries:
+                    time.sleep(_retry_delay(r,i)); continue
             if not r.ok: raise RuntimeError(f'HTTP {r.status_code}: {r.text[:160]}')
             return r.json()
         except requests.RequestException as e:
             last=RuntimeError(f'Network error: {e}')
-            if i<retries: time.sleep(.8*(i+1))
+            if i<retries: time.sleep(min(8.0,0.5*(2**i)+random.uniform(0.0,0.35)))
     raise last or RuntimeError('request failed')
 
 def binance(path,params=None):
@@ -159,84 +171,7 @@ def discover():
     except Exception as e:print('WARN: Bybit unavailable:',e)
     t=bitget('/api/v2/mix/market/ticker',{'symbol':'BTCUSDT','productType':'USDT-FUTURES'})['data'][0];return 'Bitget',float(t.get('change24h',0))*100
 
-def fetch_symbol(sym,provider,btc24):return {'Binance':binance_symbol,'Bybit':bybit_symbol,'Bitget':bitget_symbol}[provider](sym,btc24)
-
-def migrate_csv():
-    DATA_DIR.mkdir(parents=True,exist_ok=True)
-    if not SIGNAL_FILE.exists():
-        with SIGNAL_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writeheader();return
-    with SIGNAL_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
-    clean=[{k:r.get(k,'') for k in CSV_FIELDS} for r in rows]
-    with SIGNAL_FILE.open('w',newline='',encoding='utf-8') as f:w=csv.DictWriter(f,fieldnames=CSV_FIELDS);w.writeheader();w.writerows(clean)
-
-def signal_row(x,ts):
-    p=x['plan'];action=x['direction'] in ('LONG','SHORT') and p[0] is not None;tw=x['taker_windows'];return {'id':f'{ts}_{x["symbol"]}','timestamp':ts,'symbol':x['symbol'],'provider':x['provider'],'price':x['price'],'direction':x['direction'],'score':x['score'],'location':x['location'],'exhaustion':x['exhaustion'],'flow':x['flow'],'reclaim':x['reclaim'],'expansion':x['expansion'],'atr_pct':x['atr_pct'],'rsi':x['rsi'],'range_pos':x['range_pos'],'range_high':x['range_high'],'range_low':x['range_low'],'volume_ratio':x['volume_ratio'],'taker_100':tw[0],'taker_250':tw[1],'taker_500':tw[2],'taker_ratio':x['taker'],'taker_stability':x['taker_stability'],'taker_spread_pct':x['taker_spread'],'taker_fills':x['taker_fills'],'book_ratio':x['book'],'funding':x['funding'],'signal':x['signal'],'entry_low':p[0] if action else '','entry_high':p[1] if action else '','sl':p[2] if action else '','position_idr':p[3] if action else '','tp1':p[4] if action else '','tp2':p[5] if action else '','tp3':p[6] if action else '','stop_pct':p[7] if action else '','h1':'','h4':'','h12':'','h24':''}
-
-def append_rows(rows):
-    migrate_csv()
-    with SIGNAL_FILE.open('a',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=CSV_FIELDS).writerows(rows)
-
-def _closed_15m(provider,sym):
-    if provider=='Bitget':raw=bitget('/api/v2/mix/market/candles',{'symbol':sym,'productType':'USDT-FUTURES','granularity':'15m','limit':120})['data'];return list(reversed(raw[1:]))
-    if provider=='Bybit':raw=bybit('/v5/market/kline',{'category':'linear','symbol':sym,'interval':'15','limit':120})['result']['list'];return list(reversed(raw[1:]))
-    return binance('/fapi/v1/klines',{'symbol':sym,'interval':'15m','limit':120})[:-1]
-
-def _future_outcome(rows,signal_ts,price,atr_pct,direction,hours):
-    start=datetime.fromisoformat(signal_ts.replace('Z','+00:00')).timestamp()*1000;end=start+hours*3600*1000;atr=price*float(atr_pct)/100;favorable=2*atr;adverse=1*atr;future=[]
-    for x in rows:
-        try:ts=float(x[0])
-        except (TypeError,ValueError):continue
-        if start<ts<=end:future.append(x)
-    if not future:return 'OPEN'
-    for x in future:
-        h,l=float(x[2]),float(x[3]);hf=(h>=price+favorable) if direction=='LONG' else (l<=price-favorable);ha=(l<=price-adverse) if direction=='LONG' else (h>=price+adverse)
-        if hf and ha:return 'AMBIGUOUS'
-        if hf:return 'EXPANSION'
-        if ha:return 'FAIL'
-    return 'OPEN'
-
-def evaluate_forward():
-    migrate_csv()
-    with SIGNAL_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
-    now=datetime.now(timezone.utc);cache={};changed=0
-    for r in rows:
-        if r.get('direction') not in ('LONG','SHORT'):continue
-        try:ts=datetime.fromisoformat(r['timestamp'].replace('Z','+00:00'))
-        except Exception:continue
-        age=(now-ts).total_seconds()/3600
-        for h in HORIZONS:
-            key=f'h{h}'
-            if r.get(key) or age<h:continue
-            ck=(r['provider'],r['symbol'])
-            if ck not in cache:
-                try:cache[ck]=_closed_15m(*ck)
-                except Exception:cache[ck]=None
-            if cache[ck]:r[key]=_future_outcome(cache[ck],r['timestamp'],float(r['price']),float(r['atr_pct']),r['direction'],h);changed+=1
-    with SIGNAL_FILE.open('w',newline='',encoding='utf-8') as f:w=csv.DictWriter(f,fieldnames=CSV_FIELDS);w.writeheader();w.writerows(rows)
-    return changed
-
-def validation_stats():
-    migrate_csv()
-    with SIGNAL_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
-    actionable=[r for r in rows if r.get('direction') in ('LONG','SHORT') and r.get('entry_low')];out=[f'Validation: {len(actionable)} pre-expansion snapshots / {len(rows)} total snapshots']
-    for h in HORIZONS:
-        done=[r[f'h{h}'] for r in actionable if r.get(f'h{h}') in ('EXPANSION','FAIL','AMBIGUOUS')]
-        if done:
-            wins=done.count('EXPANSION');out.append(f'H{h}: {wins}/{len(done)} EXPANSION ({wins/len(done)*100:.1f}%)')
-    return '\n'.join(out)
-
-def main():
-    provider,btc24=discover();print(f'ZORATHVAEL REVERSAL SCANNER V{VERSION}');print(f'Active provider: {provider}');results=[];errors=[]
-    with ThreadPoolExecutor(max_workers=6) as ex:
-        futs={ex.submit(fetch_symbol,s,provider,btc24):s for s in SYMBOLS}
-        for f in as_completed(futs):
-            s=futs[f]
-            try:results.append(f.result())
-            except Exception as e:errors.append((s,str(e)))
-    results.sort(key=lambda x:x['score'],reverse=True);ts=datetime.now(timezone.utc).isoformat();append_rows([signal_row(x,ts) for x in results]);print(f'Coverage: {len(results)}/{len(SYMBOLS)}')
-    for i,x in enumerate(results[:10],1):
-        tw=x['taker_windows'];print(f"{i}. {x['symbol']} | {x['score']:.1f} | {x['signal']} | Loc {x['location']:.2f} Exh {x['exhaustion']:.2f} Flow {x['flow']:.2f} Reclaim {x['reclaim']:.2f} Expand {x['expansion']:.2f} | Pos {x['range_pos']:.2f} ATR {x['atr_pct']:.2f}% RSI {x['rsi']:.1f} | Taker {tw[0] if tw[0] is not None else 'N/A'}/{tw[1] if tw[1] is not None else 'N/A'}/{tw[2] if tw[2] is not None else 'N/A'} Agg {x['taker'] if x['taker'] is not None else 'N/A'} Stab {x['taker_stability'] if x['taker_stability'] is not None else 'N/A'} Fills {x['taker_fills']}")
-    if errors:print('Symbol errors:');[print(' -',s,e) for s,e in errors]
-    print(f'Forward-test outcomes updated: {evaluate_forward()}');print(validation_stats())
-
-if __name__=='__main__':main()
+def fetch_symbol(sym,provider,btc24):
+    if provider=='Bitget':return bitget_symbol(sym,btc24)
+    if provider=='Bybit':return bybit_symbol(sym,btc24)
+    return binance_symbol(sym,btc24)
