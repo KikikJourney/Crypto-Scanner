@@ -25,10 +25,10 @@ def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
     from actionable_reversal_layer import build_action_plan
-    p=build_action_plan(features,d['direction']);ts=features.get('timestamp') or timestamp
-    return {'id':f'{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'trigger':p.get('trigger',''),'action_stop':p.get('stop',''),'action_target':p.get('target',''),'action_risk_pct':p.get('risk_pct',''),'action_reward_r':p.get('reward_r',''),'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
+    p=build_action_plan(features,d['direction']);ts=features.get('timestamp') or timestamp;provider=result['provider']
+    return {'id':f'{provider}_{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':provider,'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'trigger':p.get('trigger',''),'action_stop':p.get('stop',''),'action_target':p.get('target',''),'action_risk_pct':p.get('risk_pct',''),'action_reward_r':p.get('reward_r',''),'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
 def snapshot_row(result,features,timestamp):
-    ts=features.get('timestamp') or timestamp;return {'id':f'{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':result['provider'],'price':features['price']}
+    ts=features.get('timestamp') or timestamp;provider=result['provider'];return {'id':f'{provider}_{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':provider,'price':features['price']}
 def _parse_ts(v):return datetime.fromisoformat(v.replace('Z','+00:00'))
 def _outcome(direction,entry,future,atr_pct):
     move=(future-entry)/entry*100;fav=move>=2*atr_pct if direction=='LONG' else move<=-2*atr_pct;adv=move<=-atr_pct if direction=='LONG' else move>=atr_pct
@@ -37,10 +37,11 @@ def _outcome(direction,entry,future,atr_pct):
     if adv:return 'FAIL'
     return None
 def _assign_events(rows):
-    ordered=sorted(rows,key=lambda r:(_parse_ts(r['timestamp']),r.get('symbol',''),r.get('direction','')));last={}
+    ordered=sorted(rows,key=lambda r:(_parse_ts(r['timestamp']),r.get('provider',''),r.get('symbol',''),r.get('direction','')));last={}
     for row in ordered:
-        key=(row.get('symbol',''),row.get('direction',''));ts=_parse_ts(row['timestamp']);prev=last.get(key)
-        if prev is None or ts-prev[0]>timedelta(hours=EVENT_GAP_HOURS):eid=f"{row['symbol']}_{row['direction']}_{row['timestamp']}";row['event_role']='PRIMARY'
+        key=(row.get('provider',''),row.get('symbol',''),row.get('direction',''));ts=_parse_ts(row['timestamp']);prev=last.get(key)
+        if prev is None or ts-prev[0]>timedelta(hours=EVENT_GAP_HOURS):
+            eid=f"{row.get('provider','')}_{row['symbol']}_{row['direction']}_{row['timestamp']}";row['event_role']='PRIMARY'
         else:eid=prev[1];row['event_role']='DUPLICATE'
         row['event_id']=eid;last[key]=(ts,eid)
     return rows
@@ -79,14 +80,14 @@ def evaluate_forward(snapshot_rows=None):
     if snapshot_rows is None:
         with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:snapshot_rows=list(csv.DictReader(f))
     snapshots={}
-    for r in snapshot_rows:snapshots.setdefault(r.get('symbol',''),[]).append(r)
+    for r in snapshot_rows:snapshots.setdefault((r.get('provider',''),r.get('symbol','')),[]).append(r)
     for v in snapshots.values():v.sort(key=lambda r:_parse_ts(r['timestamp']))
     updated=0
     for row in rows:
         if row.get('event_role')!='PRIMARY':continue
         try:ts=_parse_ts(row['timestamp']);entry=float(row['price']);atr=float(row['atr_pct']);direction=row['direction']
         except (TypeError,ValueError):continue
-        futures=[r for r in snapshots.get(row['symbol'],[]) if _parse_ts(r['timestamp'])>ts]
+        futures=[r for r in snapshots.get((row.get('provider',''),row['symbol']),[]) if _parse_ts(r['timestamp'])>ts]
         for h in HORIZONS:
             key=f'h{h}'
             if row[key]:continue
