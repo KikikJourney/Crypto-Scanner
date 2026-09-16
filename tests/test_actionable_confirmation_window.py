@@ -38,9 +38,12 @@ class ActionableConfirmationWindowTests(unittest.TestCase):
         self.assertEqual(actions[0]['entry'], 100.0)
 
     def test_confirmation_after_stale_excursion_is_rejected(self):
+        """A stale move before the trigger invalidates the whole event."""
         extreme = self._extreme()
         snapshots = [
-            {'timestamp': '2026-09-16T10:30:00+00:00', 'provider': 'Bitget', 'symbol': 'TESTUSDT', 'price': '102'},
+            # 98 is 2 ATR below the 100 LONG trigger, so the trigger is stale.
+            {'timestamp': '2026-09-16T10:30:00+00:00', 'provider': 'Bitget', 'symbol': 'TESTUSDT', 'price': '98'},
+            # Returning to the trigger later must not resurrect the stale setup.
             {'timestamp': '2026-09-16T11:00:00+00:00', 'provider': 'Bitget', 'symbol': 'TESTUSDT', 'price': '100'},
         ]
         self.assertEqual(build_confirmed_actions([extreme], snapshots), [])
