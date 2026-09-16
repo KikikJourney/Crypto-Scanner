@@ -12,7 +12,10 @@ from extreme_market_data import build_features
 from extreme_reversal_layer import classify, append_rows, append_snapshots, evaluate_forward, signal_row, snapshot_row
 from extreme_event_stats import format_summary
 
-WORKERS=16
+# Bitget rate limits are more important than shaving a small amount of scan time.
+# Eight concurrent symbols still gives substantial throughput while reducing
+# burst pressure from the multiple API calls required per symbol.
+WORKERS=8
 
 
 def _rows(sym, provider):
