@@ -20,6 +20,7 @@ on:
       - 'tests/test_extreme_reversal.py'
       - 'tests/test_actionable_reversal.py'
       - 'tests/test_actionable_forward_test.py'
+      - 'tests/test_actionable_confirmation_window.py'
       - 'tests/test_telegram_notifier.py'
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
@@ -55,6 +56,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_actionable_reversal.py' -v
       - name: Validate Actionable forward-test logic
         run: python -m unittest discover -s tests -p 'test_actionable_forward_test.py' -v
+      - name: Validate Actionable confirmation window
+        run: python -m unittest discover -s tests -p 'test_actionable_confirmation_window.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
       - name: Run V2.2 extreme reversal scanner
@@ -91,7 +94,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_actionable_forward_test.py tests/test_telegram_notifier.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv
+          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_actionable_forward_test.py tests/test_actionable_confirmation_window.py tests/test_telegram_notifier.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv
           git diff --cached --quiet || git commit -m 'Persist scanner and forward-test data'
           git fetch origin main
           git rebase origin/main
