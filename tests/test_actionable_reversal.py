@@ -1,6 +1,6 @@
 import unittest
 
-from actionable_reversal_layer import build_action_plan, _action_outcome
+from actionable_reversal_layer import build_action_plan, _action_outcome, MAX_TRIGGER_GAP_ATR
 
 
 class ActionableReversalTests(unittest.TestCase):
@@ -51,11 +51,28 @@ class ActionableReversalTests(unittest.TestCase):
         self.assertIsNone(_action_outcome('LONG', 92, 93, 90, 96))
 
     def test_invalid_risk_is_not_action(self):
-        # Trigger far above the extreme low makes the execution risk > 8%.
         f = self.features(); f['long_trigger'] = 105.0
         r = build_action_plan(f, 'LONG')
         self.assertEqual(r['status'], 'WAIT')
         self.assertGreater(r['risk_pct'], 8.0)
+
+    def test_long_trigger_becomes_stale_when_price_runs_away(self):
+        f = self.features(); f['price'] = 80.0
+        r = build_action_plan(f, 'LONG')
+        self.assertEqual(r['status'], 'STALE')
+        self.assertGreater(r['trigger_gap_atr'], MAX_TRIGGER_GAP_ATR)
+
+    def test_short_trigger_becomes_stale_when_price_runs_away(self):
+        f = self.features(); f['price'] = 100.0
+        r = build_action_plan(f, 'SHORT')
+        self.assertEqual(r['status'], 'STALE')
+        self.assertGreater(r['trigger_gap_atr'], MAX_TRIGGER_GAP_ATR)
+
+    def test_near_trigger_remains_wait(self):
+        f = self.features(); f['price'] = 91.0
+        r = build_action_plan(f, 'LONG')
+        self.assertEqual(r['status'], 'WAIT FOR LONG TRIGGER')
+        self.assertLessEqual(r['trigger_gap_atr'], MAX_TRIGGER_GAP_ATR)
 
 
 if __name__ == '__main__':
