@@ -21,7 +21,9 @@ def _safe_float(value):
 
 def _trigger_gap_atr(price,trigger,atr,direction):
     if atr is None or atr<=0:return None
-    gap=(trigger-price) if direction=='SHORT' else (price-trigger)
+    # Positive gap means price is still on the unconfirmed side of the trigger.
+    # LONG: price is below trigger. SHORT: price is above trigger.
+    gap=(trigger-price) if direction=='LONG' else (price-trigger)
     return gap/atr
 
 def build_action_plan(features,direction):
