@@ -44,7 +44,7 @@ class ExtremeReversalTests(unittest.TestCase):
         for i,minutes in enumerate((0,15,45,105,150,300)):
             ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
             iso=datetime.fromtimestamp(ts,tz=timezone.utc).isoformat()
-            rows.append({'id':str(i),'timestamp':iso,'symbol':'MINAUSDT','direction':'SHORT','event_id':'','event_role':''})
+            rows.append({'id':str(i),'timestamp':iso,'symbol':'MINAUSDT','provider':'Bitget','direction':'SHORT','event_id':'','event_role':''})
         _assign_events(rows)
         self.assertEqual(len({r['event_id'] for r in rows}),2)
         self.assertEqual([r['event_role'] for r in rows],['PRIMARY','DUPLICATE','DUPLICATE','DUPLICATE','DUPLICATE','PRIMARY'])
@@ -53,7 +53,7 @@ class ExtremeReversalTests(unittest.TestCase):
         rows=[]
         for i,minutes in ((2,120),(0,0),(1,119),(3,121),(4,242)):
             ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
-            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'BTCUSDT','direction':'LONG','event_id':'','event_role':''})
+            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'BTCUSDT','provider':'Bitget','direction':'LONG','event_id':'','event_role':''})
         _assign_events(rows)
         by_id={r['id']:r for r in rows}
         self.assertEqual(by_id['0']['event_role'],'PRIMARY')
@@ -67,7 +67,7 @@ class ExtremeReversalTests(unittest.TestCase):
         rows=[]
         for i,minutes in enumerate((0,121)):
             ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
-            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'ETHUSDT','direction':'SHORT','event_id':'','event_role':''})
+            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'ETHUSDT','provider':'Bitget','direction':'SHORT','event_id':'','event_role':''})
         _assign_events(rows)
         self.assertEqual([r['event_role'] for r in rows],['PRIMARY','PRIMARY'])
         self.assertEqual(len({r['event_id'] for r in rows}),2)
@@ -76,9 +76,19 @@ class ExtremeReversalTests(unittest.TestCase):
         rows=[]
         for i,(sym,side) in enumerate((('A','SHORT'),('B','SHORT'),('A','LONG'))):
             ts=datetime(2026,1,1,12,i,tzinfo=timezone.utc).isoformat()
-            rows.append({'id':str(i),'timestamp':ts,'symbol':sym,'direction':side,'event_id':'','event_role':''})
+            rows.append({'id':str(i),'timestamp':ts,'symbol':sym,'provider':'Bitget','direction':side,'event_id':'','event_role':''})
         _assign_events(rows)
         self.assertEqual(len({r['event_id'] for r in rows}),3)
+
+    def test_different_providers_are_independent_events(self):
+        rows=[]
+        for i,provider in enumerate(('Bitget','Binance')):
+            ts=datetime(2026,1,1,12,tzinfo=timezone.utc).isoformat()
+            rows.append({'id':str(i),'timestamp':ts,'symbol':'UAIUSDT','provider':provider,'direction':'SHORT','event_id':'','event_role':''})
+        _assign_events(rows)
+        self.assertEqual([r['event_role'] for r in rows],['PRIMARY','PRIMARY'])
+        self.assertEqual(len({r['event_id'] for r in rows}),2)
+        self.assertTrue(all('UAIUSDT' in r['event_id'] and r['provider'] in r['event_id'] for r in rows))
 
     def test_event_stats_do_not_double_count_horizons(self):
         rows=[
