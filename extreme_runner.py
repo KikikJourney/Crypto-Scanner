@@ -9,7 +9,8 @@ from datetime import datetime, timezone
 import scanner_v2 as core
 from universe_runner import active_symbols, select_scan_symbols
 from extreme_market_data import build_features
-from extreme_reversal_layer import classify, append_rows, append_snapshots, evaluate_forward, signal_row, snapshot_row, stats
+from extreme_reversal_layer import classify, append_rows, append_snapshots, evaluate_forward, signal_row, snapshot_row
+from extreme_event_stats import format_summary
 
 WORKERS=16
 
@@ -66,7 +67,14 @@ def main():
     print(f'Extreme market snapshots added: {snapshot_added}')
     print(f'Extreme forward-test outcomes updated: {evaluate_forward()}')
     print(f'Extreme forward-test rows added: {added}')
-    print(stats())
+    print(format_summary(_load_forward_rows()))
+
+
+def _load_forward_rows():
+    import csv
+    from extreme_reversal_layer import EXTREME_FORWARD_FILE
+    with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:
+        return list(csv.DictReader(f))
 
 
 if __name__=='__main__':main()
