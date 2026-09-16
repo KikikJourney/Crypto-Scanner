@@ -4,7 +4,7 @@ from datetime import datetime,timedelta
 from pathlib import Path
 from scanner_v2 import clamp
 EXTREME_FORWARD_FILE=Path('data/extreme_reversal_forward_test.csv');EXTREME_SNAPSHOT_FILE=Path('data/extreme_market_snapshots.csv')
-HORIZONS=(1,4,12,24);MIN_EXTREME_SCORE=70.0;MAX_1H_POS_LONG=.30;MIN_1H_POS_SHORT=.70;MAX_24H_POS_LONG=.25;MIN_24H_POS_SHORT=.75;MAX_ATR_FROM_LOW=1.;MAX_ATR_FROM_HIGH=1.;MIN_MOVE_ATR=.75;MIN_TURN=.25;EVENT_GAP_HOURS=2
+HORIZONS=(1,4,12,24);MIN_EXTREME_SCORE=70.0;MAX_1H_POS_LONG=.30;MIN_1H_POS_SHORT=.70;MAX_24H_POS_LONG=.25;MIN_24H_POS_SHORT=.75;MAX_ATR_FROM_LOW=1.;MAX_ATR_FROM_HIGH=1.;MIN_MOVE_ATR=.75;MIN_TURN=.25;MAX_TRIGGER_GAP_ATR=1.25;EVENT_GAP_HOURS=2
 CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','trigger','action_stop','action_target','action_risk_pct','action_reward_r','event_id','event_role','h1','h4','h12','h24'];SNAPSHOT_FIELDS=['id','timestamp','symbol','provider','price']
 def _score_long(f):
     if not f or f.get('data_ok') is not True:return None
@@ -14,13 +14,15 @@ def _score_short(f):
     p,p24,d,m,t=f['h1_pos_48'],f['h1_pos_24'],f['dist_high_atr'],f['move_into_high_atr'],f['turn_short'];loc=.45*clamp((p-MIN_1H_POS_SHORT)/(1-MIN_1H_POS_SHORT))+.35*clamp((p24-MIN_24H_POS_SHORT)/(1-MIN_24H_POS_SHORT))+.20*clamp((MAX_ATR_FROM_HIGH-d)/MAX_ATR_FROM_HIGH);return round(100*(.70*loc+.20*clamp(m/3)+.10*clamp(t)),1)
 def classify(features):
     if not features or features.get('data_ok') is not True:return {'status':'DATA-LIMITED','direction':'NONE','score':None,'long_score':None,'short_score':None,'blocker':'15m/1h extreme data unavailable'}
-    ls,ss=_score_long(features),_score_short(features);lg=features['h1_pos_48']<=MAX_1H_POS_LONG and features['h1_pos_24']<=MAX_24H_POS_LONG and 0<=features['dist_low_atr']<=MAX_ATR_FROM_LOW and features['move_into_low_atr']>=MIN_MOVE_ATR and features['turn_long']>=MIN_TURN;sg=features['h1_pos_48']>=MIN_1H_POS_SHORT and features['h1_pos_24']>=MIN_24H_POS_SHORT and 0<=features['dist_high_atr']<=MAX_ATR_FROM_HIGH and features['move_into_high_atr']>=MIN_MOVE_ATR and features['turn_short']>=MIN_TURN
+    ls,ss=_score_long(features),_score_short(features)
+    lg=features['h1_pos_48']<=MAX_1H_POS_LONG and features['h1_pos_24']<=MAX_24H_POS_LONG and 0<=features['dist_low_atr']<=MAX_ATR_FROM_LOW and features['move_into_low_atr']>=MIN_MOVE_ATR and features['turn_long']>=MIN_TURN and features.get('trigger_gap_atr_long',0)<=MAX_TRIGGER_GAP_ATR
+    sg=features['h1_pos_48']>=MIN_1H_POS_SHORT and features['h1_pos_24']>=MIN_24H_POS_SHORT and 0<=features['dist_high_atr']<=MAX_ATR_FROM_HIGH and features['move_into_high_atr']>=MIN_MOVE_ATR and features['turn_short']>=MIN_TURN and features.get('trigger_gap_atr_short',0)<=MAX_TRIGGER_GAP_ATR
     c=[]
     if lg and ls>=MIN_EXTREME_SCORE:c.append(('LONG',ls))
     if sg and ss>=MIN_EXTREME_SCORE:c.append(('SHORT',ss))
     if c:
         side,score=max(c,key=lambda x:(x[1],x[0]=='LONG'));return {'status':f'EXTREME REVERSAL {side}','direction':side,'score':score,'long_score':ls,'short_score':ss,'blocker':'none'}
-    return {'status':'MONITOR EXTREME','direction':'NONE','score':max(ls,ss),'long_score':ls,'short_score':ss,'blocker':'extreme gate not met'}
+    return {'status':'MONITOR EXTREME','direction':'NONE','score':max(ls,ss),'long_score':ls,'short_score':ss,'blocker':'extreme gate or trigger freshness gate not met'}
 def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
@@ -46,6 +48,7 @@ def _assign_events(rows):
         row['event_id']=eid;last[key]=(ts,eid)
     return rows
 def _write_forward(rows):
+    EXTREME_FORWARD_FILE.parent.mkdir(parents=True,exist_ok=True)
     with EXTREME_FORWARD_FILE.open('w',newline='',encoding='utf-8') as f:w=csv.DictWriter(f,fieldnames=CSV_FIELDS);w.writeheader();w.writerows(rows)
 def _migrate():
     EXTREME_FORWARD_FILE.parent.mkdir(parents=True,exist_ok=True)
