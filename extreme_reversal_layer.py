@@ -25,10 +25,10 @@ def signal_row(result,features,timestamp):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
     from actionable_reversal_layer import build_action_plan
-    p=build_action_plan(features,d['direction']);ts=features.get('timestamp') or timestamp;provider=result['provider']
+    p=build_action_plan(features,d['direction']);ts=timestamp;provider=result['provider']
     return {'id':f'{provider}_{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':provider,'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'trigger':p.get('trigger',''),'action_stop':p.get('stop',''),'action_target':p.get('target',''),'action_risk_pct':p.get('risk_pct',''),'action_reward_r':p.get('reward_r',''),'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
 def snapshot_row(result,features,timestamp):
-    ts=features.get('timestamp') or timestamp;provider=result['provider'];return {'id':f'{provider}_{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':provider,'price':features['price']}
+    ts=timestamp;provider=result['provider'];return {'id':f'{provider}_{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':provider,'price':features['price']}
 def _parse_ts(v):return datetime.fromisoformat(v.replace('Z','+00:00'))
 def _outcome(direction,entry,future,atr_pct):
     move=(future-entry)/entry*100;fav=move>=2*atr_pct if direction=='LONG' else move<=-2*atr_pct;adv=move<=-atr_pct if direction=='LONG' else move>=atr_pct
