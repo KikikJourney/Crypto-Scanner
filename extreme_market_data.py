@@ -34,8 +34,9 @@ def build_features(rows,current_price=None):
     hi24=max(_high(x) for x in h24); lo24=min(_low(x) for x in h24); hi48=max(_high(x) for x in h48); lo48=min(_low(x) for x in h48)
     price=float(current_price) if current_price is not None else _close(rows[-1])
     if price<=0:return {'data_ok':False}
-    p24=clamp((price-lo24)/(hi24-lo24)) if hi24>lo24 else .5; p48=clamp((price-lo48)/(hi48-lo48)) if hi48>lo48 else .5
-    atr=_atr(hourly); dist_low=max(0,(price-lo24)/atr) if atr else 99; dist_high=max(0,(hi24-price)/atr) if atr else 99
+    p24_raw=(price-lo24)/(hi24-lo24) if hi24>lo24 else .5; p48_raw=(price-lo48)/(hi48-lo48) if hi48>lo48 else .5
+    p24=clamp(p24_raw); p48=clamp(p48_raw)
+    atr=_atr(hourly); dist_low=abs(price-lo24)/atr if atr else 99; dist_high=abs(hi24-price)/atr if atr else 99
     hourly_closes=[_close(x) for x in hourly]; move_low=max(0,(hourly_closes[-13]-price)/atr) if atr and len(hourly_closes)>=13 else 0; move_high=max(0,(price-hourly_closes[-13])/atr) if atr and len(hourly_closes)>=13 else 0
     recent=[_close(x) for x in hourly[-4:]]; turn_long=clamp((recent[-1]-min(recent[:-1]))/(atr or 1)); turn_short=clamp((max(recent[:-1])-recent[-1])/(atr or 1)); prior4=hourly[-5:-1]
-    return {'data_ok':True,'price':price,'atr':atr,'atr_pct':(atr/price*100) if price else 0.0,'atr_basis':'1H','timestamp':_timestamp_iso(rows[-1][0]),'h1_pos_24':p24,'h1_pos_48':p48,'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short,'extreme_low_24':lo24,'extreme_high_24':hi24,'long_trigger':max(_high(x) for x in prior4),'short_trigger':min(_low(x) for x in prior4)}
+    return {'data_ok':True,'price':price,'atr':atr,'atr_pct':(atr/price*100) if price else 0.0,'atr_basis':'1H','timestamp':_timestamp_iso(rows[-1][0]),'h1_pos_24':p24,'h1_pos_48':p48,'h1_pos_24_raw':p24_raw,'h1_pos_48_raw':p48_raw,'dist_low_atr':dist_low,'dist_high_atr':dist_high,'move_into_low_atr':move_low,'move_into_high_atr':move_high,'turn_long':turn_long,'turn_short':turn_short,'extreme_low_24':lo24,'extreme_high_24':hi24,'long_trigger':max(_high(x) for x in prior4),'short_trigger':min(_low(x) for x in prior4)}
