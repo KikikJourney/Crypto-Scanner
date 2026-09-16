@@ -48,6 +48,29 @@ class ExtremeReversalTests(unittest.TestCase):
         self.assertEqual(len({r['event_id'] for r in rows}),2)
         self.assertEqual([r['event_role'] for r in rows],['PRIMARY','DUPLICATE','DUPLICATE','DUPLICATE','DUPLICATE','PRIMARY'])
 
+    def test_event_assignment_handles_unsorted_rows_and_exact_gap(self):
+        rows=[]
+        for i,minutes in ((2,120),(0,0),(1,119),(3,121),(4,241)):
+            ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
+            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'BTCUSDT','direction':'LONG','event_id':'','event_role':''})
+        _assign_events(rows)
+        by_id={r['id']:r for r in rows}
+        self.assertEqual(by_id['0']['event_role'],'PRIMARY')
+        self.assertEqual(by_id['1']['event_role'],'DUPLICATE')
+        self.assertEqual(by_id['2']['event_role'],'DUPLICATE')
+        self.assertEqual(by_id['3']['event_role'],'DUPLICATE')
+        self.assertEqual(by_id['4']['event_role'],'PRIMARY')
+        self.assertEqual(len({r['event_id'] for r in rows}),2)
+
+    def test_event_assignment_separates_gap_greater_than_two_hours(self):
+        rows=[]
+        for i,minutes in enumerate((0,121)):
+            ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
+            rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'ETHUSDT','direction':'SHORT','event_id':'','event_role':''})
+        _assign_events(rows)
+        self.assertEqual([r['event_role'] for r in rows],['PRIMARY','PRIMARY'])
+        self.assertEqual(len({r['event_id'] for r in rows}),2)
+
     def test_different_symbols_and_directions_are_independent(self):
         rows=[]
         for i,(sym,side) in enumerate((('A','SHORT'),('B','SHORT'),('A','LONG'))):
