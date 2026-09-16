@@ -116,7 +116,6 @@ def build_confirmed_actions(extreme_rows, snapshots):
                 break
         if confirmed is None:
             continue
-        action_ts = _ts(confirmed['timestamp'])
         key = (extreme.get('symbol', ''), direction, extreme.get('event_id', ''))
         if key in seen:
             continue
@@ -138,14 +137,17 @@ def build_confirmed_actions(extreme_rows, snapshots):
             'event_role': '',
             'h1': '', 'h4': '', 'h12': '', 'h24': '',
         })
-    return actions
+
+    # Contract: every confirmed action returned by this function is already
+    # event-labelled. Callers (tests, summaries, or evaluate) must not need a
+    # second normalization pass merely to obtain event identity.
+    return _assign_events(actions)
 
 
 def evaluate(rows=None, snapshots=None):
     extremes = _load(EXTREME_FILE) if rows is None else rows
     snapshots = _load(SNAPSHOT_FILE) if snapshots is None else snapshots
     actions = build_confirmed_actions(extremes, snapshots)
-    _assign_events(actions)
     # Recompute outcomes from snapshots strictly after confirmed entry.
     by_symbol = {}
     for snap in snapshots:
