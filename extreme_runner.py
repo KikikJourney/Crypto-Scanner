@@ -19,21 +19,20 @@ def _rows(sym,provider):
     return core.binance('/fapi/v1/klines',{'symbol':sym,'interval':'15m','limit':194})[:-1]
 def scan_one(sym,provider,btc24):
     result=core.fetch_symbol(sym,provider,btc24);features=build_features(_rows(sym,provider),result['price']);result['extreme_features']=features;result['extreme']=classify(features);return result
-def _build_action_rows(extreme_results):
+def _build_action_rows(extreme_results,timestamp):
     rows=[]
     for x in extreme_results:
         f=x['extreme_features'];e=x['extreme'];p=build_action_plan(f,e['direction'])
         if p['status'] not in {'ACTION LONG','ACTION SHORT'}:continue
-        provider=x['provider']
-        rows.append({'id':f"{provider}_{f['timestamp']}_{x['symbol']}_{e['direction']}_{p['trigger']}",'timestamp':f['timestamp'],'symbol':x['symbol'],'provider':provider,'direction':e['direction'],'score':e['score'],'entry':p['trigger'],'trigger':p['trigger'],'stop':p['stop'],'target':p['target'],'risk_pct':p['risk_pct'],'reward_r':p['reward_r'],'reason':p['reason']})
+        provider=x['provider']; rows.append({'id':f"{provider}_{timestamp}_{x['symbol']}_{e['direction']}_{p['trigger']}",'timestamp':timestamp,'symbol':x['symbol'],'provider':provider,'direction':e['direction'],'score':e['score'],'entry':p['trigger'],'trigger':p['trigger'],'stop':p['stop'],'target':p['target'],'risk_pct':p['risk_pct'],'reward_r':p['reward_r'],'reason':p['reason']})
     return rows
 def _write_actionable(rows):
     ACTIONABLE_FILE.parent.mkdir(parents=True,exist_ok=True)
     with ACTIONABLE_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=ACTIONABLE_FIELDS).writeheader();csv.DictWriter(f,fieldnames=ACTIONABLE_FIELDS).writerows(rows)
-def _print_action_candidates(extreme_results):
+def _print_action_candidates(extreme_results,timestamp):
     print('ACTIONABLE EXTREME OUTPUT:')
     if not extreme_results:print('NONE — no extreme candidate reached the V2.2 gate');return
-    action_rows=_build_action_rows(extreme_results)
+    action_rows=_build_action_rows(extreme_results,timestamp)
     for x in extreme_results[:20]:
         f=x['extreme_features'];e=x['extreme'];p=build_action_plan(f,e['direction'])
         print(f"{x['symbol']} | {p['status']} | trigger {p.get('trigger','-')} | stop {p.get('stop','-')} | target {p.get('target','-')} | risk {p.get('risk_pct','-')}% | {p.get('reason','')}")
@@ -57,7 +56,7 @@ def main():
     if not extreme:print('NONE — no true-extreme reversal passed the V2.2 gate')
     for rank,x in enumerate(extreme[:20],1):
         e=x['extreme'];f=x['extreme_features'];print(f"{rank}. {x['symbol']} | {e['status']} | score {e['score']:.1f} | 24hPos {f['h1_pos_24']:.2f} | 48hPos {f['h1_pos_48']:.2f} | lowDist {f['dist_low_atr']:.2f}ATR | highDist {f['dist_high_atr']:.2f}ATR")
-    _print_action_candidates(extreme)
+    _print_action_candidates(extreme,ts)
     if not extreme:_write_actionable([])
     print(f'Extreme scan coverage: {len(results)}/{len(scan_symbols)}');
     if errors:
