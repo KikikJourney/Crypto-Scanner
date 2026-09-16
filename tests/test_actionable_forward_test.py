@@ -1,18 +1,19 @@
 import unittest
+
 from actionable_forward_test import build_confirmed_actions, summarize
 
 
 class ActionableForwardTest(unittest.TestCase):
-    def extreme(self, direction='LONG'):
+    def extreme(self, direction='LONG', provider='Bitget', timestamp='2026-09-16T00:00:00+00:00'):
         return [{
-            'timestamp':'2026-09-16T00:00:00+00:00','symbol':'TESTUSDT','provider':'Bitget',
+            'timestamp':timestamp,'symbol':'TESTUSDT','provider':provider,
             'direction':direction,'score':'75','event_id':'TEST_EVENT','event_role':'PRIMARY',
             'trigger':'105','action_stop':'100','action_target':'115','action_risk_pct':'4.76',
-            'action_reward_r':'2.0'
+            'action_reward_r':'2.0','atr_pct':'2.0'
         }]
 
-    def snaps(self, prices):
-        return [{'timestamp':f'2026-09-16T{h:02d}:00:00+00:00','symbol':'TESTUSDT','provider':'Bitget','price':str(p)} for h,p in prices]
+    def snaps(self, prices, provider='Bitget', symbol='TESTUSDT'):
+        return [{'timestamp':f'2026-09-16T{h:02d}:00:00+00:00','symbol':symbol,'provider':provider,'price':str(p)} for h,p in prices]
 
     def test_confirmation_uses_fixed_trigger_and_future_only_outcome(self):
         rows = build_confirmed_actions(self.extreme(), self.snaps([(0,103),(1,105),(2,110),(3,116)]))
@@ -24,6 +25,32 @@ class ActionableForwardTest(unittest.TestCase):
     def test_no_confirmation_means_no_action(self):
         rows = build_confirmed_actions(self.extreme(), self.snaps([(0,103),(1,104),(2,104)]))
         self.assertEqual(rows,[])
+
+    def test_stale_long_trigger_is_not_confirmed_later(self):
+        rows = build_confirmed_actions(self.extreme('LONG'), self.snaps([(0,103),(1,101),(2,100),(3,105)]))
+        self.assertEqual(rows,[])
+
+    def test_stale_short_trigger_is_not_confirmed_later(self):
+        rows = build_confirmed_actions(self.extreme('SHORT'), self.snaps([(0,107),(1,109),(2,110),(3,105)]))
+        self.assertEqual(rows,[])
+
+    def test_confirmation_is_provider_specific(self):
+        rows = build_confirmed_actions(
+            self.extreme('LONG', 'Bitget'),
+            self.snaps([(0,103),(1,104)], provider='Bitget') + self.snaps([(0,103),(1,105)], provider='Binance')
+        )
+        self.assertEqual(rows,[])
+
+    def test_same_symbol_on_two_providers_remains_two_events(self):
+        extremes = self.extreme('LONG', 'Bitget') + self.extreme('LONG', 'Binance')
+        extremes[1]['event_id'] = 'OTHER_EVENT'
+        rows = build_confirmed_actions(
+            extremes,
+            self.snaps([(0,103),(1,105)], provider='Bitget') + self.snaps([(0,103),(1,105)], provider='Binance')
+        )
+        self.assertEqual(len(rows),2)
+        self.assertEqual({r['provider'] for r in rows},{'Bitget','Binance'})
+        self.assertEqual(len({r['event_id'] for r in rows}),2)
 
     def test_summary_counts_events_not_horizons(self):
         rows = [
