@@ -11,6 +11,7 @@ on:
       - 'extreme_reversal_layer.py'
       - 'extreme_market_data.py'
       - 'extreme_runner.py'
+      - 'extreme_event_stats.py'
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
   schedule:
@@ -40,7 +41,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate scanner syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py
 
       - name: Validate diagnostic layer
         run: python diagnostic_v21.py
@@ -101,14 +102,20 @@ jobs:
           assert p.exists(), 'extreme forward-test CSV missing'
           with p.open(newline='', encoding='utf-8') as f:
               rows = list(csv.DictReader(f))
-          required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','h1','h4','h12','h24'}
+          required = {'id','timestamp','symbol','direction','score','price','atr_pct','signal','event_id','event_role','h1','h4','h12','h24'}
           assert required.issubset(rows[0] if rows else required), 'extreme forward-test schema invalid'
-          print(f'EXTREME FORWARD CSV VALID: {len(rows)} rows')
+          if rows:
+              event_ids={r['event_id'] for r in rows}
+              primary_by_event={r['event_id']:0 for r in rows if r['event_role']=='PRIMARY'}
+              assert all(r['event_id'] for r in rows), 'extreme event_id missing'
+              assert all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in rows), 'invalid event_role'
+              assert len(primary_by_event)==len(event_ids), 'each event must have exactly one PRIMARY'
+          print(f'EXTREME FORWARD CSV VALID: {len(rows)} rows; event accounting present')
           p2 = Path('data/extreme_market_snapshots.csv')
           assert p2.exists(), 'extreme market snapshot CSV missing'
           with p2.open(newline='', encoding='utf-8') as f:
               snapshots = list(csv.DictReader(f))
-          assert required - {'direction','score','signal','atr_pct','h1','h4','h12','h24'} <= set(snapshots[0] if snapshots else {'id','timestamp','symbol','provider','price'}), 'extreme snapshot schema invalid'
+          assert {'id','timestamp','symbol','provider','price'} <= set(snapshots[0] if snapshots else {'id','timestamp','symbol','provider','price'}), 'extreme snapshot schema invalid'
           print(f'EXTREME SNAPSHOT CSV VALID: {len(snapshots)} rows')
           PY
 
@@ -116,6 +123,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/universe_watchlist.csv tests/test_early_reversal.py tests/test_extreme_reversal.py
+          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/universe_watchlist.csv tests/test_early_reversal.py tests/test_extreme_reversal.py
           git diff --cached --quiet || git commit -m 'Harden V2.2 extreme forward test'
+          git fetch origin main
+          git rebase origin/main
           git push origin HEAD:main
