@@ -147,7 +147,6 @@ def main():
             except Exception as exc: errors.append((symbol, str(exc)))
     results.sort(key=lambda x: x['score'], reverse=True)
     ts = datetime.now(timezone.utc).isoformat()
-    core.append_rows([core.signal_row(x, ts) for x in results])
     early_rows = [early_signal_row(x, ts) for x in results]
     early_added = append_early_rows(early_rows)
     write_watchlist(results, ts)
@@ -162,13 +161,11 @@ def main():
         print(f'Symbol errors: {len(errors)}')
         for symbol, error in errors[:20]: print(f' - {symbol}: {error}')
     print(f'Watchlist saved: {WATCHLIST_FILE}')
-    print(f'Forward-test outcomes updated: {core.evaluate_forward()}')
     print(f'Early forward-test rows added: {early_added}')
     with core.SIGNAL_FILE.open(newline='', encoding='utf-8') as f:
         snapshots = list(csv.DictReader(f))
     print(f'Early forward-test outcomes updated: {evaluate_early_forward(snapshots)}')
     print(early_stats())
-    print(core.validation_stats())
 
 
 if __name__ == '__main__': main()
