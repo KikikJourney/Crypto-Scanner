@@ -13,6 +13,7 @@ SNAPSHOT_FILE = Path('data/extreme_market_snapshots.csv')
 ACTION_FILE = Path('data/actionable_forward_test.csv')
 HORIZONS = (1, 4, 12, 24)
 EVENT_GAP_HOURS = 2
+MAX_CONFIRMATION_AGE_HOURS = EVENT_GAP_HOURS
 MAX_TRIGGER_GAP_ATR = 1.25
 FIELDS = [
     'id', 'timestamp', 'symbol', 'provider', 'direction', 'extreme_event_id',
@@ -95,9 +96,9 @@ def _assign_events(rows):
 def build_confirmed_actions(extreme_rows, snapshots):
     """Convert extreme observations into the first confirmed fixed-entry action.
 
-    Confirmation is provider-specific and must happen before the setup becomes
-    more than MAX_TRIGGER_GAP_ATR away from its trigger. A trigger hit after a
-    stale excursion is ignored; the setup must qualify as a new extreme event.
+    Confirmation is provider-specific and must occur within the same extreme
+    event window. A trigger hit after the confirmation window has expired, or
+    after a stale excursion, is ignored.
     """
     extremes = _assign_events([dict(r) for r in extreme_rows if r.get('event_role') == 'PRIMARY'])
     by_provider_symbol = {}
@@ -117,6 +118,7 @@ def build_confirmed_actions(extreme_rows, snapshots):
         if direction not in {'LONG', 'SHORT'} or None in (trigger, stop, target, atr_pct) or atr_pct <= 0:
             continue
         extreme_ts = _ts(extreme['timestamp'])
+        confirmation_deadline = extreme_ts + timedelta(hours=MAX_CONFIRMATION_AGE_HOURS)
         candidates = by_provider_symbol.get((extreme.get('provider', ''), extreme.get('symbol', '')), [])
         confirmed = None
         stale = False
@@ -124,6 +126,8 @@ def build_confirmed_actions(extreme_rows, snapshots):
             snap_ts = _ts(snap['timestamp'])
             if snap_ts < extreme_ts:
                 continue
+            if snap_ts > confirmation_deadline:
+                break
             price = _f(snap.get('price'))
             if price is None:
                 continue
@@ -159,9 +163,6 @@ def build_confirmed_actions(extreme_rows, snapshots):
             'h1': '', 'h4': '', 'h12': '', 'h24': '',
         })
 
-    # Contract: every confirmed action returned by this function is already
-    # event-labelled. Callers (tests, summaries, or evaluate) must not need a
-    # second normalization pass merely to obtain event identity.
     return _assign_events(actions)
 
 
@@ -169,8 +170,6 @@ def evaluate(rows=None, snapshots=None):
     extremes = _load(EXTREME_FILE) if rows is None else rows
     snapshots = _load(SNAPSHOT_FILE) if snapshots is None else snapshots
     actions = build_confirmed_actions(extremes, snapshots)
-    # Recompute outcomes from snapshots strictly after confirmed entry and from
-    # the same provider as the confirmed action.
     by_provider_symbol = {}
     for snap in snapshots:
         by_provider_symbol.setdefault((snap.get('provider', ''), snap.get('symbol', '')), []).append(snap)
