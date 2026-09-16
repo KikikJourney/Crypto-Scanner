@@ -24,7 +24,8 @@ def _build_action_rows(extreme_results):
     for x in extreme_results:
         f=x['extreme_features'];e=x['extreme'];p=build_action_plan(f,e['direction'])
         if p['status'] not in {'ACTION LONG','ACTION SHORT'}:continue
-        rows.append({'id':f"{f['timestamp']}_{x['symbol']}_{e['direction']}_{p['trigger']}",'timestamp':f['timestamp'],'symbol':x['symbol'],'provider':x['provider'],'direction':e['direction'],'score':e['score'],'entry':p['trigger'],'trigger':p['trigger'],'stop':p['stop'],'target':p['target'],'risk_pct':p['risk_pct'],'reward_r':p['reward_r'],'reason':p['reason']})
+        provider=x['provider']
+        rows.append({'id':f"{provider}_{f['timestamp']}_{x['symbol']}_{e['direction']}_{p['trigger']}",'timestamp':f['timestamp'],'symbol':x['symbol'],'provider':provider,'direction':e['direction'],'score':e['score'],'entry':p['trigger'],'trigger':p['trigger'],'stop':p['stop'],'target':p['target'],'risk_pct':p['risk_pct'],'reward_r':p['reward_r'],'reason':p['reason']})
     return rows
 def _write_actionable(rows):
     ACTIONABLE_FILE.parent.mkdir(parents=True,exist_ok=True)
