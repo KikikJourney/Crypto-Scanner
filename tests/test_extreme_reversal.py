@@ -22,6 +22,12 @@ class ExtremeReversalTests(unittest.TestCase):
     def test_small_extreme_overshoot_remains_eligible(self):
         self.assertEqual(classify(extreme(h1_pos_48=0.0,h1_pos_24=0.0,dist_low_atr=.5,move_into_low_atr=2.0))['status'],'EXTREME REVERSAL LONG')
         self.assertEqual(classify(extreme(h1_pos_48=1.0,h1_pos_24=1.0,dist_high_atr=.5,move_into_high_atr=2.0,turn_short=.8))['status'],'EXTREME REVERSAL SHORT')
+    def test_stale_trigger_is_not_classified_as_extreme(self):
+        self.assertFalse(classify(extreme(trigger_gap_atr_long=1.26))['status'].startswith('EXTREME REVERSAL'))
+        self.assertFalse(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=.2,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.8,trigger_gap_atr_short=1.26))['status'].startswith('EXTREME REVERSAL'))
+    def test_fresh_trigger_can_remain_extreme(self):
+        self.assertEqual(classify(extreme(trigger_gap_atr_long=1.25))['status'],'EXTREME REVERSAL LONG')
+        self.assertEqual(classify(extreme(h1_pos_48=.97,h1_pos_24=.95,dist_low_atr=3.0,dist_high_atr=.2,move_into_low_atr=.2,move_into_high_atr=2.0,turn_long=.1,turn_short=.8,trigger_gap_atr_short=1.25))['status'],'EXTREME REVERSAL SHORT')
     def test_missing_data_blocked(self): self.assertEqual(classify({'data_ok':False})['status'],'DATA-LIMITED')
     def test_forward_outcome_uses_two_atr_favorable_and_one_atr_adverse(self):
         self.assertEqual(_outcome('SHORT',100,97,1.0),'EXPANSION'); self.assertEqual(_outcome('SHORT',100,101,1.0),'FAIL'); self.assertIsNone(_outcome('SHORT',100,99.5,1.0))
