@@ -49,8 +49,9 @@ class ExtremeReversalTests(unittest.TestCase):
         self.assertEqual([r['event_role'] for r in rows],['PRIMARY','DUPLICATE','DUPLICATE','DUPLICATE','DUPLICATE','PRIMARY'])
 
     def test_event_assignment_handles_unsorted_rows_and_exact_gap(self):
+        # Exact 2-hour gaps remain in the same event; a gap greater than 2h starts a new event.
         rows=[]
-        for i,minutes in ((2,120),(0,0),(1,119),(3,121),(4,241)):
+        for i,minutes in ((2,120),(0,0),(1,119),(3,121),(4,242)):
             ts=datetime(2026,1,1,tzinfo=timezone.utc).timestamp()+minutes*60
             rows.append({'id':str(i),'timestamp':datetime.fromtimestamp(ts,tz=timezone.utc).isoformat(),'symbol':'BTCUSDT','direction':'LONG','event_id':'','event_role':''})
         _assign_events(rows)
