@@ -23,11 +23,13 @@ def classify(features):
     if c:
         side,score=max(c,key=lambda x:(x[1],x[0]=='LONG'));return {'status':f'EXTREME REVERSAL {side}','direction':side,'score':score,'long_score':ls,'short_score':ss,'blocker':'none'}
     return {'status':'MONITOR EXTREME','direction':'NONE','score':max(ls,ss),'long_score':ls,'short_score':ss,'blocker':'extreme gate or trigger freshness gate not met'}
-def signal_row(result,features,timestamp):
+def signal_row(result,features,timestamp,action_plan=None):
     d=classify(features)
     if not d['status'].startswith('EXTREME REVERSAL'):return None
-    from actionable_reversal_layer import build_action_plan
-    p=build_action_plan(features,d['direction']);ts=timestamp;provider=result['provider']
+    if action_plan is None:
+        from actionable_reversal_layer import build_action_plan
+        action_plan=build_action_plan(features,d['direction'])
+    p=action_plan;ts=timestamp;provider=result['provider']
     return {'id':f'{provider}_{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':provider,'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'trigger':p.get('trigger',''),'action_stop':p.get('stop',''),'action_target':p.get('target',''),'action_risk_pct':p.get('risk_pct',''),'action_reward_r':p.get('reward_r',''),'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
 def snapshot_row(result,features,timestamp):
     ts=timestamp;provider=result['provider'];return {'id':f'{provider}_{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':provider,'price':features['price']}
