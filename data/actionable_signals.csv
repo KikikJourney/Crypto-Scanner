@@ -1,1 +1,2 @@
 id,timestamp,symbol,provider,direction,score,entry,trigger,stop,target,risk_pct,reward_r,reason
+Bitget_2026-09-17T23:05:44.669666+00:00_SKYAIUSDT_LONG_0.05235,2026-09-17T23:05:44.669666+00:00,SKYAIUSDT,Bitget,LONG,85.4,0.05235,0.05235,0.050575357143,0.055899285714,3.39,2.0,15m trigger confirmed by closed 30m structure
