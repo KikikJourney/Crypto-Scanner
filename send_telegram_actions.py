@@ -112,7 +112,11 @@ def main():
             )
             ok, detail = send_message(message, token, chat_id)
             if not ok:
-                raise RuntimeError(f"Telegram send failed for {row['id']}: {detail}")
+                print(
+                    f"TELEGRAM ERROR: {row.get('symbol','?')} {row.get('direction','?')} "
+                    f"id={row.get('id','?')} detail={detail}"
+                )
+                continue
             sent.add(row["id"])
             print(
                 f"TELEGRAM SENT: {row['symbol']} {row['direction']} "
