@@ -1,5 +1,5 @@
 import unittest
-from scalping_intelligence import aggregate, build_plan, infer_direction
+from scalping_intelligence import aggregate, build_plan, infer_direction, _timestamp
 
 
 def rows(prices, volume=100):
@@ -10,6 +10,10 @@ def rows(prices, volume=100):
 
 
 class ScalpingIntelligenceTests(unittest.TestCase):
+    def test_timestamp_parses_milliseconds(self):
+        ts = _timestamp([1758196500000])
+        self.assertIsNotNone(ts)
+
     def test_aggregate(self):
         out = aggregate(rows([100, 101, 102, 103]), 2)
         self.assertEqual(len(out), 2)
