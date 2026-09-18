@@ -1,68 +1,250 @@
-"""V2.2 Extreme Reversal production runner with isolated 15m-30m scalping execution."""
-from concurrent.futures import ThreadPoolExecutor,as_completed
-from datetime import datetime,timezone
+"""V2.2 scanner runner with a dedicated multi-timeframe scalping execution engine."""
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 import csv
 from pathlib import Path
+
 import scanner_v2 as core
-from universe_runner import active_symbols,select_scan_symbols
+from universe_runner import active_symbols, select_scan_symbols
 from extreme_market_data import build_features
-from extreme_reversal_layer import classify,append_rows,append_snapshots,evaluate_forward,signal_row,snapshot_row
+from extreme_reversal_layer import (
+    classify, append_rows, append_snapshots, evaluate_forward,
+    signal_row, snapshot_row,
+)
 from extreme_event_stats import format_summary
-from scalping_execution_layer import build_plan
-from scalping_forward_test import evaluate as evaluate_scalping,format_summary as scalping_summary
-WORKERS=8
-ACTIONABLE_FILE=Path('data/actionable_signals.csv')
-ACTIONABLE_FIELDS=['id','timestamp','symbol','provider','direction','score','entry','trigger','stop','target','risk_pct','reward_r','reason']
-def _rows(sym,provider):
-    if provider=='Bitget':return core.normalize_bitget_candles(core.bitget('/api/v2/mix/market/candles',{'symbol':sym,'productType':'USDT-FUTURES','granularity':'15m','limit':194})['data'])
-    if provider=='Bybit':return core.normalize_bybit_candles(core.bybit('/v5/market/kline',{'category':'linear','symbol':sym,'interval':'15','limit':194})['result']['list'])
-    return core.binance('/fapi/v1/klines',{'symbol':sym,'interval':'15m','limit':194})[:-1]
-def scan_one(sym,provider,btc24):
-    result=core.fetch_symbol(sym,provider,btc24);rows=_rows(sym,provider);features=build_features(rows,result['price']);result['extreme_features']=features;result['scalping_rows_15m']=rows;result['extreme']=classify(features);return result
-def _build_action_rows(extreme_results,timestamp):
-    rows=[]
-    for x in extreme_results:
-        f=x['extreme_features'];e=x['extreme'];p=build_plan(f,x['scalping_rows_15m'],e['direction'])
-        if p['status'] not in {'ACTION LONG','ACTION SHORT'}:continue
-        provider=x['provider']; rows.append({'id':f"{provider}_{timestamp}_{x['symbol']}_{e['direction']}_{p['trigger']}",'timestamp':timestamp,'symbol':x['symbol'],'provider':provider,'direction':e['direction'],'score':e['score'],'entry':p['trigger'],'trigger':p['trigger'],'stop':p['stop'],'target':p['target'],'risk_pct':p['risk_pct'],'reward_r':p['reward_r'],'reason':p['reason']})
-    return rows
+from scalping_execution_layer import build_plan as legacy_scalping_plan
+from scalping_intelligence import build_plan as mtf_scalping_plan
+from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary
+
+WORKERS = 8
+ACTIONABLE_FILE = Path("data/actionable_signals.csv")
+ACTIONABLE_FIELDS = [
+    "id", "timestamp", "symbol", "provider", "direction", "score",
+    "confidence", "entry", "entry_low", "entry_high", "trigger",
+    "stop", "target", "risk_pct", "reward_r", "valid_until",
+    "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
+    "structure_15m", "liquidity_sweep_5m", "volume_5m", "reason",
+]
+
+
+def _rows(sym, provider):
+    if provider == "Bitget":
+        raw = core.bitget(
+            "/api/v2/mix/market/candles",
+            {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "15m", "limit": 194},
+        )["data"]
+        return core.normalize_bitget_candles(raw)
+    if provider == "Bybit":
+        raw = core.bybit(
+            "/v5/market/kline",
+            {"category": "linear", "symbol": sym, "interval": "15", "limit": 194},
+        )["result"]["list"]
+        return core.normalize_bybit_candles(raw)
+    return core.binance(
+        "/fapi/v1/klines", {"symbol": sym, "interval": "15m", "limit": 194}
+    )[:-1]
+
+
+def _rows_5m(sym, provider):
+    if provider == "Bitget":
+        raw = core.bitget(
+            "/api/v2/mix/market/candles",
+            {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "5m", "limit": 194},
+        )["data"]
+        return core.normalize_bitget_candles(raw)
+    if provider == "Bybit":
+        raw = core.bybit(
+            "/v5/market/kline",
+            {"category": "linear", "symbol": sym, "interval": "5", "limit": 194},
+        )["result"]["list"]
+        return core.normalize_bybit_candles(raw)
+    return core.binance(
+        "/fapi/v1/klines", {"symbol": sym, "interval": "5m", "limit": 194}
+    )[:-1]
+
+
+def scan_one(sym, provider, btc24):
+    result = core.fetch_symbol(sym, provider, btc24)
+    rows = _rows(sym, provider)
+    features = build_features(rows, result["price"])
+    result["extreme_features"] = features
+    result["scalping_rows_15m"] = rows
+    result["extreme"] = classify(features)
+    return result
+
+
+def _mtf_action(x, timestamp):
+    extreme = x["extreme"]
+    if not extreme["status"].startswith("EXTREME REVERSAL"):
+        return None
+    rows_5m = _rows_5m(x["symbol"], x["provider"])
+    plan = mtf_scalping_plan(
+        extreme["direction"],
+        x["scalping_rows_15m"],
+        rows_5m,
+        extreme["score"],
+        x["extreme_features"],
+    )
+    if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
+        return None
+    p = plan
+    return {
+        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{p["direction"]}_{p["entry"]}',
+        "timestamp": timestamp,
+        "symbol": x["symbol"],
+        "provider": x["provider"],
+        "direction": p["direction"],
+        "score": p["v2_score"],
+        "confidence": p["confidence"],
+        "entry": p["entry"],
+        "entry_low": p["entry_low"],
+        "entry_high": p["entry_high"],
+        "trigger": p["entry"],
+        "stop": p["stop"],
+        "target": p["target"],
+        "risk_pct": p["risk_pct"],
+        "reward_r": p["reward_r"],
+        "valid_until": p["valid_until"],
+        "timeframes": p["timeframes"],
+        "rsi_5m": p["rsi_5m"],
+        "trend_4h": p["trend_4h"],
+        "trend_1h": p["trend_1h"],
+        "structure_30m": p["structure_30m"],
+        "structure_15m": p["structure_15m"],
+        "liquidity_sweep_5m": p["liquidity_sweep_5m"],
+        "volume_5m": p["volume_5m"],
+        "reason": p["reason"],
+    }
+
+
 def _write_actionable(rows):
-    ACTIONABLE_FILE.parent.mkdir(parents=True,exist_ok=True)
-    with ACTIONABLE_FILE.open('w',newline='',encoding='utf-8') as f:
-        w=csv.DictWriter(f,fieldnames=ACTIONABLE_FIELDS);w.writeheader();w.writerows(rows)
-def _print_action_candidates(extreme_results,timestamp):
-    print('ACTIONABLE SCALPING 15M-30M OUTPUT:')
+    ACTIONABLE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with ACTIONABLE_FILE.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=ACTIONABLE_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _print_action_candidates(extreme_results, timestamp):
+    print("MTF SCALPING INTELLIGENCE OUTPUT:")
     if not extreme_results:
-        print('NONE — no extreme candidate reached the V2.2 gate');_write_actionable([]);return
-    action_rows=_build_action_rows(extreme_results,timestamp)
+        print("NONE — no V2.2 extreme candidate reached the execution stage")
+        _write_actionable([])
+        return
+
+    actions = []
     for x in extreme_results[:20]:
-        f=x['extreme_features'];e=x['extreme'];p=build_plan(f,x['scalping_rows_15m'],e['direction'])
-        print(f"{x['symbol']} | {p['status']} | 15m trigger {p.get('trigger','-')} | 30m close {p.get('confirmation_close','-')} | stop {p.get('stop','-')} | target {p.get('target','-')} | risk {p.get('risk_pct','-')}% | {p.get('reason','')}")
-    _write_actionable(action_rows)
+        legacy = legacy_scalping_plan(
+            x["extreme_features"], x["scalping_rows_15m"], x["extreme"]["direction"]
+        )
+        try:
+            action = _mtf_action(x, timestamp)
+        except Exception as exc:
+            action = None
+            print(f'{x["symbol"]} | DATA-LIMITED | 5m execution data error: {exc}')
+        if action:
+            actions.append(action)
+            print(
+                f'{x["symbol"]} | ACTION {action["direction"]} | '
+                f'confidence {action["confidence"]} | entry {action["entry_low"]}-{action["entry_high"]} | '
+                f'SL {action["stop"]} | TP {action["target"]} | '
+                f'RR {action["reward_r"]} | valid {action["valid_until"]}'
+            )
+        else:
+            print(
+                f'{x["symbol"]} | NO ACTION | V2.2={x["extreme"]["score"]:.1f} | '
+                f'legacy={legacy.get("status")} | MTF filters not satisfied'
+            )
+    _write_actionable(actions)
+    print(f"Confirmed MTF scalping actions: {len(actions)}")
+
+
 def _load_forward_rows():
     from extreme_reversal_layer import EXTREME_FORWARD_FILE
-    with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:return list(csv.DictReader(f))
+    with EXTREME_FORWARD_FILE.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
 def main():
-    provider,btc24=core.discover();symbols=active_symbols(provider);scan_symbols,liquid_n,mover_n=select_scan_symbols(provider,symbols)
-    print(f'Extreme scan universe: {len(symbols)} active {provider} USDT perpetual symbols');print(f'Extreme deep scan: {len(scan_symbols)} symbols | liquidity bucket={liquid_n} | mover bucket={mover_n} | workers={WORKERS}')
-    results=[];errors=[]
-    with ThreadPoolExecutor(max_workers=min(WORKERS,len(scan_symbols))) as ex:
-        futures={ex.submit(scan_one,s,provider,btc24):s for s in scan_symbols}
+    provider, btc24 = core.discover()
+    symbols = active_symbols(provider)
+    scan_symbols, liquid_n, mover_n = select_scan_symbols(provider, symbols)
+    print(
+        f"Extreme scan universe: {len(symbols)} active {provider} USDT perpetual symbols"
+    )
+    print(
+        f"Extreme deep scan: {len(scan_symbols)} symbols | "
+        f"liquidity bucket={liquid_n} | mover bucket={mover_n} | workers={WORKERS}"
+    )
+
+    results, errors = [], []
+    with ThreadPoolExecutor(max_workers=min(WORKERS, len(scan_symbols))) as executor:
+        futures = {
+            executor.submit(scan_one, symbol, provider, btc24): symbol
+            for symbol in scan_symbols
+        }
         for future in as_completed(futures):
-            s=futures[future]
-            try:results.append(future.result())
-            except Exception as exc:errors.append((s,str(exc)))
-    results.sort(key=lambda x:(x['extreme']['score'] if x['extreme']['score'] is not None else -1),reverse=True);ts=datetime.now(timezone.utc).isoformat()
-    added=append_rows([signal_row(x,x['extreme_features'],ts,build_plan(x['extreme_features'],x['scalping_rows_15m'],x['extreme']['direction'])) for x in results]);snapshot_added=append_snapshots([snapshot_row(x,x['extreme_features'],ts) for x in results])
-    extreme=[x for x in results if x['extreme']['status'].startswith('EXTREME REVERSAL')];print('TOP EXTREME CANDIDATES:')
-    if not extreme:print('NONE — no true-extreme reversal passed the V2.2 gate')
-    for rank,x in enumerate(extreme[:20],1):
-        e=x['extreme'];f=x['extreme_features'];print(f"{rank}. {x['symbol']} | {e['status']} | score {e['score']:.1f} | 24hPos {f['h1_pos_24']:.2f} | 48hPos {f['h1_pos_48']:.2f} | lowDist {f['dist_low_atr']:.2f}ATR | highDist {f['dist_high_atr']:.2f}ATR")
-    _print_action_candidates(extreme,ts)
-    print(f'Extreme scan coverage: {len(results)}/{len(scan_symbols)}')
+            symbol = futures[future]
+            try:
+                results.append(future.result())
+            except Exception as exc:
+                errors.append((symbol, str(exc)))
+
+    results.sort(
+        key=lambda x: x["extreme"]["score"] if x["extreme"]["score"] is not None else -1,
+        reverse=True,
+    )
+    timestamp = datetime.now(timezone.utc).isoformat()
+
+    # Historical V2.2 accounting remains intact.
+    added = append_rows([
+        signal_row(
+            x,
+            x["extreme_features"],
+            timestamp,
+            legacy_scalping_plan(
+                x["extreme_features"],
+                x["scalping_rows_15m"],
+                x["extreme"]["direction"],
+            ),
+        )
+        for x in results
+    ])
+    snapshot_added = append_snapshots([
+        snapshot_row(x, x["extreme_features"], timestamp) for x in results
+    ])
+
+    extreme = [
+        x for x in results
+        if x["extreme"]["status"].startswith("EXTREME REVERSAL")
+    ]
+    print("TOP EXTREME CANDIDATES:")
+    if not extreme:
+        print("NONE — no true-extreme reversal passed the V2.2 gate")
+    for rank, x in enumerate(extreme[:20], 1):
+        e, f = x["extreme"], x["extreme_features"]
+        print(
+            f'{rank}. {x["symbol"]} | {e["status"]} | score {e["score"]:.1f} | '
+            f'24hPos {f["h1_pos_24"]:.2f} | 48hPos {f["h1_pos_48"]:.2f} | '
+            f'lowDist {f["dist_low_atr"]:.2f}ATR | highDist {f["dist_high_atr"]:.2f}ATR'
+        )
+
+    _print_action_candidates(extreme, timestamp)
+
+    print(f"Extreme scan coverage: {len(results)}/{len(scan_symbols)}")
     if errors:
-        print(f'Extreme symbol errors: {len(errors)}')
-        for s,e in errors[:10]:print(f' - {s}: {e}')
-    print(f'Extreme market snapshots added: {snapshot_added}');print(f'Extreme forward-test outcomes updated: {evaluate_forward()}');print(f'Extreme forward-test rows added: {added}');print(format_summary(_load_forward_rows()))
-    scalping=evaluate_scalping();print(scalping_summary(scalping))
-if __name__=='__main__':main()
+        print(f"Extreme symbol errors: {len(errors)}")
+        for symbol, error in errors[:10]:
+            print(f" - {symbol}: {error}")
+
+    print(f"Extreme market snapshots added: {snapshot_added}")
+    print(f"Extreme forward-test outcomes updated: {evaluate_forward()}")
+    print(f"Extreme forward-test rows added: {added}")
+    print(format_summary(_load_forward_rows()))
+
+    scalping = evaluate_scalping()
+    print(scalping_summary(scalping))
+
+
+if __name__ == "__main__":
+    main()
