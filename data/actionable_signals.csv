@@ -1,1 +1,1 @@
-id,timestamp,symbol,provider,direction,score,entry,trigger,stop,target,risk_pct,reward_r,reason
+id,timestamp,symbol,provider,direction,score,confidence,entry,entry_low,entry_high,trigger,stop,target,risk_pct,reward_r,valid_until,timeframes,rsi_5m,trend_4h,trend_1h,structure_30m,structure_15m,liquidity_sweep_5m,volume_5m,reason
