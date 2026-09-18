@@ -1,7 +1,7 @@
 import unittest
 
 from telegram_notifier import format_action
-from send_telegram_actions import _still_actionable
+from send_telegram_actions import _execution_status, _still_actionable
 
 
 class TelegramNotifierTests(unittest.TestCase):
@@ -79,6 +79,28 @@ class TelegramNotifierTests(unittest.TestCase):
         self.assertFalse(_still_actionable(row, 94))
         self.assertFalse(_still_actionable(row, 108))
         self.assertFalse(_still_actionable(row, 115))
+
+    def test_execution_status_reports_wait_when_price_is_outside_zone(self):
+        row = {
+            "direction": "LONG",
+            "entry": "105",
+            "entry_low": "104",
+            "entry_high": "107",
+            "stop": "100",
+            "target": "115",
+        }
+        self.assertEqual(_execution_status(row, 103), "WAIT — PRICE OUTSIDE ENTRY ZONE")
+
+    def test_execution_status_reports_triggered_inside_zone(self):
+        row = {
+            "direction": "LONG",
+            "entry": "105",
+            "entry_low": "104",
+            "entry_high": "107",
+            "stop": "100",
+            "target": "115",
+        }
+        self.assertEqual(_execution_status(row, 106), "TRIGGERED — PRICE IN ENTRY ZONE")
 
 
 if __name__ == "__main__":
