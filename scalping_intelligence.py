@@ -81,14 +81,21 @@ def atr(rows, period=14):
 
 def _trend_score(rows, direction):
     closes = [_close(x) for x in rows]
-    if len(closes) < 50:
+    n = len(closes)
+    if n >= 50:
+        fast_period, slow_period = 20, 50
+    elif n >= 20:
+        fast_period, slow_period = 8, 20
+    elif n >= 10:
+        fast_period, slow_period = 3, 8
+    else:
         return 0.0
-    e20, e50 = ema(closes, 20), ema(closes, 50)
-    if e20 is None or e50 is None:
+    fast, slow = ema(closes, fast_period), ema(closes, slow_period)
+    if fast is None or slow is None:
         return 0.0
     if direction == "LONG":
-        return 1.0 if e20 >= e50 and closes[-1] >= e20 else 0.0
-    return 1.0 if e20 <= e50 and closes[-1] <= e20 else 0.0
+        return 1.0 if fast >= slow and closes[-1] >= fast else 0.0
+    return 1.0 if fast <= slow and closes[-1] <= fast else 0.0
 
 
 def _structure_score(rows, direction):
