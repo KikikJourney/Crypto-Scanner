@@ -37,13 +37,56 @@ ACTIONABLE_FIELDS = [
 ]
 
 
+def _normalize_bitget_mtf_candles(raw, interval_minutes, limit=194):
+    """Normalize Bitget MTF candles to ascending, closed-only chronological order.
+
+    Bitget can return candle arrays in an order that must not be assumed by the
+    strategy. The previous implementation blindly reversed raw[1:], which is
+    only correct for a newest-first response. When the response is oldest-first,
+    that transformation makes rows[-1] approximately one full requested page
+    behind the live market (about 48h for 194 x 15m candles).
+    """
+    if not isinstance(raw, list):
+        raise RuntimeError("Bitget candle response is not a list")
+
+    def ts_ms(row):
+        try:
+            value = float(row[0])
+            return int(value if value > 10_000_000_000 else value * 1000)
+        except (TypeError, ValueError, IndexError):
+            return None
+
+    rows = [row for row in raw if isinstance(row, (list, tuple)) and len(row) >= 6]
+    rows.sort(key=lambda row: ts_ms(row) if ts_ms(row) is not None else -1)
+
+    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    interval_ms = interval_minutes * 60 * 1000
+    closed = [
+        row for row in rows
+        if ts_ms(row) is not None and ts_ms(row) + interval_ms <= now_ms
+    ]
+    if len(closed) < limit:
+        raise RuntimeError(
+            f"Bitget {interval_minutes}m candle response has only "
+            f"{len(closed)} closed candles; need {limit}"
+        )
+    return closed[-limit:]
+
+
 def _rows(sym, provider):
     if provider == "Bitget":
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
         raw = core.bitget(
             "/api/v2/mix/market/candles",
-            {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "15m", "limit": 194},
+            {
+                "symbol": sym,
+                "productType": "USDT-FUTURES",
+                "granularity": "15m",
+                "limit": 194,
+                "endTime": str(now_ms),
+            },
         )["data"]
-        return core.normalize_bitget_candles(raw)
+        return _normalize_bitget_mtf_candles(raw, 15)
     if provider == "Bybit":
         raw = core.bybit(
             "/v5/market/kline",
@@ -57,11 +100,18 @@ def _rows(sym, provider):
 
 def _rows_5m(sym, provider):
     if provider == "Bitget":
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
         raw = core.bitget(
             "/api/v2/mix/market/candles",
-            {"symbol": sym, "productType": "USDT-FUTURES", "granularity": "5m", "limit": 194},
+            {
+                "symbol": sym,
+                "productType": "USDT-FUTURES",
+                "granularity": "5m",
+                "limit": 194,
+                "endTime": str(now_ms),
+            },
         )["data"]
-        return core.normalize_bitget_candles(raw)
+        return _normalize_bitget_mtf_candles(raw, 5)
     if provider == "Bybit":
         raw = core.bybit(
             "/v5/market/kline",
