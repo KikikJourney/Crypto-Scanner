@@ -15,6 +15,7 @@ from extreme_event_stats import format_summary
 from scalping_execution_layer import build_plan as legacy_scalping_plan
 from scalping_intelligence import build_plan as mtf_scalping_plan
 from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary
+from scalping_intelligence import _timestamp as mtf_timestamp
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
@@ -79,6 +80,23 @@ def scan_one(sym, provider, btc24):
     result["extreme_features"] = features
     result["scalping_rows_15m"] = rows
     result["scalping_rows_5m"] = _rows_5m(sym, provider)
+    # Execution signals must be built from genuinely recent closed candles.
+    # A stale MTF feed can produce mathematically valid but operationally wrong prices.
+    now = datetime.now(timezone.utc)
+    for label, candle_rows, interval_minutes, max_age_minutes in (
+        ("15m", rows, 15, 30),
+        ("5m", result["scalping_rows_5m"], 5, 10),
+    ):
+        if not candle_rows:
+            raise RuntimeError(f"{label} candle feed empty")
+        last = mtf_timestamp(candle_rows[-1])
+        if last is None:
+            raise RuntimeError(f"{label} candle timestamp unavailable")
+        age = (now - last).total_seconds() / 60.0
+        if age > max_age_minutes or age < -interval_minutes:
+            raise RuntimeError(
+                f"{label} candle feed stale: latest={last.isoformat()} age={age:.1f}m"
+            )
     result["extreme"] = classify(features)
     return result
 
@@ -176,7 +194,7 @@ def _brain_action(x, timestamp):
         "target": plan["target"],
         "risk_pct": plan["risk_pct"],
         "reward_r": plan["reward_r"],
-        "valid_until": plan["valid_until"],
+        "valid_until": _issue_valid_until(timestamp),
         "timeframes": plan["timeframes"],
         "rsi_5m": plan["rsi_5m"],
         "trend_4h": plan["trend_4h"],
