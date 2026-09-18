@@ -1,6 +1,6 @@
 """V2.2 scanner runner with a dedicated multi-timeframe scalping execution engine."""
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import csv
 from pathlib import Path
 
@@ -18,6 +18,15 @@ from scalping_forward_test import evaluate as evaluate_scalping, format_summary 
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
+def _issue_valid_until(timestamp):
+    """Give each newly issued action a fresh 15-minute delivery window."""
+    try:
+        issued = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        return (issued + timedelta(minutes=15)).isoformat()
+    except ValueError:
+        return timestamp
+
+
 ACTIONABLE_FIELDS = [
     "id", "timestamp", "symbol", "provider", "direction", "score",
     "confidence", "entry", "entry_low", "entry_high", "trigger",
@@ -106,7 +115,7 @@ def _mtf_action(x, timestamp):
         "target": plan["target"],
         "risk_pct": plan["risk_pct"],
         "reward_r": plan["reward_r"],
-        "valid_until": plan["valid_until"],
+        "valid_until": _issue_valid_until(timestamp),
         "timeframes": plan["timeframes"],
         "rsi_5m": plan["rsi_5m"],
         "trend_4h": plan["trend_4h"],
