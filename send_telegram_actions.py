@@ -66,6 +66,11 @@ def _execution_status(row, live_price):
     return "WAIT — PRICE OUTSIDE ENTRY ZONE"
 
 
+def _still_actionable(row, live_price):
+    """Backward-compatible execution-window predicate used by tests."""
+    return _execution_status(row, live_price) == "TRIGGERED — PRICE IN ENTRY ZONE"
+
+
 def main():
     if not ACTIONS.exists():
         print("TELEGRAM: no actionable signal file")
