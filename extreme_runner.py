@@ -83,7 +83,7 @@ def _rows(sym, provider):
                 "symbol": sym,
                 "productType": "USDT-FUTURES",
                 "granularity": "15m",
-                "limit": 194,
+                "limit": 200,
                 "endTime": str(now_ms),
             },
         )["data"]
@@ -91,11 +91,11 @@ def _rows(sym, provider):
     if provider == "Bybit":
         raw = core.bybit(
             "/v5/market/kline",
-            {"category": "linear", "symbol": sym, "interval": "15", "limit": 194},
+            {"category": "linear", "symbol": sym, "interval": "15", "limit": 195},
         )["result"]["list"]
         return core.normalize_bybit_candles(raw)
     return core.binance(
-        "/fapi/v1/klines", {"symbol": sym, "interval": "15m", "limit": 194}
+        "/fapi/v1/klines", {"symbol": sym, "interval": "15m", "limit": 195}
     )[:-1]
 
 
@@ -116,11 +116,11 @@ def _rows_5m(sym, provider):
     if provider == "Bybit":
         raw = core.bybit(
             "/v5/market/kline",
-            {"category": "linear", "symbol": sym, "interval": "5", "limit": 194},
+            {"category": "linear", "symbol": sym, "interval": "5", "limit": 195},
         )["result"]["list"]
         return core.normalize_bybit_candles(raw)
     return core.binance(
-        "/fapi/v1/klines", {"symbol": sym, "interval": "5m", "limit": 194}
+        "/fapi/v1/klines", {"symbol": sym, "interval": "5m", "limit": 195}
     )[:-1]
 
 
