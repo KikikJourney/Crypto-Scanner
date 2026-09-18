@@ -62,6 +62,12 @@ def send_message(text, token=None, chat_id=None):
         if body.get("ok") is not True:
             return False, str(body)
         return True, "sent"
+    except urllib.error.HTTPError as exc:
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+        return False, f"HTTP {exc.code}: {body or exc.reason}"
     except Exception as exc:
         return False, str(exc)
 
