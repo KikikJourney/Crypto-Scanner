@@ -16,6 +16,7 @@ from scalping_execution_layer import build_plan as legacy_scalping_plan
 from scalping_intelligence import build_plan as mtf_scalping_plan
 from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary
 from scalping_intelligence import _timestamp as mtf_timestamp
+from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
@@ -349,6 +350,26 @@ def main():
         )
 
     _print_action_candidates(results, timestamp)
+
+    # Diagnostic-only funnel: explains exactly where scanned symbols are filtered out.
+    funnel_summary, funnel_rows = diagnose_signal_funnel(
+        results, errors, len(symbols), len(scan_symbols), provider, timestamp
+    )
+    write_signal_funnel(funnel_summary, funnel_rows)
+    print(
+        "SIGNAL FUNNEL: "
+        f"universe={funnel_summary['universe']} | "
+        f"deep_scan={funnel_summary['deep_scan']} | "
+        f"data_valid={funnel_summary['data_valid']} | "
+        f"errors={funnel_summary['data_errors']} | "
+        f"LONG={funnel_summary['direction_long']} | "
+        f"SHORT={funnel_summary['direction_short']} | "
+        f"no_direction={funnel_summary['no_direction']} | "
+        f"alignment_failed={funnel_summary['alignment_failed']} | "
+        f"confidence_failed={funnel_summary['confidence_failed']} | "
+        f"risk_failed={funnel_summary['risk_failed']} | "
+        f"actions={funnel_summary['actions']}"
+    )
 
     print(f"Extreme scan coverage: {len(results)}/{len(scan_symbols)}")
     if errors:
