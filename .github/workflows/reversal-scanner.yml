@@ -115,8 +115,14 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py tests/test_early_reversal.py tests/test_extreme_reversal.py tests/test_actionable_reversal.py tests/test_actionable_forward_test.py tests/test_actionable_confirmation_window.py tests/test_scalping_execution.py tests/test_scalping_intelligence.py tests/test_telegram_notifier.py tests/test_signal_funnel_diagnostic.py data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
-          git diff --cached --quiet || git commit -m 'feat: migrate execution to 15m-30m scalping'
+          # Only generated datasets belong in the persistence commit.
+          # Source/test files are immutable during a scan; including them here can
+          # accidentally replay an old source commit during a concurrent workflow.
+          git add data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
+          # Scheduled runs can finish against an older main revision. Rebase the
+          # generated-data commit onto the newest main and prefer this run's data
+          # when the same generated CSV changed upstream.
           git fetch origin main
-          git rebase origin/main
+          git rebase -X theirs origin/main
           git push origin HEAD:main
