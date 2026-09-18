@@ -149,7 +149,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features):
     tf30 = aggregate(rows_15m, 2)
     tf1h = aggregate(rows_15m, 4)
     tf4h = aggregate(rows_15m, 16)
-    if len(tf30) < 20 or len(tf1h) < 50 or len(tf4h) < 8:
+    if len(tf30) < 20 or len(tf1h) < 40 or len(tf4h) < 8:
         return {"status": "DATA-LIMITED", "reason": "insufficient aggregated timeframe history"}
 
     # All calculations use closed candles only. rows_5m is expected to have
