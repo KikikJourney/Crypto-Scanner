@@ -1,4 +1,4 @@
-"""Send only currently valid MTF scalping actions to Telegram."""
+"""Send fresh scalping actions to Telegram without requiring price-zone coincidence."""
 import csv
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,9 +44,11 @@ def _valid_until(row):
         return False
 
 
-def _still_actionable(row, live_price):
-    if live_price is None or not _valid_until(row):
-        return False
+def _execution_status(row, live_price):
+    if not _valid_until(row):
+        return "EXPIRED"
+    if live_price is None:
+        return "LIVE PRICE UNAVAILABLE"
     try:
         price = float(live_price)
         low = float(row.get("entry_low", row["entry"]))
@@ -54,13 +56,14 @@ def _still_actionable(row, live_price):
         stop = float(row["stop"])
         target = float(row["target"])
     except (KeyError, TypeError, ValueError):
-        return False
+        return "SIGNAL VALID / PRICE CHECK FAILED"
 
-    if row.get("direction") == "LONG":
-        return low <= price <= high and price > stop and price < target
-    if row.get("direction") == "SHORT":
-        return low <= price <= high and price < stop and price > target
-    return False
+    direction = row.get("direction")
+    if direction == "LONG" and low <= price <= high and price > stop and price < target:
+        return "TRIGGERED — PRICE IN ENTRY ZONE"
+    if direction == "SHORT" and low <= price <= high and price < stop and price > target:
+        return "TRIGGERED — PRICE IN ENTRY ZONE"
+    return "WAIT — PRICE OUTSIDE ENTRY ZONE"
 
 
 def main():
@@ -82,26 +85,33 @@ def main():
     chat_id = __import__("os").environ.get("TELEGRAM_CHAT_ID")
 
     if not pending:
-        print("TELEGRAM: no new confirmed MTF scalping actions")
+        print("TELEGRAM: no new scalping actions")
     elif not token or not chat_id:
         print(f"TELEGRAM: {len(pending)} action(s) pending; credentials not configured")
         return 0
     else:
         for row in pending:
-            live = _live_price(row)
-            if not _still_actionable(row, live):
+            if not _valid_until(row):
                 print(
                     f"TELEGRAM SKIP: {row.get('symbol','?')} {row.get('direction','?')} "
-                    f"outside entry/validity window (price={live})"
+                    "expired before delivery"
                 )
                 continue
-            ok, detail = send_message(format_action(row), token, chat_id)
+
+            live = _live_price(row)
+            status = _execution_status(row, live)
+            message = (
+                format_action(row)
+                + f"\n\nStatus now: {status}"
+                + f"\nLive price: {live if live is not None else 'N/A'}"
+            )
+            ok, detail = send_message(message, token, chat_id)
             if not ok:
                 raise RuntimeError(f"Telegram send failed for {row['id']}: {detail}")
             sent.add(row["id"])
             print(
                 f"TELEGRAM SENT: {row['symbol']} {row['direction']} "
-                f"entry={row.get('entry_low')}-{row.get('entry_high')} live={live}"
+                f"status={status} entry={row.get('entry_low')}-{row.get('entry_high')} live={live}"
             )
 
     with STATE.open("w", newline="", encoding="utf-8") as f:
