@@ -69,6 +69,7 @@ def scan_one(sym, provider, btc24):
     features = build_features(rows, result["price"])
     result["extreme_features"] = features
     result["scalping_rows_15m"] = rows
+    result["scalping_rows_5m"] = _rows_5m(sym, provider)
     result["extreme"] = classify(features)
     return result
 
@@ -77,43 +78,44 @@ def _mtf_action(x, timestamp):
     extreme = x["extreme"]
     if not extreme["status"].startswith("EXTREME REVERSAL"):
         return None
-    rows_5m = _rows_5m(x["symbol"], x["provider"])
+    rows_5m = x["scalping_rows_5m"]
     plan = mtf_scalping_plan(
         extreme["direction"],
         x["scalping_rows_15m"],
         rows_5m,
         extreme["score"],
         x["extreme_features"],
+        require_v2_direction=True,
     )
     if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
         return None
     p = plan
     return {
-        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{p["direction"]}_{p["entry"]}',
+        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
         "timestamp": timestamp,
         "symbol": x["symbol"],
         "provider": x["provider"],
-        "direction": p["direction"],
-        "score": p["v2_score"],
-        "confidence": p["confidence"],
-        "entry": p["entry"],
-        "entry_low": p["entry_low"],
-        "entry_high": p["entry_high"],
-        "trigger": p["entry"],
-        "stop": p["stop"],
-        "target": p["target"],
-        "risk_pct": p["risk_pct"],
-        "reward_r": p["reward_r"],
-        "valid_until": p["valid_until"],
-        "timeframes": p["timeframes"],
-        "rsi_5m": p["rsi_5m"],
-        "trend_4h": p["trend_4h"],
-        "trend_1h": p["trend_1h"],
-        "structure_30m": p["structure_30m"],
-        "structure_15m": p["structure_15m"],
-        "liquidity_sweep_5m": p["liquidity_sweep_5m"],
-        "volume_5m": p["volume_5m"],
-        "reason": p["reason"],
+        "direction": plan["direction"],
+        "score": plan["v2_score"],
+        "confidence": plan["confidence"],
+        "entry": plan["entry"],
+        "entry_low": plan["entry_low"],
+        "entry_high": plan["entry_high"],
+        "trigger": plan["entry"],
+        "stop": plan["stop"],
+        "target": plan["target"],
+        "risk_pct": plan["risk_pct"],
+        "reward_r": plan["reward_r"],
+        "valid_until": plan["valid_until"],
+        "timeframes": plan["timeframes"],
+        "rsi_5m": plan["rsi_5m"],
+        "trend_4h": plan["trend_4h"],
+        "trend_1h": plan["trend_1h"],
+        "structure_30m": plan["structure_30m"],
+        "structure_15m": plan["structure_15m"],
+        "liquidity_sweep_5m": plan["liquidity_sweep_5m"],
+        "volume_5m": plan["volume_5m"],
+        "reason": plan["reason"],
     }
 
 
@@ -125,39 +127,79 @@ def _write_actionable(rows):
         writer.writerows(rows)
 
 
-def _print_action_candidates(extreme_results, timestamp):
-    print("MTF SCALPING INTELLIGENCE OUTPUT:")
-    if not extreme_results:
-        print("NONE — no V2.2 extreme candidate reached the execution stage")
-        _write_actionable([])
-        return
+def _brain_action(x, timestamp):
+    rows_5m = x["scalping_rows_5m"]
+    direction = __import__("scalping_intelligence", fromlist=["infer_direction"]).infer_direction(
+        x["scalping_rows_15m"], rows_5m
+    )
+    if not direction:
+        return None
+    extreme = x["extreme"]
+    v2_bonus_score = (
+        extreme["score"]
+        if extreme["status"].startswith("EXTREME REVERSAL")
+        and extreme["direction"] == direction
+        else 0.0
+    )
+    plan = mtf_scalping_plan(
+        direction,
+        x["scalping_rows_15m"],
+        rows_5m,
+        v2_bonus_score,
+        x["extreme_features"],
+        require_v2_direction=False,
+    )
+    if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
+        return None
+    return {
+        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
+        "timestamp": timestamp,
+        "symbol": x["symbol"],
+        "provider": x["provider"],
+        "direction": plan["direction"],
+        "score": plan["v2_score"],
+        "confidence": plan["confidence"],
+        "entry": plan["entry"],
+        "entry_low": plan["entry_low"],
+        "entry_high": plan["entry_high"],
+        "trigger": plan["entry"],
+        "stop": plan["stop"],
+        "target": plan["target"],
+        "risk_pct": plan["risk_pct"],
+        "reward_r": plan["reward_r"],
+        "valid_until": plan["valid_until"],
+        "timeframes": plan["timeframes"],
+        "rsi_5m": plan["rsi_5m"],
+        "trend_4h": plan["trend_4h"],
+        "trend_1h": plan["trend_1h"],
+        "structure_30m": plan["structure_30m"],
+        "structure_15m": plan["structure_15m"],
+        "liquidity_sweep_5m": plan["liquidity_sweep_5m"],
+        "volume_5m": plan["volume_5m"],
+        "reason": plan["reason"],
+    }
 
+
+def _print_action_candidates(results, timestamp):
+    print("SCALPING BRAIN OUTPUT:")
     actions = []
-    for x in extreme_results[:20]:
-        legacy = legacy_scalping_plan(
-            x["extreme_features"], x["scalping_rows_15m"], x["extreme"]["direction"]
-        )
+    for x in results:
         try:
-            action = _mtf_action(x, timestamp)
+            action = _brain_action(x, timestamp)
         except Exception as exc:
             action = None
-            print(f'{x["symbol"]} | DATA-LIMITED | 5m execution data error: {exc}')
+            print(f'{x["symbol"]} | DATA-LIMITED | brain error: {exc}')
         if action:
             actions.append(action)
             print(
                 f'{x["symbol"]} | ACTION {action["direction"]} | '
                 f'confidence {action["confidence"]} | entry {action["entry_low"]}-{action["entry_high"]} | '
-                f'SL {action["stop"]} | TP {action["target"]} | '
-                f'RR {action["reward_r"]} | valid {action["valid_until"]}'
+                f'SL {action["stop"]} | TP {action["target"]} | RR {action["reward_r"]}'
             )
-        else:
-            print(
-                f'{x["symbol"]} | NO ACTION | V2.2={x["extreme"]["score"]:.1f} | '
-                f'legacy={legacy.get("status")} | MTF filters not satisfied'
-            )
+    actions.sort(key=lambda r: float(r["confidence"]), reverse=True)
+    actions = actions[:20]
     _write_actionable(actions)
-    print(f"Confirmed MTF scalping actions: {len(actions)}")
-
+    print(f"Confirmed MTF scalping brain actions: {len(actions)}")
 
 def _load_forward_rows():
     from extreme_reversal_layer import EXTREME_FORWARD_FILE
@@ -229,7 +271,7 @@ def main():
             f'lowDist {f["dist_low_atr"]:.2f}ATR | highDist {f["dist_high_atr"]:.2f}ATR'
         )
 
-    _print_action_candidates(extreme, timestamp)
+    _print_action_candidates(results, timestamp)
 
     print(f"Extreme scan coverage: {len(results)}/{len(scan_symbols)}")
     if errors:
