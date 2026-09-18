@@ -139,10 +139,38 @@ def _timestamp(row):
         return None
 
 
-def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features):
+def infer_direction(rows_15m, rows_5m):
+    """Infer a trade side from MTF trend/structure without requiring V2.2."""
+    if len(rows_15m) < 160 or len(rows_5m) < 60:
+        return None
+    tf1h = aggregate(rows_15m, 4)
+    tf4h = aggregate(rows_15m, 16)
+    tf30 = aggregate(rows_15m, 2)
+    if len(tf1h) < 40 or len(tf4h) < 8 or len(tf30) < 20:
+        return None
+    long_sum = sum([
+        _trend_score(tf4h, "LONG"),
+        _trend_score(tf1h, "LONG"),
+        _structure_score(tf30, "LONG"),
+        _structure_score(rows_15m, "LONG"),
+    ])
+    short_sum = sum([
+        _trend_score(tf4h, "SHORT"),
+        _trend_score(tf1h, "SHORT"),
+        _structure_score(tf30, "SHORT"),
+        _structure_score(rows_15m, "SHORT"),
+    ])
+    if long_sum >= 3.0 and long_sum > short_sum:
+        return "LONG"
+    if short_sum >= 3.0 and short_sum > long_sum:
+        return "SHORT"
+    return None
+
+
+def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_direction=True):
     """Return an execution plan only when MTF conditions support the V2.2 side."""
     if direction not in {"LONG", "SHORT"}:
-        return {"status": "NO-TRADE", "reason": "no V2.2 direction"}
+        return {"status": "NO-TRADE", "reason": "no trade direction"}
     if len(rows_15m) < 160 or len(rows_5m) < 60:
         return {"status": "DATA-LIMITED", "reason": "insufficient MTF candles"}
 
@@ -177,6 +205,15 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features):
         0.10 * volume_5 +
         0.05 * momentum_5
     )
+
+    if not require_v2_direction:
+        alignment = score_4h + score_1h + score_30 + score_15
+        if alignment < 3.0:
+            return {"status": "WAIT", "direction": direction,
+                    "confidence": round(confidence, 1),
+                    "reason": "MTF directional alignment below threshold"}
+        if _f(v2_score, 0.0) >= 80.0:
+            confidence = min(100.0, confidence + 3.0)
 
     price = _close(rows_5m[-1])
     atr15 = _f(v2_features.get("atr"))
@@ -239,5 +276,9 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features):
         "volume_5m": round(volume_5, 3),
         "valid_until": valid_until.isoformat() if valid_until else "",
         "timeframes": "4H/1H/30m/15m/5m",
-        "reason": "V2.2 extreme + MTF structure/momentum/liquidity confirmation",
+        "reason": (
+            "MTF brain + V2.2 confirmation"
+            if require_v2_direction
+            else "MTF brain: trend + structure + liquidity + volume + momentum"
+        ),
     }
