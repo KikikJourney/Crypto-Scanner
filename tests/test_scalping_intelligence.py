@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timezone
 from extreme_runner import _normalize_bitget_mtf_candles
 from scalping_intelligence import aggregate, build_plan, infer_direction, _timestamp
 
@@ -16,10 +17,13 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertIsNotNone(ts)
 
     def test_bitget_mtf_normalization_sorts_oldest_first_and_drops_open_candle(self):
-        base_ms = 1_758_196_500_000
+        interval_ms = 15 * 60 * 1000
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        current_start = (now_ms // interval_ms) * interval_ms
+        base_ms = current_start - 194 * interval_ms
         rows = []
         for i in range(194):
-            ts = base_ms + i * 15 * 60 * 1000
+            ts = base_ms + i * interval_ms
             rows.append([str(ts), "100", "101", "99", "100", "10"])
         # Simulate a response containing a newer in-progress candle.
         open_ts = base_ms + 194 * 15 * 60 * 1000
@@ -32,7 +36,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         )
         self.assertEqual(len(normalized), 194)
         self.assertEqual(int(normalized[0][0]), base_ms)
-        self.assertEqual(int(normalized[-1][0]), base_ms + 193 * 15 * 60 * 1000)
+        self.assertEqual(int(normalized[-1][0]), current_start - interval_ms)
 
     def test_aggregate(self):
         out = aggregate(rows([100, 101, 102, 103]), 2)
