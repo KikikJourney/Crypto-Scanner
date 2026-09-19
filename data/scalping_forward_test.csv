@@ -1,2 +1,1 @@
 id,timestamp,symbol,provider,direction,score,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
-Bitget_2026-09-19T04:31:20.229552+00:00_VVVUSDT_LONG_27.869,2026-09-19T04:31:20.229552+00:00,VVVUSDT,Bitget,LONG,0.0,27.869,27.828657142857,28.025714285714,0.2357,2.0,,,,

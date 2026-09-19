@@ -1,2 +1,1 @@
 id,timestamp,symbol,provider,direction,score,confidence,entry,entry_low,entry_high,trigger,stop,target,risk_pct,reward_r,valid_until,timeframes,rsi_5m,trend_4h,trend_1h,structure_30m,structure_15m,liquidity_sweep_5m,volume_5m,reason
-Bitget_2026-09-19T04:31:20.229552+00:00_VVVUSDT_LONG_27.869,2026-09-19T04:31:20.229552+00:00,VVVUSDT,Bitget,LONG,0.0,88.0,27.869,27.843657142857,27.894342857143,27.869,27.828657142857,28.025714285714,0.2357,2.0,2026-09-19T04:46:20.229552+00:00,4H/1H/30m/15m/5m,21.78,1.0,1.0,0.5,0.5,1.0,1.0,MTF brain: direction + location + reversal + execution
