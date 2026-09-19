@@ -30,10 +30,10 @@ def _issue_valid_until(timestamp):
 
 
 ACTIONABLE_FIELDS = [
-    "id", "timestamp", "symbol", "provider", "direction", "score",
-    "confidence", "entry", "entry_low", "entry_high", "trigger",
-    "stop", "target", "risk_pct", "reward_r", "valid_until",
-    "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
+    "id", "timestamp", "scan_timestamp", "symbol", "provider", "direction", "score",
+    "v2_score", "confidence", "entry", "entry_low", "entry_high", "trigger",
+    "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_15m_timestamp",
+    "data_age_seconds", "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
     "structure_15m", "liquidity_sweep_5m", "volume_5m", "reason",
 ]
 
@@ -168,13 +168,22 @@ def _mtf_action(x, timestamp):
     if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
         return None
     p = plan
+    latest5 = plan.get("latest_closed_5m_timestamp", "")
+    latest15 = plan.get("latest_closed_15m_timestamp", "")
+    data_age = ""
+    try:
+        data_age = round((datetime.fromisoformat(timestamp.replace("Z", "+00:00")) - datetime.fromisoformat(latest5.replace("Z", "+00:00"))).total_seconds(), 3)
+    except (TypeError, ValueError):
+        pass
     return {
         "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
         "timestamp": timestamp,
+        "scan_timestamp": timestamp,
         "symbol": x["symbol"],
         "provider": x["provider"],
         "direction": plan["direction"],
         "score": plan["v2_score"],
+        "v2_score": plan["v2_score"],
         "confidence": plan["confidence"],
         "entry": plan["entry"],
         "entry_low": plan["entry_low"],
@@ -185,6 +194,9 @@ def _mtf_action(x, timestamp):
         "risk_pct": plan["risk_pct"],
         "reward_r": plan["reward_r"],
         "valid_until": _issue_valid_until(timestamp),
+        "latest_closed_5m_timestamp": latest5,
+        "latest_closed_15m_timestamp": latest15,
+        "data_age_seconds": data_age,
         "timeframes": plan["timeframes"],
         "rsi_5m": plan["rsi_5m"],
         "trend_4h": plan["trend_4h"],
@@ -229,9 +241,17 @@ def _brain_action(x, timestamp):
     )
     if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
         return None
+    latest5 = plan.get("latest_closed_5m_timestamp", "")
+    latest15 = plan.get("latest_closed_15m_timestamp", "")
+    data_age = ""
+    try:
+        data_age = round((datetime.fromisoformat(timestamp.replace("Z", "+00:00")) - datetime.fromisoformat(latest5.replace("Z", "+00:00"))).total_seconds(), 3)
+    except (TypeError, ValueError):
+        pass
     return {
         "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
         "timestamp": timestamp,
+        "scan_timestamp": timestamp,
         "symbol": x["symbol"],
         "provider": x["provider"],
         "direction": plan["direction"],
