@@ -119,13 +119,31 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
 
 
 def write(summary, rows):
-    """Append one run summary and replace per-symbol detail for the latest run."""
+    """Append one run summary and replace per-symbol detail for the latest run.
+
+    Migrate legacy summary headers before appending so persisted CSVs remain
+    schema-compatible across scanner upgrades. This is data-contract handling
+    only; it does not change any signal rules.
+    """
     SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    summary_exists = SUMMARY_FILE.exists() and SUMMARY_FILE.stat().st_size > 0
+
+    existing_rows = []
+    existing_fields = []
+    if SUMMARY_FILE.exists() and SUMMARY_FILE.stat().st_size > 0:
+        with SUMMARY_FILE.open(newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            existing_fields = reader.fieldnames or []
+            existing_rows = list(reader)
+
+    if existing_fields != SUMMARY_FIELDS:
+        with SUMMARY_FILE.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=SUMMARY_FIELDS)
+            writer.writeheader()
+            for row in existing_rows:
+                writer.writerow({field: row.get(field, "") for field in SUMMARY_FIELDS})
+
     with SUMMARY_FILE.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=SUMMARY_FIELDS)
-        if not summary_exists:
-            writer.writeheader()
         writer.writerow(summary)
 
     with SYMBOL_FILE.open("w", newline="", encoding="utf-8") as f:
