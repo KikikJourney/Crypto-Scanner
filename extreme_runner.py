@@ -125,10 +125,12 @@ def _rows_5m(sym, provider):
 
 
 def scan_one(sym, provider, btc24):
+    scan_started = datetime.now(timezone.utc)
     result = core.fetch_symbol(sym, provider, btc24)
     rows = _rows(sym, provider)
     features = build_features(rows, result["price"])
     result["extreme_features"] = features
+    result["scan_timestamp"] = scan_started.isoformat()
     result["scalping_rows_15m"] = rows
     result["scalping_rows_5m"] = _rows_5m(sym, provider)
     # Execution signals must be built from genuinely recent closed candles.
@@ -153,6 +155,7 @@ def scan_one(sym, provider, btc24):
 
 
 def _mtf_action(x, timestamp):
+    timestamp = x.get("scan_timestamp", timestamp)
     extreme = x["extreme"]
     if not extreme["status"].startswith("EXTREME REVERSAL"):
         return None
@@ -220,6 +223,7 @@ def _write_actionable(rows):
 
 
 def _brain_action(x, timestamp):
+    timestamp = x.get("scan_timestamp", timestamp)
     rows_5m = x["scalping_rows_5m"]
     direction = __import__("scalping_intelligence", fromlist=["infer_direction"]).infer_direction(
         x["scalping_rows_15m"], rows_5m
