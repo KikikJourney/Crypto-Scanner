@@ -220,18 +220,36 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if not price or not atr15:
         return {"status": "DATA-LIMITED", "reason": "price/ATR unavailable"}
 
-    # Entry is a bounded execution zone around the latest 5m close.
-    # The V2.2 extreme anchor remains the stop reference.
+    # Execution geometry is deliberately independent from the V2.2 24h
+    # extreme. V2.2 remains a directional/opportunity input only.
+    # Entry: latest closed 5m close with a small micro-ATR zone.
+    # Stop: recent 5m structural swing, falling back to 15m structure.
     micro_atr = atr(rows_5m, 14) or atr15 / 3.0
     buffer = max(micro_atr * 0.20, price * 0.0003)
+    entry_low, entry_high = price - buffer, price + buffer
+
+    structure_rows_5 = rows_5m[-7:-1]
+    structure_rows_15 = rows_15m[-5:-1]
+    if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
+        return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
+
+    recent_5m_low = min(_low(x) for x in structure_rows_5)
+    recent_5m_high = max(_high(x) for x in structure_rows_5)
+    recent_15m_low = min(_low(x) for x in structure_rows_15)
+    recent_15m_high = max(_high(x) for x in structure_rows_15)
+
     if direction == "LONG":
-        entry_low, entry_high = price - buffer, price + buffer
-        stop = _f(v2_features.get("extreme_low_24")) - 0.25 * atr15
+        structural_stop = recent_5m_low
+        if structural_stop >= entry_low:
+            structural_stop = recent_15m_low
+        stop = structural_stop - 0.20 * micro_atr
         risk = entry_high - stop
         target = entry_high + 2.0 * risk
     else:
-        entry_low, entry_high = price - buffer, price + buffer
-        stop = _f(v2_features.get("extreme_high_24")) + 0.25 * atr15
+        structural_stop = recent_5m_high
+        if structural_stop <= entry_high:
+            structural_stop = recent_15m_high
+        stop = structural_stop + 0.20 * micro_atr
         risk = stop - entry_low
         target = entry_low - 2.0 * risk
 
@@ -239,14 +257,23 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         return {"status": "INVALID", "reason": "non-positive execution risk"}
 
     risk_pct = risk / price * 100.0
-    if risk_pct > 8.0 or risk_pct < 0.10:
+    max_stop_distance_pct = 2.0
+    if risk_pct > max_stop_distance_pct:
         return {
-            "status": "NO-TRADE",
-            "reason": "execution risk outside configured band",
+            "status": "WAIT",
+            "reason": "execution stop distance exceeds scalping limit",
             "confidence": round(confidence, 1),
             "risk_pct": round(risk_pct, 4),
+            "max_stop_distance_pct": max_stop_distance_pct,
         }
-
+    if risk_pct < 0.10:
+        return {
+            "status": "NO-TRADE",
+            "reason": "execution risk below configured minimum",
+            "confidence": round(confidence, 1),
+            "risk_pct": round(risk_pct, 4),
+            "max_stop_distance_pct": max_stop_distance_pct,
+        }
     # High-confidence threshold deliberately sits above the old V2.2 gate.
     if confidence < 80.0:
         status = "WAIT"
