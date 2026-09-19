@@ -142,7 +142,7 @@ jobs:
           # Only generated datasets belong in the persistence commit.
           # Source/test files are immutable during a scan; including them here can
           # accidentally replay an old source commit during a concurrent workflow.
-          git add data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           # Scheduled runs can finish against an older main revision. Rebase the
           # generated-data commit onto the newest main and prefer this run's data
