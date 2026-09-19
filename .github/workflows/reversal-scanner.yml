@@ -21,6 +21,7 @@ on:
       - 'telegram_notifier.py'
       - 'send_telegram_actions.py'
       - 'signal_funnel_diagnostic.py'
+      - 'scalping_optimizer.py'
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_early_reversal.py'
       - 'tests/test_extreme_reversal.py'
@@ -53,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
       - name: Validate Early Reversal
@@ -70,6 +71,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_scalping_execution.py' -v
       - name: Validate Scalping intelligence
         run: python -m unittest discover -s tests -p 'test_scalping_intelligence.py' -v
+      - name: Build optimization report
+        run: python scalping_optimizer.py
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -100,7 +103,7 @@ jobs:
               ids={r['event_id'] for r in actionable}; primary={r['event_id'] for r in actionable if r['event_role']=='PRIMARY'}
               assert all(r['event_id'] for r in actionable) and all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in actionable) and ids==primary
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in actionable)
-          actions=check('data/actionable_signals.csv', {'id','timestamp','scan_timestamp','symbol','provider','direction','score','v2_score','confidence','entry','entry_low','entry_high','trigger','stop','target','risk_pct','reward_r','valid_until','latest_closed_5m_timestamp','latest_closed_15m_timestamp','data_age_seconds','timeframes','reason'})
+          actions=check('data/actionable_signals.csv', {'id','timestamp','scan_timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','entry','entry_low','entry_high','trigger','stop','target','risk_pct','reward_r','valid_until','latest_closed_5m_timestamp','latest_closed_15m_timestamp','data_age_seconds','timeframes','reason'})
           assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
           assert all(0 <= float(r['confidence']) <= 100 for r in actions)
           assert all(float(r['score']) == float(r['v2_score']) for r in actions)
@@ -109,7 +112,8 @@ jobs:
           assert all(float(r['entry_low']) <= float(r['entry_high']) for r in actions)
           funnel=check('data/signal_funnel_summary.csv', {'timestamp','provider','universe','deep_scan','data_valid','data_errors','direction_long','direction_short','no_direction','alignment_failed','location_failed','reversal_failed','confidence_failed','risk_failed','actions'})
           funnel_symbols=check('data/signal_funnel_symbols.csv', {'timestamp','symbol','provider','stage','direction','confidence','alignment','reason'})
-          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120'})
+          optimization=check('data/scalping_optimization_report.csv', {'dimension','bucket','resolved','expansion','fail','ambiguous','expansion_rate','fail_rate','min_sample_for_review'})
+          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120'})
           if scalping:
               assert all(r['direction'] in {'LONG','SHORT'} for r in scalping)
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in scalping)
@@ -129,6 +133,7 @@ jobs:
             data/extreme_market_snapshots.csv
             data/extreme_reversal_forward_test.csv
             data/actionable_forward_test.csv
+            data/scalping_optimization_report.csv
 
       - name: Persist scanner and forward-test data
         run: |
