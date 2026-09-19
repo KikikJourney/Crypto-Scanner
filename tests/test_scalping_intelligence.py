@@ -76,7 +76,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
 
     def test_max_stop_distance_returns_wait(self):
         # Keep 15m price in the lower range so the location gate passes.
-        prices15 = [100.0] * 160 + [100.0 + i * 0.01 for i in range(34)]
+        prices15 = [100.0] * 194
         prices5 = [103.5 + i * 0.005 for i in range(194)]
         prices5[-7:-1] = [100, 100.2, 100.1, 100.3, 100.0, 100.2]
         plan = build_plan("LONG", prices_to_rows(prices15, 120),
