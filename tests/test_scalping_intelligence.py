@@ -65,24 +65,27 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertGreaterEqual(_location_score(rows(prices), "LONG"), 0.5)
 
     def test_reversal_detects_long_sweep(self):
-        candles = [(100, 101, 99, 100)] * 7
+        candles = [(100, 101, 99, 100)] * 8
         candles[-1] = (99.8, 100.8, 98.5, 100.5)
         self.assertEqual(_reversal_score(rows_ohlc(candles), "LONG"), 1.0)
 
     def test_reversal_detects_short_sweep(self):
-        candles = [(100, 101, 99, 100)] * 7
+        candles = [(100, 101, 99, 100)] * 8
         candles[-1] = (100.2, 101.5, 99.2, 99.5)
         self.assertEqual(_reversal_score(rows_ohlc(candles), "SHORT"), 1.0)
 
     def test_max_stop_distance_returns_wait(self):
-        prices15 = [100 + i * 0.02 for i in range(194)]
+        # Keep 15m price in the lower range so the location gate passes.
+        prices15 = [100.0] * 160 + [100.0 + i * 0.01 for i in range(34)]
         prices5 = [103.5 + i * 0.005 for i in range(194)]
         prices5[-7:-1] = [100, 100.2, 100.1, 100.3, 100.0, 100.2]
-        plan = build_plan("LONG", prices_to_rows(prices15, 120), prices_to_rows(prices5, 180),
-                          88, {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
+        plan = build_plan("LONG", prices_to_rows(prices15, 120),
+                          prices_to_rows(prices5, 180), 88,
+                          {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
         self.assertEqual(plan["status"], "WAIT")
         self.assertGreater(plan["risk_pct"], 2.0)
         self.assertEqual(plan["max_stop_distance_pct"], 2.0)
+        self.assertEqual(plan["reason"], "execution stop distance exceeds scalping limit")
 
 
 if __name__ == "__main__":
