@@ -108,7 +108,7 @@ def _rows_5m(sym, provider):
                 "symbol": sym,
                 "productType": "USDT-FUTURES",
                 "granularity": "5m",
-                "limit": 194,
+                "limit": 200,
                 "endTime": str(now_ms),
             },
         )["data"]
