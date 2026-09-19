@@ -296,6 +296,8 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "ACTION LONG" if direction == "LONG" else "ACTION SHORT")
     ts = _timestamp(rows_5m[-1])
     valid_until = ts + timedelta(minutes=15) if ts else None
+    latest_5m_ts = _timestamp(rows_5m[-1])
+    latest_15m_ts = _timestamp(rows_15m[-1])
     return {
         "status": status, "direction": direction, "confidence": round(confidence, 1),
         "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(price, 12),
@@ -308,6 +310,8 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "reversal_5m": reversal_5, "liquidity_sweep_5m": sweep_5,
         "volume_5m": round(volume_5, 3),
         "valid_until": valid_until.isoformat() if valid_until else "",
+        "latest_closed_5m_timestamp": latest_5m_ts.isoformat() if latest_5m_ts else "",
+        "latest_closed_15m_timestamp": latest_15m_ts.isoformat() if latest_15m_ts else "",
         "timeframes": "4H/1H/30m/15m/5m",
         "reason": ("MTF brain + V2.2 confirmation" if require_v2_direction
                    else "MTF brain: direction + location + reversal + execution"),
