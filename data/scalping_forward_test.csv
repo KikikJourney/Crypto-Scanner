@@ -1,2 +1,1 @@
 id,timestamp,symbol,provider,direction,score,v2_score,confidence,location_15m,reversal_5m,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
-Bitget_2026-09-19T14:45:38.078256+00:00_SYNUSDT_LONG_0.2418,2026-09-19T14:45:38.078256+00:00,SYNUSDT,Bitget,LONG,0.0,0.0,85.9,1.0,1.0,0.2418,0.240744571429,0.246177142857,0.7489,2.0,,,,

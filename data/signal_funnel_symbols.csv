@@ -1,256 +1,251 @@
 timestamp,symbol,provider,stage,direction,confidence,alignment,risk_pct,v2_score,reason
-2026-09-19T14:45:45.961709+00:00,BGBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,86.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MDBUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,85.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CKBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,85.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LQTYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,84.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LDOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,83.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CELOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,82.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,FLUIDUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,80.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ONDOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,74.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PONSUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,74.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ALLOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,74.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,TAOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,74.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,KASUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,73.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ZILUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,72.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ZAMAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,72.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,COWUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,72.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,DOODUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,71.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,IOSTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,70.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MONUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,69.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PHAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,69.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,XTZUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,69.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,JUPUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,68.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,IOTAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,66.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AVAXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,66.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,GTLBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,64.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ARUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,63.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,JTOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,62.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,IMXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,60.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BTWUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,60.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ENAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,59.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ARMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,59.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LABUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,58.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BRUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,58.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,HBARUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,58.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ARIAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,58.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AKEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,56.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,USUALUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,56.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,FIGHTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,53.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MSTUUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,51.7,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,MMTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,51.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LINKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,50.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MSTRUSDT,Bitget,NO_DIRECTION,,,,,50.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,FILUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,49.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ANTHROPICUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,48.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BTCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,48.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,KITEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,48.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,WALUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,47.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SEIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,46.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CHILLGUYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,45.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AZTECUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,44.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,USARUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,44.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MARAUSDT,Bitget,NO_DIRECTION,,,,,44.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,NEARUSDT,Bitget,NO_DIRECTION,,,,,43.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,BIOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,43.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,INJUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,42.8,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,TUTUSDT,Bitget,NO_DIRECTION,,,,,42.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ARXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,42.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,USUSDT,Bitget,NO_DIRECTION,,,,,42.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ALGOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,42.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,REZUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,41.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,TAIKOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,41.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AAOIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,41.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,DOGEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,40.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,VIRTUALUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,40.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,FWDIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,GRAMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BNBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,XRPUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SHIBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,TIAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,STXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,38.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,DYDXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,38.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,TAGUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,37.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,TRUSTUSDT,Bitget,NO_DIRECTION,,,,,37.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SNDKUSDT,Bitget,NO_DIRECTION,,,,,37.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SUIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,37.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,COINUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,36.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,VETUSDT,Bitget,NO_DIRECTION,,,,,36.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CVCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,36.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,EIGENUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,35.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CLUSDT,Bitget,NO_DIRECTION,,,,,35.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CAPUSDT,Bitget,NO_DIRECTION,,,,,35.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,C98USDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,34.8,reversal confirmation lacks supportive 5m momentum
-2026-09-19T14:45:45.961709+00:00,ARQQUSDT,Bitget,NO_DIRECTION,,,,,34.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,COTIUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,33.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BIGTIMEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,33.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,EPICUSDT,Bitget,NO_DIRECTION,,,,,33.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,NVDAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,32.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MARSCOINUSDT,Bitget,NO_DIRECTION,,,,,32.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SNXXUSDT,Bitget,NO_DIRECTION,,,,,32.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ETHUSDT,Bitget,CONFIDENCE_FAILED,LONG,62.0,0.0,0.1893,30.6,confidence below action threshold
-2026-09-19T14:45:45.961709+00:00,NAVERUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ICPUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CBRSUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,30.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AEROUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,30.3,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,RKLBUSDT,Bitget,NO_DIRECTION,,,,,30.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,COAIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ACHUSDT,Bitget,NO_DIRECTION,,,,,30.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,30.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SKYUSDT,Bitget,NO_DIRECTION,,,,,29.7,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,AVAUSDT,Bitget,NO_DIRECTION,,,,,29.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,NILUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,28.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ETCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,28.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,UBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,28.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BANKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,27.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,B2USDT,Bitget,NO_DIRECTION,,,,,27.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CATIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LITUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,XLMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,牛来USDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,26.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,HOODUSDT,Bitget,NO_DIRECTION,,,,,26.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SHEINHKDUSDT,Bitget,REVERSAL_FAILED,SHORT,0.0,0.0,,25.7,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,VSTUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,25.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,USELESSUSDT,Bitget,NO_DIRECTION,,,,,25.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CRWVUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,24.8,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,BEUSDT,Bitget,NO_DIRECTION,,,,,24.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,STRKUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,24.5,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,23.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ORDIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,23.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,OPUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,22.8,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,PENDLEUSDT,Bitget,NO_DIRECTION,,,,,22.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CRCLUSDT,Bitget,NO_DIRECTION,,,,,22.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ZKUSDT,Bitget,CONFIDENCE_FAILED,LONG,62.0,0.0,0.8787,22.3,confidence below action threshold
-2026-09-19T14:45:45.961709+00:00,DELLUSDT,Bitget,NO_DIRECTION,,,,,22.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,BNCUSDT,Bitget,NO_DIRECTION,,,,,22.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,22.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,PROMUSDT,Bitget,NO_DIRECTION,,,,,21.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,HOMEUSDT,Bitget,NO_DIRECTION,,,,,21.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,PEOPLEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,21.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ONEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,20.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,WUSDT,Bitget,NO_DIRECTION,,,,,20.6,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ZROUSDT,Bitget,CONFIDENCE_FAILED,LONG,63.1,0.0,0.3412,20.6,confidence below action threshold
-2026-09-19T14:45:45.961709+00:00,BZUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CRDOUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MAGMAUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MRNAUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,HYPEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,19.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ARPAUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,18.4,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,DASHUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,18.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,18.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CFGUSDT,Bitget,NO_DIRECTION,,,,,18.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,PENGUUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,18.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,18.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,TEMUSDT,Bitget,NO_DIRECTION,,,,,18.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ATOMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,17.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,MORPHOUSDT,Bitget,NO_DIRECTION,,,,,17.7,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ENSUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,17.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,17.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ADAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,16.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,16.7,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,METUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,16.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PLTRUSDT,Bitget,NO_DIRECTION,,,,,16.6,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SOLUSDT,Bitget,NO_DIRECTION,,,,,16.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SPCXUSDT,Bitget,NO_DIRECTION,,,,,16.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,PUMPUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,16.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BOMEUSDT,Bitget,REVERSAL_FAILED,SHORT,0.0,0.0,,16.0,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,16.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MEGAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,15.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AAVEUSDT,Bitget,NO_DIRECTION,,,,,15.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SPYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,15.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,THETAUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,15.0,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,BSBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,14.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CYSUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,NFLXUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,14.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,NOCUSDT,Bitget,NO_DIRECTION,,,,,13.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,13.6,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,13.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,POLUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,GPROUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,13.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PYTHUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SOXSUSDT,Bitget,NO_DIRECTION,,,,,13.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SOXLUSDT,Bitget,NO_DIRECTION,,,,,13.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MRVLUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,13.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PEPEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,12.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,REDUSDT,Bitget,NO_DIRECTION,,,,,12.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,FETUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,12.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BCHUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,12.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,RECALLUSDT,Bitget,NO_DIRECTION,,,,,12.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,GUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,11.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,GALAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,VVVUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.8,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,APTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,1000BONKUSDT,Bitget,NO_DIRECTION,,,,,11.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ORCLUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,11.2,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LSKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LTCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,10.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,XAGUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ALCHUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ASTERUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,WLDUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.1,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,AINUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,BEATUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,BLESSUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,EDGEUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,EGLDUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,GOOGLUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MYXUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MSFTUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,10.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PIEVERSEUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,QQQUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,RAVEUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,STGUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,XMRUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,GENIUSUSDT,Bitget,NO_DIRECTION,,,,,9.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,AMZNUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,9.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SKHYNIXUSDT,Bitget,NO_DIRECTION,,,,,9.7,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,TEAMUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,9.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,CHIPUSDT,Bitget,NO_DIRECTION,,,,,9.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,HANMIUSDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CRVUSDT,Bitget,NO_DIRECTION,,,,,9.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,AMDUSDT,Bitget,NO_DIRECTION,,,,,8.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,VELVETUSDT,Bitget,NO_DIRECTION,,,,,8.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,FUSDT,Bitget,NO_DIRECTION,,,,,8.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SYNUSDT,Bitget,ACTION,LONG,85.9,3.0,0.7489,8.7,MTF brain: direction + location + reversal + execution
-2026-09-19T14:45:45.961709+00:00,GRASSUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,8.5,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,KORUUSDT,Bitget,NO_DIRECTION,,,,,8.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,KR200USDT,Bitget,NO_DIRECTION,,,,,8.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,TSLAUSDT,Bitget,NO_DIRECTION,,,,,8.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,MUUSDT,Bitget,NO_DIRECTION,,,,,8.1,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,DRAMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,8.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ZECUSDT,Bitget,NO_DIRECTION,,,,,7.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,LITEUSDT,Bitget,NO_DIRECTION,,,,,7.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,AVGOUSDT,Bitget,NO_DIRECTION,,,,,7.4,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ACEUSDT,Bitget,NO_DIRECTION,,,,,7.2,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CAKEUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,7.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SAMSUNGEMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,7.0,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,EVAAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,6.9,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SKHYUSDT,Bitget,NO_DIRECTION,,,,,6.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,TRUMPUSDT,Bitget,NO_DIRECTION,,,,,6.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,XPLUSDT,Bitget,NO_DIRECTION,,,,,6.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ZSUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,6.4,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,PAXGUSDT,Bitget,NO_DIRECTION,,,,,5.9,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,5.8,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,AAPLUSDT,Bitget,NO_DIRECTION,,,,,5.7,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,XAUUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,5.3,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ESPUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,4.6,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,METAUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,4.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,NBISUSDT,Bitget,NO_DIRECTION,,,,,4.6,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,TBTUSDT,Bitget,NO_DIRECTION,,,,,4.6,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SAMSUNGUSDT,Bitget,NO_DIRECTION,,,,,4.3,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,ZENUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,4.1,no 5m pullback/reversal confirmation
-2026-09-19T14:45:45.961709+00:00,INTCUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,3.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,ORDERUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,3.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,SSVUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,3.6,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,XAUTUSDT,Bitget,NO_DIRECTION,,,,,3.5,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,SOFTBANKUSDT,Bitget,CONFIDENCE_FAILED,SHORT,70.0,0.0,0.1117,3.4,confidence below action threshold
-2026-09-19T14:45:45.961709+00:00,龙虾USDT,Bitget,NO_DIRECTION,,,,,3.0,MTF infer_direction returned None
-2026-09-19T14:45:45.961709+00:00,EWZUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,2.7,entry location is unfavorable for direction
-2026-09-19T14:45:45.961709+00:00,LGELECTRONICSUSDT,Bitget,NO_DIRECTION,,,,,2.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,IMXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,90.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARCUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,88.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,FLUXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,88.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,VANAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,87.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PONSUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,85.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MDBUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,84.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ONEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,84.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MARSCOINUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,82.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,JTOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,81.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,AVAXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,80.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,LABUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,79.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,FLUIDUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,76.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BGBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,76.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SOMIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,76.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BANKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,76.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BRUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,76.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,74.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,KASUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,73.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ZAMAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,72.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MSTUUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,72.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,FIGHTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,71.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,COINUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,69.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,USUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,68.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,JOEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,65.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARIAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,63.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,EPICUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,63.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,GTLBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,62.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,COWUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,62.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,TAOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,62.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MSTRUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,61.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,LDOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,61.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,FILUSDT,Bitget,NO_DIRECTION,,,,,58.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,PHAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,57.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,LQTYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,56.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,USUALUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,56.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ALGOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,56.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CKBUSDT,Bitget,NO_DIRECTION,,,,,55.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ARMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,55.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,AKEUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,54.2,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,ENAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,54.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MEGAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,52.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,GRAMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,50.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,WALUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,50.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,HBARUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,49.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MARAUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,49.3,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,SPYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,49.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,IOTAUSDT,Bitget,NO_DIRECTION,,,,,49.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,LINKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,48.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,NAVERUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,48.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MONUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,47.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,TUTUSDT,Bitget,NO_DIRECTION,,,,,46.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ONDOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,45.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ALLOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,44.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ZILUSDT,Bitget,NO_DIRECTION,,,,,43.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,REZUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,43.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,AVAUSDT,Bitget,NO_DIRECTION,,,,,43.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CHIPUSDT,Bitget,NO_DIRECTION,,,,,42.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SEIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,40.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,AAOIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,牛来USDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,39.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,NVDAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,HOODUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,39.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,VETUSDT,Bitget,NO_DIRECTION,,,,,38.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,COTIUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,38.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CLUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,37.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CHILLGUYUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,37.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,EVAAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,37.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CBRSUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,36.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,INJUSDT,Bitget,NO_DIRECTION,,,,,36.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,EULUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,36.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARUSDT,Bitget,NO_DIRECTION,,,,,35.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SANDUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,35.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BTCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,35.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,DYMUSDT,Bitget,NO_DIRECTION,,,,,34.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,JUPUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,33.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARQQUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,33.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PIEVERSEUSDT,Bitget,NO_DIRECTION,,,,,31.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,31.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,STXUSDT,Bitget,NO_DIRECTION,,,,,31.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,DYDXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARPAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BIOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,30.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,EWZUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,29.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ETHUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,29.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,29.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,TIAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,28.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BEUSDT,Bitget,REVERSAL_FAILED,SHORT,0.0,0.0,,28.3,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,RKLBUSDT,Bitget,NO_DIRECTION,,,,,27.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BNBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,27.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PEPEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,27.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,FUSDT,Bitget,NO_DIRECTION,,,,,26.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CRWVUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SUIUSDT,Bitget,NO_DIRECTION,,,,,26.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ETCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,26.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,XRPUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,26.5,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,BIGTIMEUSDT,Bitget,NO_DIRECTION,,,,,26.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MMTUSDT,Bitget,NO_DIRECTION,,,,,26.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,AEROUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,26.0,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,ICPUSDT,Bitget,NO_DIRECTION,,,,,26.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CRCLUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,25.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,DOGEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,25.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,VIRTUALUSDT,Bitget,NO_DIRECTION,,,,,25.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,WUSDT,Bitget,NO_DIRECTION,,,,,25.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,KITEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,25.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SNDKUSDT,Bitget,CONFIDENCE_FAILED,LONG,77.0,0.0,0.1496,25.5,confidence below action threshold
+2026-09-19T16:00:03.788675+00:00,BNCUSDT,Bitget,NO_DIRECTION,,,,,25.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,EIGENUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,25.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,COAIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,24.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PENDLEUSDT,Bitget,NO_DIRECTION,,,,,24.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SHIBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,24.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PUMPUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,24.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ACHUSDT,Bitget,NO_DIRECTION,,,,,24.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,LITUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,24.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MORPHOUSDT,Bitget,NO_DIRECTION,,,,,24.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,USELESSUSDT,Bitget,NO_DIRECTION,,,,,24.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SNXXUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,23.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,NILUSDT,Bitget,NO_DIRECTION,,,,,23.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BUSDT,Bitget,NO_DIRECTION,,,,,23.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CELOUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,22.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,22.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,DELLUSDT,Bitget,NO_DIRECTION,,,,,22.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,STRKUSDT,Bitget,NO_DIRECTION,,,,,22.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,NEARUSDT,Bitget,NO_DIRECTION,,,,,22.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XPLUSDT,Bitget,NO_DIRECTION,,,,,22.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,21.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,B2USDT,Bitget,NO_DIRECTION,,,,,21.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ARKUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,21.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,MRNAUSDT,Bitget,NO_DIRECTION,,,,,21.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XTZUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,21.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CRDOUSDT,Bitget,NO_DIRECTION,,,,,20.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,PROMUSDT,Bitget,NO_DIRECTION,,,,,20.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,VELVETUSDT,Bitget,NO_DIRECTION,,,,,20.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ORDIUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,20.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,20.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BZUSDT,Bitget,NO_DIRECTION,,,,,20.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MRVLUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SOLUSDT,Bitget,NO_DIRECTION,,,,,20.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CVCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,19.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,HYPEUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,19.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,19.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ZKUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,19.3,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,TEMUSDT,Bitget,NO_DIRECTION,,,,,19.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,19.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,PLTRUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,18.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,BREVUSDT,Bitget,NO_DIRECTION,,,,,18.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CAPUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,18.6,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,OPUSDT,Bitget,NO_DIRECTION,,,,,18.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ATOMUSDT,Bitget,NO_DIRECTION,,,,,18.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,VSTUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,18.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,17.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BOMEUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,17.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ROBOUSDT,Bitget,NO_DIRECTION,,,,,17.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SOXLUSDT,Bitget,NO_DIRECTION,,,,,17.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,17.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ZROUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,17.1,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,SOXSUSDT,Bitget,NO_DIRECTION,,,,,17.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,EGLDUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,16.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,16.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,DASHUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,16.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CFGUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,16.3,reversal confirmation lacks supportive 5m momentum
+2026-09-19T16:00:03.788675+00:00,BLESSUSDT,Bitget,NO_DIRECTION,,,,,16.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BSBUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,15.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,GPROUSDT,Bitget,NO_DIRECTION,,,,,15.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,METUSDT,Bitget,CONFIDENCE_FAILED,LONG,62.0,0.0,0.6044,15.7,confidence below action threshold
+2026-09-19T16:00:03.788675+00:00,XLMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,15.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ORCLUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,15.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,1000BONKUSDT,Bitget,NO_DIRECTION,,,,,15.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ADAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ENSUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ANTHROPICUSDT,Bitget,NO_DIRECTION,,,,,14.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BTWUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,14.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CAKEUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,14.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,14.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,PENGUUSDT,Bitget,NO_DIRECTION,,,,,14.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,QQQUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.2,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,LTCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,14.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,13.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CATIUSDT,Bitget,NO_DIRECTION,,,,,13.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,NOCUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.7,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SHEINHKDUSDT,Bitget,NO_DIRECTION,,,,,13.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,UBUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,13.7,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,ASTERUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.5,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,POLUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,13.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,CUSDT,Bitget,NO_DIRECTION,,,,,13.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,13.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XAGUSDT,Bitget,NO_DIRECTION,,,,,13.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,THETAUSDT,Bitget,REVERSAL_FAILED,LONG,0.0,0.0,,12.8,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,ZSUSDT,Bitget,NO_DIRECTION,,,,,12.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,NBISUSDT,Bitget,NO_DIRECTION,,,,,12.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,GRASSUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,12.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,INTCUSDT,Bitget,NO_DIRECTION,,,,,12.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XAUTUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,12.3,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,REDUSDT,Bitget,NO_DIRECTION,,,,,12.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,TEAMUSDT,Bitget,NO_DIRECTION,,,,,12.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,TBTUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,11.9,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SKYUSDT,Bitget,NO_DIRECTION,,,,,11.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,POWERUSDT,Bitget,NO_DIRECTION,,,,,11.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XAUUSDT,Bitget,NO_DIRECTION,,,,,11.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SAMSUNGEMUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,11.4,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,LSKUSDT,Bitget,NO_DIRECTION,,,,,10.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,STGUSDT,Bitget,NO_DIRECTION,,,,,10.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,APTUSDT,Bitget,NO_DIRECTION,,,,,10.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SYNUSDT,Bitget,NO_DIRECTION,,,,,10.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,XMRUSDT,Bitget,NO_DIRECTION,,,,,10.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BCHUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,GALAUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SPCXUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,10.1,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,AAVEUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,AINUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,ARXUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,BEATUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,GOOGLUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MSFTUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,PAXGUSDT,Bitget,LOCATION_FAILED,LONG,0.0,0.0,,10.0,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SKHYUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,HANMIUSDT,Bitget,NO_DIRECTION,,,,,9.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,KORUUSDT,Bitget,CONFIDENCE_FAILED,SHORT,72.0,0.0,0.2044,9.4,confidence below action threshold
+2026-09-19T16:00:03.788675+00:00,PYTHUSDT,Bitget,NO_DIRECTION,,,,,9.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,AVGOUSDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CYSUSDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,GENIUSUSDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,龙虾USDT,Bitget,NO_DIRECTION,,,,,9.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,8.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ZENUSDT,Bitget,NO_DIRECTION,,,,,8.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MAGMAUSDT,Bitget,NO_DIRECTION,,,,,8.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,NFLXUSDT,Bitget,LOCATION_FAILED,SHORT,0.0,0.0,,8.8,entry location is unfavorable for direction
+2026-09-19T16:00:03.788675+00:00,SKHYNIXUSDT,Bitget,NO_DIRECTION,,,,,8.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,LITEUSDT,Bitget,NO_DIRECTION,,,,,8.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,DRAMUSDT,Bitget,NO_DIRECTION,,,,,8.4,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,TRUMPUSDT,Bitget,NO_DIRECTION,,,,,8.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,EDGEUSDT,Bitget,NO_DIRECTION,,,,,8.0,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MUUSDT,Bitget,NO_DIRECTION,,,,,7.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,7.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CRVUSDT,Bitget,NO_DIRECTION,,,,,7.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SAMSUNGUSDT,Bitget,REVERSAL_FAILED,SHORT,0.0,0.0,,7.2,no 5m pullback/reversal confirmation
+2026-09-19T16:00:03.788675+00:00,ESPUSDT,Bitget,NO_DIRECTION,,,,,6.8,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,TSLAUSDT,Bitget,NO_DIRECTION,,,,,6.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,AMDUSDT,Bitget,NO_DIRECTION,,,,,6.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,MYXUSDT,Bitget,NO_DIRECTION,,,,,6.1,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,AAPLUSDT,Bitget,RISK_FAILED,SHORT,75.3,0.0,0.0253,5.9,execution risk below configured minimum
+2026-09-19T16:00:03.788675+00:00,METAUSDT,Bitget,NO_DIRECTION,,,,,5.6,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ACEUSDT,Bitget,NO_DIRECTION,,,,,5.5,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,ZECUSDT,Bitget,NO_DIRECTION,,,,,5.3,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,LGELECTRONICSUSDT,Bitget,NO_DIRECTION,,,,,4.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,4.7,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,KR200USDT,Bitget,NO_DIRECTION,,,,,4.2,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,2.9,MTF infer_direction returned None
+2026-09-19T16:00:03.788675+00:00,SOFTBANKUSDT,Bitget,NO_DIRECTION,,,,,2.3,MTF infer_direction returned None
