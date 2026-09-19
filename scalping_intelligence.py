@@ -292,8 +292,16 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
                 "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
                 "max_stop_distance_pct": max_stop_distance_pct}
 
-    status = "WAIT" if confidence < 80.0 else (
-        "ACTION LONG" if direction == "LONG" else "ACTION SHORT")
+    if confidence < 80.0:
+        return {
+            "status": "WAIT", "direction": direction,
+            "confidence": round(confidence, 1),
+            "v2_score": round(_f(v2_score, 0.0), 1),
+            "location_15m": location_15, "reversal_5m": reversal_5,
+            "risk_pct": round(risk_pct, 4),
+            "reason": "confidence below action threshold",
+        }
+    status = "ACTION LONG" if direction == "LONG" else "ACTION SHORT"
     ts = _timestamp(rows_5m[-1])
     valid_until = ts + timedelta(minutes=15) if ts else None
     latest_5m_ts = _timestamp(rows_5m[-1])
