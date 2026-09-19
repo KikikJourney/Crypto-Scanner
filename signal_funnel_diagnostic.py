@@ -15,8 +15,8 @@ SYMBOL_FILE = Path("data/signal_funnel_symbols.csv")
 SUMMARY_FIELDS = [
     "timestamp", "provider", "universe", "deep_scan", "data_valid",
     "data_errors", "direction_long", "direction_short", "no_direction",
-    "alignment_failed", "confidence_failed", "risk_failed",
-    "plan_data_failed", "invalid", "actions", "v2_extreme_reversals",
+    "alignment_failed", "location_failed", "reversal_failed",
+    "confidence_failed", "risk_failed", "plan_data_failed", "invalid", "actions", "v2_extreme_reversals",
 ]
 
 SYMBOL_FIELDS = [
@@ -67,6 +67,12 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         if status in {"ACTION LONG", "ACTION SHORT"}:
             stage = "ACTION"
             counts["actions"] += 1
+        elif status == "WAIT" and "location" in reason:
+            stage = "LOCATION_FAILED"
+            counts["location_failed"] += 1
+        elif status == "WAIT" and "reversal" in reason:
+            stage = "REVERSAL_FAILED"
+            counts["reversal_failed"] += 1
         elif status == "WAIT" and "alignment" in reason:
             stage = "ALIGNMENT_FAILED"
             counts["alignment_failed"] += 1
@@ -101,6 +107,8 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         "direction_short": counts["direction_short"],
         "no_direction": counts["no_direction"],
         "alignment_failed": counts["alignment_failed"],
+        "location_failed": counts["location_failed"],
+        "reversal_failed": counts["reversal_failed"],
         "confidence_failed": counts["confidence_failed"],
         "risk_failed": counts["risk_failed"],
         "plan_data_failed": counts["plan_data_failed"],
