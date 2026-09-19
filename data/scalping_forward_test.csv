@@ -1,2 +1,1 @@
 id,timestamp,symbol,provider,direction,score,v2_score,confidence,location_15m,reversal_5m,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
-Bitget_2026-09-19T09:27:13.236826+00:00_ARXUSDT_LONG_0.19065,2026-09-19T09:27:13.236826+00:00,ARXUSDT,Bitget,LONG,0.0,0.0,90.0,1.0,1.0,0.19065,0.189732714286,0.193706428571,0.6948,2.0,,,,
