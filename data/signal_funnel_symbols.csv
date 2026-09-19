@@ -1,1 +1,245 @@
 timestamp,symbol,provider,stage,direction,confidence,alignment,risk_pct,v2_score,reason
+2026-09-19T01:14:42.464880+00:00,ARXUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,13.4038,91.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MORPHOUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,15.3969,88.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,SOMIUSDT,Bitget,RISK_FAILED,LONG,67.2,0.0,14.1252,88.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MSTUUSDT,Bitget,RISK_FAILED,LONG,75.0,0.0,25.6208,86.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,哈基米USDT,Bitget,RISK_FAILED,LONG,72.5,0.0,14.1825,86.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TREEUSDT,Bitget,RISK_FAILED,LONG,90.0,0.0,10.5703,86.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,BABAUSDT,Bitget,NO_DIRECTION,,,,,85.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ASTERUSDT,Bitget,WAIT,LONG,57.5,3.0,5.4383,85.3,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,CRCLUSDT,Bitget,RISK_FAILED,LONG,90.0,0.0,8.9746,82.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,NIGHTUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,11.3398,80.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MSTRUSDT,Bitget,RISK_FAILED,LONG,80.0,0.0,14.8945,80.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,HOODUSDT,Bitget,RISK_FAILED,LONG,80.0,0.0,9.3637,80.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,CRDOUSDT,Bitget,WAIT,LONG,75.0,4.0,6.1978,80.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,METUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,14.5315,79.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,BOMEUSDT,Bitget,WAIT,LONG,72.5,3.0,6.9143,79.0,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SNXXUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,19.3069,75.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MUUSDT,Bitget,WAIT,LONG,57.5,3.0,4.1581,74.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ENSUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,9.7878,74.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,SNDKUSDT,Bitget,NO_DIRECTION,,,,,74.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SKYUSDT,Bitget,RISK_FAILED,LONG,58.5,0.0,17.4155,74.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MARAUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,12.6152,74.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ZECUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,10.6902,73.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MUUUSDT,Bitget,WAIT,LONG,57.5,3.0,7.9432,73.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,NVDAUSDT,Bitget,WAIT,LONG,57.5,3.0,1.9609,72.7,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,AVAXUSDT,Bitget,RISK_FAILED,LONG,82.7,0.0,8.8593,72.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,CONLUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,20.6215,72.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,HYPEUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,8.326,72.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,NILUSDT,Bitget,RISK_FAILED,LONG,75.0,0.0,10.7425,70.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,COINUSDT,Bitget,RISK_FAILED,LONG,84.7,0.0,11.6932,70.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,KASUSDT,Bitget,RISK_FAILED,LONG,62.4,0.0,10.9783,69.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,牛来USDT,Bitget,RISK_FAILED,LONG,75.3,0.0,18.6927,68.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,SOLUSDT,Bitget,RISK_FAILED,LONG,83.5,0.0,11.0648,68.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ARMUSDT,Bitget,NO_DIRECTION,,,,,67.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,FLUIDUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,14.6164,67.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,QQQUSDT,Bitget,WAIT,LONG,62.5,3.0,1.0675,67.1,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,USELESSUSDT,Bitget,RISK_FAILED,LONG,78.9,0.0,22.1763,67.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,XTZUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,14.8662,66.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,BTCUSDT,Bitget,ACTION,LONG,84.9,4.0,6.2463,66.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ARUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,27.47,65.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,LINKUSDT,Bitget,WAIT,LONG,67.5,3.0,7.851,65.7,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ETCUSDT,Bitget,RISK_FAILED,LONG,82.5,0.0,8.9636,65.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,BEUSDT,Bitget,RISK_FAILED,SHORT,57.5,0.0,8.4957,65.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,KIOXIAUSDT,Bitget,RISK_FAILED,LONG,57.7,0.0,9.6805,63.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AKEUSDT,Bitget,RISK_FAILED,LONG,60.2,0.0,56.56,63.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ADAUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,10.2761,61.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,THETAUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,11.4626,60.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,COHRUSDT,Bitget,NO_DIRECTION,,,,,60.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,STRKUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,35.0541,60.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,DRAMUSDT,Bitget,NO_DIRECTION,,,,,60.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,MMTUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,12.8895,60.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,NEARUSDT,Bitget,RISK_FAILED,LONG,67.0,0.0,17.5572,59.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ZAMAUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,21.1575,56.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AMDUSDT,Bitget,WAIT,LONG,57.5,3.0,3.0608,56.1,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SOXSUSDT,Bitget,NO_DIRECTION,,,,,54.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SYNUSDT,Bitget,RISK_FAILED,LONG,62.8,0.0,30.6748,54.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,DELLUSDT,Bitget,WAIT,SHORT,57.5,3.0,4.9682,53.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,GPROUSDT,Bitget,WAIT,SHORT,57.5,3.0,5.5346,53.6,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ATHUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,13.225,52.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MINAUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,13.2985,52.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TIAUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,12.2919,51.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,RKLBUSDT,Bitget,WAIT,SHORT,57.5,3.0,7.6744,51.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,BTWUSDT,Bitget,RISK_FAILED,SHORT,57.5,0.0,15.1862,51.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MAGMAUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,30.0376,51.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,FWDIUSDT,Bitget,RISK_FAILED,LONG,69.0,0.0,19.9276,51.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,WIFUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,12.6069,50.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,XRPUSDT,Bitget,RISK_FAILED,LONG,72.9,0.0,8.2205,49.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,COPPERUSDT,Bitget,NO_DIRECTION,,,,,49.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,18.0204,48.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ZKUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,15.6863,47.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,JUPUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,11.9159,47.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,SOXLUSDT,Bitget,NO_DIRECTION,,,,,46.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ALGOUSDT,Bitget,RISK_FAILED,LONG,68.7,0.0,8.3035,46.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TUTUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,9.5927,46.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,APTUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,19.3108,45.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ENAUSDT,Bitget,RISK_FAILED,LONG,85.0,0.0,11.026,45.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,STXUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,11.7894,45.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AVAUSDT,Bitget,RISK_FAILED,SHORT,80.0,0.0,25.2833,45.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,PYTHUSDT,Bitget,NO_DIRECTION,,,,,44.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,DOGEUSDT,Bitget,WAIT,LONG,72.5,3.0,7.0874,44.5,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,LITUSDT,Bitget,RISK_FAILED,SHORT,80.0,0.0,9.6818,44.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ETHUSDT,Bitget,WAIT,LONG,75.6,3.5,6.8613,44.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,TQQQUSDT,Bitget,WAIT,LONG,57.5,3.0,2.8391,44.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SENTUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,11.9148,44.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ONDOUSDT,Bitget,WAIT,LONG,65.9,3.0,6.239,43.7,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,VIRTUALUSDT,Bitget,ACTION,LONG,82.5,3.0,7.5879,43.7,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,BMNRUSDT,Bitget,WAIT,LONG,57.5,3.0,7.9302,43.6,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,RENDERUSDT,Bitget,WAIT,LONG,62.5,3.0,5.8502,43.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,EIGENUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,14.7232,42.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TAOUSDT,Bitget,WAIT,LONG,72.5,3.0,7.8675,42.5,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,REZUSDT,Bitget,NO_DIRECTION,,,,,42.3,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CYSUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,8.8478,42.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AMZNUSDT,Bitget,WAIT,LONG,57.5,3.0,1.8029,41.5,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,HBARUSDT,Bitget,WAIT,LONG,57.5,3.0,6.0983,41.0,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,XPLUSDT,Bitget,WAIT,LONG,57.5,3.0,7.7546,40.9,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,1000BONKUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,10.4422,40.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MINIMAXUSDT,Bitget,NO_DIRECTION,,,,,40.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,WLFIUSDT,Bitget,WAIT,LONG,62.5,3.0,2.9066,40.3,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,LTCUSDT,Bitget,WAIT,LONG,67.5,3.0,7.1418,40.1,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ICPUSDT,Bitget,WAIT,LONG,57.5,3.0,7.8315,39.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ROBOUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,13.4115,39.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MINIMAXHKDUSDT,Bitget,NO_DIRECTION,,,,,38.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ZENUSDT,Bitget,NO_DIRECTION,,,,,38.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SKHYNIXUSDT,Bitget,WAIT,LONG,67.5,3.0,2.7833,37.7,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,FILUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,11.8209,37.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,INJUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,16.7021,37.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MEGAUSDT,Bitget,RISK_FAILED,LONG,66.3,0.0,14.3879,37.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,GALAUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,8.744,37.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,EPICUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,15.5702,36.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ATOMUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,8.9514,36.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,OPUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,14.5561,36.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,RAVEUSDT,Bitget,NO_DIRECTION,,,,,35.3,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SEIUSDT,Bitget,NO_DIRECTION,,,,,35.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SHIBUSDT,Bitget,NO_DIRECTION,,,,,35.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,XLMUSDT,Bitget,WAIT,LONG,63.9,3.0,5.9599,34.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,PLTRUSDT,Bitget,NO_DIRECTION,,,,,34.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SUIUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,9.1444,33.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AAVEUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,9.6945,33.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,FARTCOINUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,10.0403,33.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,VVVUSDT,Bitget,NO_DIRECTION,,,,,33.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BNBUSDT,Bitget,NO_DIRECTION,,,,,33.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ORDIUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,8.222,33.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,GWEIUSDT,Bitget,RISK_FAILED,LONG,61.9,0.0,11.495,31.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,WDCUSDT,Bitget,WAIT,LONG,77.5,3.0,4.9724,31.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,PEPEUSDT,Bitget,NO_DIRECTION,,,,,30.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,IDOLUSDT,Bitget,NO_DIRECTION,,,,,30.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AAOIUSDT,Bitget,NO_DIRECTION,,,,,30.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,LDOUSDT,Bitget,NO_DIRECTION,,,,,29.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,PENGUUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,8.3373,29.7,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,BCHUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,8.8401,29.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,DASHUSDT,Bitget,NO_DIRECTION,,,,,29.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,PONSUSDT,Bitget,NO_DIRECTION,,,,,28.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BNCUSDT,Bitget,RISK_FAILED,LONG,80.0,0.0,12.8724,26.2,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,NAVERUSDT,Bitget,WAIT,SHORT,64.7,3.0,2.3898,26.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,VELVETUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,9.939,26.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,PIEVERSEUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,29.4767,25.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,PIUSDT,Bitget,WAIT,LONG,72.5,3.0,4.251,25.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,METAUSDT,Bitget,NO_DIRECTION,,,,,25.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CHIPUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,14.1203,25.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,COTIUSDT,Bitget,RISK_FAILED,SHORT,62.5,0.0,20.577,25.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,CAKEUSDT,Bitget,NO_DIRECTION,,,,,25.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SAMSUNGUSDT,Bitget,NO_DIRECTION,,,,,24.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CPUSDT,Bitget,RISK_FAILED,LONG,72.5,0.0,8.3177,24.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ALCHUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,16.7292,23.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,AVGOUSDT,Bitget,WAIT,LONG,57.5,3.0,3.0484,22.5,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,PANWUSDT,Bitget,WAIT,SHORT,67.5,3.5,4.1827,22.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,UBUSDT,Bitget,NO_DIRECTION,,,,,21.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,POLUSDT,Bitget,NO_DIRECTION,,,,,21.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AUSDT,Bitget,NO_DIRECTION,,,,,21.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AEROUSDT,Bitget,NO_DIRECTION,,,,,21.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AINUSDT,Bitget,NO_DIRECTION,,,,,21.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,FUSDT,Bitget,RISK_FAILED,LONG,67.5,0.0,38.1924,21.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,SUSHIUSDT,Bitget,NO_DIRECTION,,,,,20.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SKYAIUSDT,Bitget,WAIT,SHORT,57.5,3.0,4.5354,20.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,BGBUSDT,Bitget,NO_DIRECTION,,,,,20.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ORDERUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,13.3695,20.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,DYDXUSDT,Bitget,NO_DIRECTION,,,,,19.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,DRIFTUSDT,Bitget,WAIT,LONG,57.5,3.0,6.1251,19.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,EVAAUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,23.8734,19.1,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,CRVUSDT,Bitget,NO_DIRECTION,,,,,19.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,19.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BRUSDT,Bitget,NO_DIRECTION,,,,,18.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BILLUSDT,Bitget,WAIT,LONG,57.5,3.0,2.1385,17.9,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SKHYUSDT,Bitget,NO_DIRECTION,,,,,17.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BEATUSDT,Bitget,NO_DIRECTION,,,,,17.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,17.7,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,17.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,XAUTUSDT,Bitget,NO_DIRECTION,,,,,17.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AZTECUSDT,Bitget,RISK_FAILED,LONG,62.5,0.0,15.2205,17.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,CLUSDT,Bitget,NO_DIRECTION,,,,,17.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,GOOGLUSDT,Bitget,NO_DIRECTION,,,,,17.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,PROMUSDT,Bitget,RISK_FAILED,SHORT,72.5,0.0,11.892,17.0,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,17.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AXSUSDT,Bitget,WAIT,LONG,67.5,3.0,4.9951,16.9,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,XAUUSDT,Bitget,NO_DIRECTION,,,,,16.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,NBISUSDT,Bitget,WAIT,LONG,57.5,3.0,5.4507,16.1,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SOFTBANKUSDT,Bitget,NO_DIRECTION,,,,,16.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,UNITREEUSDT,Bitget,NO_DIRECTION,,,,,16.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CVCUSDT,Bitget,NO_DIRECTION,,,,,15.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,XMRUSDT,Bitget,RISK_FAILED,LONG,65.1,0.0,10.4219,15.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MARSCOINUSDT,Bitget,RISK_FAILED,LONG,80.0,0.0,10.208,15.5,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TEMUSDT,Bitget,NO_DIRECTION,,,,,15.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,15.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,MSFTUSDT,Bitget,WAIT,SHORT,57.5,3.0,1.2415,15.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ONEUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,31.886,14.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,MRNAUSDT,Bitget,WAIT,SHORT,57.5,3.0,5.6955,14.3,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SHEINHKDUSDT,Bitget,NO_DIRECTION,,,,,14.3,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,STGUSDT,Bitget,NO_DIRECTION,,,,,14.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ORCLUSDT,Bitget,NO_DIRECTION,,,,,14.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,UAIUSDT,Bitget,NO_DIRECTION,,,,,13.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CUSDT,Bitget,RISK_FAILED,LONG,60.7,0.0,17.4908,13.8,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,13.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,13.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SPYUSDT,Bitget,WAIT,LONG,62.5,3.0,0.6747,13.6,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,LITEUSDT,Bitget,NO_DIRECTION,,,,,13.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AAPLUSDT,Bitget,WAIT,SHORT,57.5,3.0,1.2729,13.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,GTLBUSDT,Bitget,NO_DIRECTION,,,,,13.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,LABUSDT,Bitget,WAIT,LONG,57.5,3.0,5.6767,13.0,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,REDUSDT,Bitget,NO_DIRECTION,,,,,13.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,13.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SPCXUSDT,Bitget,NO_DIRECTION,,,,,13.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BANKUSDT,Bitget,WAIT,LONG,57.5,3.0,5.1535,12.6,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,LPTUSDT,Bitget,NO_DIRECTION,,,,,12.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,PAXGUSDT,Bitget,NO_DIRECTION,,,,,12.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,TSLAUSDT,Bitget,NO_DIRECTION,,,,,12.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,XAGUSDT,Bitget,NO_DIRECTION,,,,,11.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,11.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,DOTUSDT,Bitget,WAIT,LONG,57.5,3.0,4.112,11.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,CRWVUSDT,Bitget,NO_DIRECTION,,,,,11.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,GRAMUSDT,Bitget,NO_DIRECTION,,,,,11.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,EWYUSDT,Bitget,WAIT,LONG,67.5,3.0,1.3812,11.0,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,TRXUSDT,Bitget,NO_DIRECTION,,,,,10.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,OPENAIUSDT,Bitget,WAIT,LONG,57.5,3.0,1.0367,10.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,SAMSUNGEMUSDT,Bitget,WAIT,LONG,57.5,3.0,5.6984,10.6,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,GENIUSUSDT,Bitget,RISK_FAILED,SHORT,61.9,0.0,17.3893,10.3,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ZSUSDT,Bitget,NO_DIRECTION,,,,,10.2,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,BZUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,KORUUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,PUMPUSDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,龙虾USDT,Bitget,NO_DIRECTION,,,,,10.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,AXTIUSDT,Bitget,WAIT,LONG,57.5,3.0,5.0474,9.8,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,PENDLEUSDT,Bitget,NO_DIRECTION,,,,,9.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,CBRSUSDT,Bitget,NO_DIRECTION,,,,,9.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,LSKUSDT,Bitget,RISK_FAILED,SHORT,62.5,0.0,24.4874,9.4,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ENSOUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,16.9379,8.9,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,TRUMPUSDT,Bitget,NO_DIRECTION,,,,,8.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,SUPERUSDT,Bitget,RISK_FAILED,LONG,57.5,0.0,12.8691,8.6,execution risk outside configured band
+2026-09-19T01:14:42.464880+00:00,ZHIPUHKDUSDT,Bitget,NO_DIRECTION,,,,,8.6,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,MYXUSDT,Bitget,NO_DIRECTION,,,,,8.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,TEAMUSDT,Bitget,WAIT,SHORT,57.5,3.0,1.8188,8.4,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,ZROUSDT,Bitget,WAIT,LONG,62.5,3.0,7.1218,8.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,JTOUSDT,Bitget,NO_DIRECTION,,,,,8.1,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,USARUSDT,Bitget,NO_DIRECTION,,,,,8.0,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ANTHROPICUSDT,Bitget,NO_DIRECTION,,,,,7.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,ZHIPUUSDT,Bitget,NO_DIRECTION,,,,,7.8,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,7.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,MRVLUSDT,Bitget,WAIT,LONG,57.5,3.0,2.8919,7.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,MVLLUSDT,Bitget,WAIT,LONG,57.5,3.0,5.6545,7.1,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,LGELECTRONICSUSDT,Bitget,WAIT,SHORT,62.5,3.0,3.4513,7.0,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,6.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,GLWUSDT,Bitget,NO_DIRECTION,,,,,6.5,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,INTCUSDT,Bitget,NO_DIRECTION,,,,,6.4,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,NFLXUSDT,Bitget,WAIT,SHORT,57.5,3.0,5.2927,6.2,MTF brain: trend + structure + liquidity + volume + momentum
+2026-09-19T01:14:42.464880+00:00,MUBARAKUSDT,Bitget,NO_DIRECTION,,,,,5.9,MTF infer_direction returned None
+2026-09-19T01:14:42.464880+00:00,HANMIUSDT,Bitget,WAIT,LONG,57.5,3.0,2.6744,2.7,MTF brain: trend + structure + liquidity + volume + momentum
