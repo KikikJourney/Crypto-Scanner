@@ -1,2 +1,1 @@
 id,timestamp,symbol,provider,direction,score,v2_score,confidence,location_15m,reversal_5m,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
-Bitget_2026-09-19T19:06:29.967464+00:00_EULUSDT_LONG_1.439,2026-09-19T19:06:29.967464+00:00,EULUSDT,Bitget,LONG,0.0,0.0,80.0,0.5,1.0,1.439,1.437442857143,1.443785714286,0.1469,2.0,,,,
