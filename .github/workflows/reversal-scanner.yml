@@ -1,5 +1,5 @@
 name: Zorathvael Dynamic Futures Scanner
-# CI gate: scalping intelligence tests must pass before live scan/persistence. Risk fixture aligned with location gate.
+# CI gate: scalping intelligence tests must pass before live scan/persistence. Risk fixture aligned with location and reversal gates.
 
 on:
   push:
