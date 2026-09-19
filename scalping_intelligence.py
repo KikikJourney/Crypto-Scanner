@@ -227,6 +227,14 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         return {"status": "WAIT", "direction": direction, "confidence": 0.0,
                 "location_15m": location_15, "reversal_5m": reversal_5,
                 "reason": "no 5m pullback/reversal confirmation"}
+    # A generic recovery candle is not enough when momentum is already
+    # stretched against the intended entry. Require either a true sweep
+    # (reversal_5 == 1.0) or supportive RSI for a half-score recovery.
+    if reversal_5 < 1.0 and momentum_5 == 0.0:
+        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                "location_15m": location_15, "reversal_5m": reversal_5,
+                "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
+                "reason": "reversal confirmation lacks supportive 5m momentum"}
 
     confidence = 100.0 * (
         0.15 * score_4h + 0.15 * score_1h + 0.10 * score_30 + 0.10 * score_15 +
