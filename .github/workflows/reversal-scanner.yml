@@ -1,4 +1,5 @@
 name: Zorathvael Dynamic Futures Scanner
+# CI gate: scalping intelligence tests must pass before live scan/persistence.
 
 on:
   push:
