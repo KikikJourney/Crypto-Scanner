@@ -31,7 +31,7 @@ def _issue_valid_until(timestamp):
 
 ACTIONABLE_FIELDS = [
     "id", "timestamp", "scan_timestamp", "symbol", "provider", "direction", "score",
-    "v2_score", "confidence", "entry", "entry_low", "entry_high", "trigger",
+    "v2_score", "confidence", "location_15m", "reversal_5m", "entry", "entry_low", "entry_high", "trigger",
     "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_15m_timestamp",
     "data_age_seconds", "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
     "structure_15m", "liquidity_sweep_5m", "volume_5m", "reason",
@@ -185,6 +185,8 @@ def _mtf_action(x, timestamp):
         "score": plan["v2_score"],
         "v2_score": plan["v2_score"],
         "confidence": plan["confidence"],
+        "location_15m": plan["location_15m"],
+        "reversal_5m": plan["reversal_5m"],
         "entry": plan["entry"],
         "entry_low": plan["entry_low"],
         "entry_high": plan["entry_high"],
@@ -257,6 +259,8 @@ def _brain_action(x, timestamp):
         "direction": plan["direction"],
         "score": plan["v2_score"],
         "confidence": plan["confidence"],
+        "location_15m": plan["location_15m"],
+        "reversal_5m": plan["reversal_5m"],
         "entry": plan["entry"],
         "entry_low": plan["entry_low"],
         "entry_high": plan["entry_high"],
