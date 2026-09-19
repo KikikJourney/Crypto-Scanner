@@ -79,8 +79,12 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         prices15 = [100.0] * 194
         prices5 = [103.5 + i * 0.005 for i in range(194)]
         prices5[-7:-1] = [100, 100.2, 100.1, 100.3, 100.0, 100.2]
-        plan = build_plan("LONG", prices_to_rows(prices15, 120),
-                          prices_to_rows(prices5, 180), 88,
+        execution_rows = prices_to_rows(prices5, 180)
+        # Last candle is a valid bullish recovery; structural stop remains far
+        # enough away to exercise the >2% risk gate.
+        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "103.0", "105.0", "180"]
+        plan = build_plan("LONG", prices15 and prices_to_rows(prices15, 120),
+                          execution_rows, 88,
                           {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
         self.assertEqual(plan["status"], "WAIT")
         self.assertGreater(plan["risk_pct"], 2.0)
