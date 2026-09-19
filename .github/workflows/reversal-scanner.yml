@@ -100,11 +100,14 @@ jobs:
               ids={r['event_id'] for r in actionable}; primary={r['event_id'] for r in actionable if r['event_role']=='PRIMARY'}
               assert all(r['event_id'] for r in actionable) and all(r['event_role'] in {'PRIMARY','DUPLICATE'} for r in actionable) and ids==primary
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in actionable)
-          actions=check('data/actionable_signals.csv', {'id','timestamp','symbol','provider','direction','score','confidence','entry','entry_low','entry_high','trigger','stop','target','risk_pct','reward_r','valid_until','timeframes','reason'})
+          actions=check('data/actionable_signals.csv', {'id','timestamp','scan_timestamp','symbol','provider','direction','score','v2_score','confidence','entry','entry_low','entry_high','trigger','stop','target','risk_pct','reward_r','valid_until','latest_closed_5m_timestamp','latest_closed_15m_timestamp','data_age_seconds','timeframes','reason'})
           assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
           assert all(0 <= float(r['confidence']) <= 100 for r in actions)
+          assert all(float(r['score']) == float(r['v2_score']) for r in actions)
+          assert all(float(r['data_age_seconds']) >= 0 and float(r['data_age_seconds']) <= 900 for r in actions)
+          assert all(r['latest_closed_5m_timestamp'] and r['latest_closed_15m_timestamp'] for r in actions)
           assert all(float(r['entry_low']) <= float(r['entry_high']) for r in actions)
-          funnel=check('data/signal_funnel_summary.csv', {'timestamp','provider','universe','deep_scan','data_valid','data_errors','direction_long','direction_short','no_direction','alignment_failed','confidence_failed','risk_failed','actions'})
+          funnel=check('data/signal_funnel_summary.csv', {'timestamp','provider','universe','deep_scan','data_valid','data_errors','direction_long','direction_short','no_direction','alignment_failed','location_failed','reversal_failed','confidence_failed','risk_failed','actions'})
           funnel_symbols=check('data/signal_funnel_symbols.csv', {'timestamp','symbol','provider','stage','direction','confidence','alignment','reason'})
           scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120'})
           if scalping:
@@ -112,6 +115,21 @@ jobs:
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in scalping)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
+      - name: Archive exact run datasets
+        uses: actions/upload-artifact@v4
+        with:
+          name: scanner-run-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            data/actionable_signals.csv
+            data/signal_funnel_summary.csv
+            data/signal_funnel_symbols.csv
+            data/scalping_forward_test.csv
+            data/extreme_market_snapshots.csv
+            data/extreme_reversal_forward_test.csv
+            data/actionable_forward_test.csv
+
       - name: Persist scanner and forward-test data
         run: |
           git config user.name 'github-actions[bot]'
