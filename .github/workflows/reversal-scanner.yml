@@ -17,6 +17,7 @@ on:
       - 'actionable_forward_test.py'
       - 'scalping_execution_layer.py'
       - 'scalping_intelligence.py'
+      - 'early_reversal_engine.py'
       - 'scalping_forward_test.py'
       - 'telegram_notifier.py'
       - 'send_telegram_actions.py'
@@ -72,6 +73,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_scalping_execution.py' -v
       - name: Validate Scalping intelligence
         run: python -m unittest discover -s tests -p 'test_scalping_intelligence.py' -v
+      - name: Validate Early Reversal Engine
+        run: python -m unittest discover -s tests -p 'test_early_reversal_engine.py' -v
       - name: Build optimization report
         run: python scalping_optimizer.py
       - name: Validate Scalping Optimizer
@@ -114,10 +117,11 @@ jobs:
               assert all(float(r['data_age_seconds']) >= 0 and float(r['data_age_seconds']) <= 900 for r in actions)
               assert all(r['latest_closed_5m_timestamp'] and r['latest_closed_15m_timestamp'] for r in actions)
               assert all(float(r['entry_low']) <= float(r['entry_high']) for r in actions)
+              assert all(0.0 <= float(r['early_reversal_score']) <= 1.0 for r in actions)
           funnel=check('data/signal_funnel_summary.csv', {'timestamp','provider','universe','deep_scan','data_valid','data_errors','direction_long','direction_short','no_direction','alignment_failed','location_failed','reversal_failed','confidence_failed','risk_failed','actions'})
           funnel_symbols=check('data/signal_funnel_symbols.csv', {'timestamp','symbol','provider','stage','direction','confidence','alignment','reason'})
           optimization=check('data/scalping_optimization_report.csv', {'dimension','bucket','resolved','expansion','fail','ambiguous','expansion_rate','fail_rate','min_sample_for_review'})
-          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120'})
+          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m','reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120'})
           if scalping:
               assert all(r['direction'] in {'LONG','SHORT'} for r in scalping)
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in scalping)
