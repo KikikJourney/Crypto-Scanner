@@ -175,9 +175,12 @@ def archive_pending_action_candles(fetch_rows, now=None, lookback_minutes=960, p
                 continue
             try:
                 opened = _ts(str(candle[0]))
-                closed = opened + timedelta(minutes=5)
-            except (TypeError, ValueError):
-                continue
+            except ValueError:
+                try:
+                    opened = datetime.fromtimestamp(float(candle[0]) / 1000, tz=now.tzinfo)
+                except (TypeError, ValueError):
+                    continue
+            closed = opened + timedelta(minutes=5)
             if start < closed <= min(end, now):
                 selected.append(candle)
         results.append({
