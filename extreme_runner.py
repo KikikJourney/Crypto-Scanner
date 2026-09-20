@@ -225,9 +225,10 @@ def _write_actionable(rows):
 def _brain_action(x, timestamp):
     timestamp = x.get("scan_timestamp", timestamp)
     rows_5m = x["scalping_rows_5m"]
-    direction = __import__("scalping_intelligence", fromlist=["infer_direction"]).infer_direction(
-        x["scalping_rows_15m"], rows_5m
-    )
+    # Primary execution path: detect the reversal while price is still near
+    # the extreme/base. Do not require the preceding trend to have already
+    # flipped; that would systematically make the scanner late.
+    direction = infer_early_reversal_direction(x["scalping_rows_15m"], rows_5m)
     if not direction:
         return None
     extreme = x["extreme"]
@@ -244,6 +245,7 @@ def _brain_action(x, timestamp):
         v2_bonus_score,
         x["extreme_features"],
         require_v2_direction=False,
+        early_reversal=True,
     )
     if plan["status"] not in {"ACTION LONG", "ACTION SHORT"}:
         return None
