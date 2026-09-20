@@ -47,7 +47,7 @@ class EarlyReversalTests(unittest.TestCase):
         self.assertEqual(infer_direction(*self._short_fixture()), "SHORT")
 
     def test_no_reversal_does_not_trigger(self):
-        prices15 = [100 + i * 0.5 for i in range(32)]
+        prices15 = [100 + i * 0.5 for i in range(40)]
         candles5 = [(115, 116, 114, 115)] * 20
         setup = evaluate_setup(rows(prices15), rows_ohlc(candles5), "LONG")
         self.assertFalse(setup["eligible"])
