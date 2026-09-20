@@ -93,7 +93,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_recovery_only_cannot_be_action(self):
         prices15 = [100.0] * 194
         prices15[-32:] = [100.0 - i * 0.05 for i in range(31)] + [98.4]
-        candles = [(98.2, 99.0, 98.0, 98.6)] * 7 + [(98.5, 99.8, 98.4, 99.7)]
+        candles = [(98.2, 99.0, 98.0, 98.6)] * 59 + [(98.5, 99.8, 98.4, 99.7)]
         execution = rows_ohlc(candles, 180)
         plan = build_plan("LONG", prices_to_rows(prices15, 120), execution, 88,
                           {"extreme_low_24": 90, "extreme_high_24": 110, "atr": 1.0})
@@ -104,7 +104,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_structure_target_must_support_two_r(self):
         prices15 = [100.0] * 194
         prices15[-32:] = [100.0 - i * 0.10 for i in range(31)] + [96.5]
-        candles = [(96.0, 96.8, 95.5, 96.2)] * 7 + [(96.1, 97.2, 95.8, 97.0)]
+        candles = [(96.0, 96.8, 95.5, 96.2)] * 59 + [(96.1, 97.2, 95.8, 97.0)]
         execution = rows_ohlc(candles, 180)
         plan = build_plan("LONG", prices_to_rows(prices15, 120), execution, 88,
                           {"extreme_low_24": 90, "extreme_high_24": 100, "atr": 1.0})
@@ -116,7 +116,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_max_stop_distance_returns_wait(self):
         # Isolate the stop-distance gate: preferred LONG location + true sweep.
         prices15 = [100.0] * 194
-        prices15[-32:] = [100.0 + i * 0.005 for i in range(31)] + [99.0]
+        prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [120.0, 99.0]
         execution_rows = prices_to_rows([103.5] * 194, 180)
         execution_rows[-7:-1] = [
             [execution_rows[-7][0], "100", "101", "99", "100", "180"],
