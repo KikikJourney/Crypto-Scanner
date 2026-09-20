@@ -18,6 +18,13 @@ def candle(ts, high, low):
 
 
 class ScalpingForwardTest(unittest.TestCase):
+    def test_archive_actions_deduplicates_same_setup_within_window(self):
+        first = action("2026-09-20T10:00:00+00:00")
+        duplicate = action("2026-09-20T10:10:00+00:00")
+        with mock.patch.object(ft, "_migrate_history"),              mock.patch.object(ft, "_load", return_value=[first]):
+            self.assertEqual(ft.archive_actions([duplicate]), 0)
+
+
     def test_pending_action_refresh_selects_recent_symbols(self):
         actions = [action("2026-09-20T10:00:00+00:00")]
         calls = []
