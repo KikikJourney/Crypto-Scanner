@@ -12,7 +12,7 @@ ACTION_FILE = Path('data/actionable_signals.csv')
 SNAPSHOT_FILE = Path('data/extreme_market_snapshots.csv')
 OUTPUT_FILE = Path('data/scalping_forward_test.csv')
 HORIZONS_MINUTES = (15, 30, 60, 120)
-FIELDS = ['id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120']
+FIELDS = ['id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m','reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120']
 
 
 def _ts(value): return datetime.fromisoformat(str(value).replace('Z', '+00:00'))
