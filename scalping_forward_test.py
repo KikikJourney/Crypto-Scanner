@@ -230,7 +230,7 @@ def evaluate(actions=None, market_rows=None):
                     if first_touch is None:
                         first_touch = outcome
                         first_touch_ts = _candle_close_timestamp(candle).isoformat()
-                        row['resolved_horizon'] = key
+                        row['resolved_horizon'] = str(horizon)
                         row['outcome_r'] = (
                             '2.0' if outcome == 'EXPANSION'
                             else '-1.0' if outcome == 'FAIL'
