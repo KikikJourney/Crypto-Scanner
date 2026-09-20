@@ -1,1 +1,1 @@
-id,timestamp,symbol,provider,direction,score,v2_score,confidence,location_15m,reversal_5m,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
+id,timestamp,symbol,provider,direction,score,v2_score,confidence,location_15m,reversal_5m,exhaustion_15m,base_15m,structure_shift_5m,reversal_trigger_5m,early_reversal_score,entry,stop,target,risk_pct,reward_r,h15,h30,h60,h120
