@@ -100,7 +100,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
             "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
             "stage": stage, "direction": direction, "confidence": confidence,
             "alignment": round(alignment, 3), "risk_pct": risk_pct,
-            "v2_score": extreme.get("score", ""),
+            "v2_score": v2_score,
             "location_15m": plan.get("location_15m", ""),
             "exhaustion_15m": plan.get("exhaustion_15m", ""),
             "base_15m": plan.get("base_15m", ""),
