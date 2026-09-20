@@ -137,13 +137,13 @@ def archive_market_candles(results, per_symbol=8):
     return len(fresh)
 
 
-def archive_pending_action_candles(fetch_rows, now=None, per_symbol=32):
-    """Fetch a fresh 5m window for recent executable actions even if they left the deep scan."""
+def archive_pending_action_candles(fetch_rows, now=None, lookback_minutes=960, per_symbol=32):
+    """Backfill recent action windows from the provider even when symbols leave the deep scan."""
     _migrate_history()
     now = now or datetime.now().astimezone()
     actions = _load(ACTION_HISTORY_FILE)
-    cutoff = now - timedelta(minutes=135)
-    symbols = {}
+    cutoff = now - timedelta(minutes=lookback_minutes)
+    windows = {}
     for action in actions:
         if action.get('direction') not in {'LONG', 'SHORT'}:
             continue
@@ -152,22 +152,39 @@ def archive_pending_action_candles(fetch_rows, now=None, per_symbol=32):
         except (TypeError, ValueError):
             continue
         if cutoff <= ts <= now:
-            symbols[(action.get('provider', ''), action.get('symbol', ''))] = True
+            key = (action.get('provider', ''), action.get('symbol', ''))
+            if key[0] and key[1]:
+                start = ts
+                end = ts + timedelta(minutes=max(HORIZONS_MINUTES))
+                current = windows.get(key)
+                windows[key] = (
+                    min(current[0], start) if current else start,
+                    max(current[1], end) if current else end,
+                )
 
     results = []
-    for provider, symbol in sorted(symbols):
-        if not provider or not symbol:
-            continue
+    for (provider, symbol), (start, end) in sorted(windows.items()):
         try:
             rows = fetch_rows(symbol, provider) or []
         except Exception as exc:
             print(f'Forward-test market refresh failed: {provider} {symbol}: {exc}')
             continue
+        selected = []
+        for candle in rows:
+            if len(candle) < 6:
+                continue
+            try:
+                opened = _ts(str(candle[0]))
+                closed = opened + timedelta(minutes=5)
+            except (TypeError, ValueError):
+                continue
+            if start < closed <= min(end, now):
+                selected.append(candle)
         results.append({
             'symbol': symbol,
             'provider': provider,
             'scan_timestamp': now.isoformat(),
-            'scalping_rows_5m': rows[-per_symbol:],
+            'scalping_rows_5m': selected[-per_symbol:],
         })
     return archive_market_candles(results, per_symbol=per_symbol)
 
