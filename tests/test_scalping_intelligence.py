@@ -64,6 +64,23 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         prices = [100 + i * 0.05 for i in range(31)] + [100.2]
         self.assertGreaterEqual(_location_score(rows(prices), "LONG"), 0.5)
 
+    def test_midrange_location_cannot_be_action(self):
+        prices15 = [100.0] * 194
+        prices5 = [100.0] * 194
+        # Put the latest 15m close around the middle of a defined range.
+        for i in range(32):
+            prices15[-32 + i] = 90.0 + i * (20.0 / 31.0)
+        prices15[-1] = 100.0
+        execution_rows = prices_to_rows(prices5, 180)
+        # Valid bullish recovery candle; location gate should stop promotion first.
+        execution_rows[-2] = [execution_rows[-2][0], "99", "100", "98", "99", "180"]
+        execution_rows[-1] = [execution_rows[-1][0], "99", "101", "99", "100.5", "180"]
+        plan = build_plan("LONG", prices_to_rows(prices15, 120),
+                          execution_rows, 90,
+                          {"extreme_low_24": 80, "extreme_high_24": 120, "atr": 1.0})
+        self.assertEqual(plan["status"], "WAIT")
+        self.assertIn("mid-range", plan["reason"])
+
     def test_reversal_detects_long_sweep(self):
         candles = [(100, 101, 99, 100)] * 8
         candles[-1] = (99.8, 100.8, 98.5, 100.5)
