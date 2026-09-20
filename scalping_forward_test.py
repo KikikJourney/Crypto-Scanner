@@ -137,6 +137,40 @@ def archive_market_candles(results, per_symbol=8):
     return len(fresh)
 
 
+def archive_pending_action_candles(fetch_rows, now=None, per_symbol=32):
+    """Fetch a fresh 5m window for recent executable actions even if they left the deep scan."""
+    _migrate_history()
+    now = now or datetime.now().astimezone()
+    actions = _load(ACTION_HISTORY_FILE)
+    cutoff = now - timedelta(minutes=135)
+    symbols = {}
+    for action in actions:
+        if action.get('direction') not in {'LONG', 'SHORT'}:
+            continue
+        try:
+            ts = _ts(action['timestamp'])
+        except (TypeError, ValueError):
+            continue
+        if cutoff <= ts <= now:
+            symbols[(action.get('provider', ''), action.get('symbol', ''))] = True
+
+    results = []
+    for provider, symbol in sorted(symbols):
+        if not provider or not symbol:
+            continue
+        try:
+            rows = fetch_rows(symbol, provider) or []
+        except Exception as exc:
+            print(f'Forward-test market refresh failed: {provider} {symbol}: {exc}')
+            continue
+        results.append({
+            'symbol': symbol,
+            'provider': provider,
+            'scan_timestamp': now.isoformat(),
+            'scalping_rows_5m': rows[-per_symbol:],
+        })
+    return archive_market_candles(results, per_symbol=per_symbol)
+
 def _first_touch(direction, high, low, stop, target):
     high, low, stop, target = map(_f, (high, low, stop, target))
     if None in (high, low, stop, target):
