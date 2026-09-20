@@ -18,14 +18,14 @@ FIELDS = [
     'location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m',
     'reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct',
     'reward_r','h15','h30','h60','h120',
-    'first_touch','first_touch_timestamp','mfe_pct','mae_pct',
+    'first_touch','first_touch_timestamp','resolved_horizon','outcome_r','mfe_pct','mae_pct',
 ]
 ACTION_HISTORY_FIELDS = [
     'id','timestamp','symbol','provider','direction','score','v2_score','confidence',
     'location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m',
     'reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r',
 ]
-MARKET_FIELDS = ['id','timestamp','symbol','provider','open','high','low','close']
+MARKET_FIELDS = ['id','timestamp','close_timestamp','symbol','provider','open','high','low','close']
 FORWARD_ACTION_FIELDS = FIELDS
 
 
@@ -88,7 +88,17 @@ def archive_market_candles(results, per_symbol=8):
     if not MARKET_FILE.exists():
         _write_rows(MARKET_FILE, MARKET_FIELDS, [])
     existing_rows = _load(MARKET_FILE)
-    existing = {r.get('id') for r in existing_rows}
+    migrated = []
+    for r in existing_rows:
+        if not r.get('close_timestamp') and r.get('timestamp'):
+            try:
+                r['close_timestamp'] = (_ts(r['timestamp']) + timedelta(minutes=5)).isoformat()
+            except ValueError:
+                r['close_timestamp'] = ''
+        migrated.append({k: r.get(k, '') for k in MARKET_FIELDS})
+    if migrated:
+        _write_rows(MARKET_FILE, MARKET_FIELDS, migrated)
+    existing = {r.get('id') for r in migrated}
     fresh = []
     for result in results:
         rows = result.get('scalping_rows_5m') or []
@@ -108,9 +118,11 @@ def archive_market_candles(results, per_symbol=8):
             row_id = f'{provider}_{symbol}_{ts_iso}'
             if row_id in existing:
                 continue
+            close_ts = (_ts(ts_iso) + timedelta(minutes=5)).isoformat()
             fresh.append({
                 'id': row_id,
                 'timestamp': ts_iso,
+                'close_timestamp': close_ts,
                 'symbol': symbol,
                 'provider': provider,
                 'open': candle[1],
@@ -147,7 +159,8 @@ def _market_slice(action, market_rows, horizon):
         row for row in market_rows
         if row.get('provider') == action.get('provider')
         and row.get('symbol') == action.get('symbol')
-        and ts < _ts(row['timestamp']) <= deadline
+        and row.get('close_timestamp')
+        and ts < _ts(row['close_timestamp']) <= deadline
     ]
 
 
@@ -182,6 +195,8 @@ def evaluate(actions=None, market_rows=None):
         if action.get('direction') not in {'LONG', 'SHORT'}:
             continue
         row = {k: action.get(k, '') for k in FIELDS}
+        row['resolved_horizon'] = ''
+        row['outcome_r'] = ''
         first_touch = None
         first_touch_ts = ''
         all_future = [
@@ -208,7 +223,13 @@ def evaluate(actions=None, market_rows=None):
                     row[key] = outcome
                     if first_touch is None:
                         first_touch = outcome
-                        first_touch_ts = candle['timestamp']
+                        first_touch_ts = candle.get('close_timestamp', candle['timestamp'])
+                        row['resolved_horizon'] = key
+                        row['outcome_r'] = (
+                            '2.0' if outcome == 'EXPANSION'
+                            else '-1.0' if outcome == 'FAIL'
+                            else ''
+                        )
                     break
         if first_touch is not None:
             row['first_touch'] = first_touch
@@ -229,6 +250,10 @@ def summarize(rows=None):
         'expansion': first_touch.count('EXPANSION'),
         'fail': first_touch.count('FAIL'),
         'ambiguous': first_touch.count('AMBIGUOUS'),
+        'net_r': sum(
+            2.0 if x == 'EXPANSION' else -1.0 if x == 'FAIL' else 0.0
+            for x in first_touch
+        ),
     }
 
 
@@ -237,5 +262,5 @@ def format_summary(rows=None):
     return (
         f"Scalping forward-test: {s['actions']} actions / {s['resolved']} resolved / "
         f"{s['unresolved']} unresolved | EXPANSION={s['expansion']}, "
-        f"FAIL={s['fail']}, AMBIGUOUS={s['ambiguous']}"
+        f"FAIL={s['fail']}, AMBIGUOUS={s['ambiguous']} | NET_R={s['net_r']:.2f}"
     )
