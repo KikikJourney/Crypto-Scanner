@@ -1,5 +1,4 @@
 import unittest
-from scalping_intelligence import _reversal_score
 from early_reversal_engine import evaluate_setup, infer_direction
 
 
