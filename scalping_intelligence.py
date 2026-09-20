@@ -254,11 +254,11 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             return {"status": "WAIT", "direction": direction, "confidence": 0.0,
                     "location_15m": location_15, "reversal_5m": reversal_5,
                     "reason": "no 5m pullback/reversal confirmation"}
-        if reversal_5 < 1.0 and momentum_5 == 0.0:
+        if reversal_5 < 1.0:
             return {"status": "WAIT", "direction": direction, "confidence": 0.0,
                     "location_15m": location_15, "reversal_5m": reversal_5,
                     "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
-                    "reason": "reversal confirmation lacks supportive 5m momentum"}
+                    "reason": "reversal confirmation is not a true sweep/rejection"}
 
         confidence = 100.0 * (
             0.15 * score_4h + 0.15 * score_1h + 0.10 * score_30 + 0.10 * score_15 +
@@ -311,6 +311,42 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
 
+    # TP is a market-structure objective, not a fixed 2R number.
+    # For a reversal, the first meaningful opposing liquidity/swing is the
+    # natural destination. Require that objective to offer at least 2R;
+    # otherwise WAIT instead of forcing an artificially close target.
+    opposing_high = max(_high(x) for x in rows_15m[-32:])
+    opposing_low = min(_low(x) for x in rows_15m[-32:])
+    if direction == "LONG":
+        structural_target = opposing_high
+        min_target = entry_high + 2.0 * risk
+        if structural_target < min_target:
+            return {
+                "status": "WAIT", "direction": direction,
+                "confidence": round(confidence, 1),
+                "location_15m": location_15, "reversal_5m": reversal_5,
+                "risk_pct": round(risk / price * 100.0, 4),
+                "reason": "opposing 15m liquidity target is too close for minimum 2R",
+            }
+        target = structural_target
+    else:
+        structural_target = opposing_low
+        min_target = entry_low - 2.0 * risk
+        if structural_target > min_target:
+            return {
+                "status": "WAIT", "direction": direction,
+                "confidence": round(confidence, 1),
+                "location_15m": location_15, "reversal_5m": reversal_5,
+                "risk_pct": round(risk / price * 100.0, 4),
+                "reason": "opposing 15m liquidity target is too close for minimum 2R",
+            }
+        target = structural_target
+
+    reward_r = (
+        (target - entry_high) / risk
+        if direction == "LONG"
+        else (entry_low - target) / risk
+    )
     risk_pct = risk / price * 100.0
     max_stop_distance_pct = 2.0
     if risk_pct > max_stop_distance_pct:
@@ -343,7 +379,8 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(price, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
-        "risk_pct": round(risk_pct, 4), "reward_r": 2.0,
+        "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
+        "target_structure": round(structural_target, 12),
         "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
         "trend_4h": score_4h, "trend_1h": score_1h, "structure_30m": score_30,
         "structure_15m": score_15, "location_15m": location_15,

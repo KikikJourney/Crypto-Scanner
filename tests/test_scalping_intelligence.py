@@ -89,6 +89,30 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         candles[-1] = (100.2, 101.5, 99.2, 99.5)
         self.assertEqual(_reversal_score(rows_ohlc(candles), "SHORT"), 1.0)
 
+
+    def test_recovery_only_cannot_be_action(self):
+        prices15 = [100.0] * 194
+        prices15[-32:] = [100.0 - i * 0.05 for i in range(31)] + [98.4]
+        candles = [(98.2, 99.0, 98.0, 98.6)] * 7 + [(98.5, 99.8, 98.4, 99.7)]
+        execution = rows_ohlc(candles, 180)
+        plan = build_plan("LONG", prices_to_rows(prices15, 120), execution, 88,
+                          {"extreme_low_24": 90, "extreme_high_24": 110, "atr": 1.0})
+        self.assertEqual(plan["status"], "WAIT")
+        self.assertEqual(plan["reversal_5m"], 0.5)
+        self.assertIn("true sweep", plan["reason"])
+
+    def test_structure_target_must_support_two_r(self):
+        prices15 = [100.0] * 194
+        prices15[-32:] = [100.0 - i * 0.10 for i in range(31)] + [96.5]
+        candles = [(96.0, 96.8, 95.5, 96.2)] * 7 + [(96.1, 97.2, 95.8, 97.0)]
+        execution = rows_ohlc(candles, 180)
+        plan = build_plan("LONG", prices_to_rows(prices15, 120), execution, 88,
+                          {"extreme_low_24": 90, "extreme_high_24": 100, "atr": 1.0})
+        self.assertIn(plan["status"], {"WAIT", "ACTION LONG"})
+        if plan["status"] == "ACTION LONG":
+            self.assertGreaterEqual(plan["reward_r"], 2.0)
+            self.assertGreaterEqual(plan["target"], plan["target_structure"])
+
     def test_max_stop_distance_returns_wait(self):
         # Isolate the stop-distance gate: preferred LONG location + true sweep.
         prices15 = [100.0] * 194
