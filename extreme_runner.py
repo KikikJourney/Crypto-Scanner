@@ -14,7 +14,7 @@ from extreme_reversal_layer import (
 from extreme_event_stats import format_summary
 from scalping_execution_layer import build_plan as legacy_scalping_plan
 from scalping_intelligence import build_plan as mtf_scalping_plan
-from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary, archive_actions as archive_scalping_actions, archive_market_candles as archive_scalping_market
+from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary, archive_actions as archive_scalping_actions, archive_market_candles as archive_scalping_market, archive_pending_action_candles
 from scalping_intelligence import _timestamp as mtf_timestamp
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
@@ -400,8 +400,10 @@ def main():
     scalping_actions = _print_action_candidates(results, timestamp)
     archived_actions = archive_scalping_actions(scalping_actions)
     archived_candles = archive_scalping_market(results)
+    refreshed_pending = archive_pending_action_candles(_rows_5m)
     print(f"Scalping action history added: {archived_actions}")
     print(f"Scalping 5m candles archived: {archived_candles}")
+    print(f"Pending-action 5m candles refreshed: {refreshed_pending}")
 
     # Diagnostic-only funnel: explains exactly where scanned symbols are filtered out.
     funnel_summary, funnel_rows = diagnose_signal_funnel(
