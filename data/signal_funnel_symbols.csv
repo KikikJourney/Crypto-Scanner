@@ -1,244 +1,245 @@
 timestamp,symbol,provider,stage,direction,confidence,alignment,risk_pct,v2_score,location_15m,exhaustion_15m,base_15m,structure_shift_5m,reversal_trigger_5m,early_reversal_score,reason
-2026-09-20T19:19:19.540685+00:00,FFUSDT,Bitget,NO_DIRECTION,,,,,83.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AMDUSDT,Bitget,NO_DIRECTION,,,,,78.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,UBUSDT,Bitget,NO_DIRECTION,,,,,77.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,77.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,FLOCKUSDT,Bitget,NO_DIRECTION,,,,,76.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,USELESSUSDT,Bitget,NO_DIRECTION,,,,,74.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,72.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ARCUSDT,Bitget,NO_DIRECTION,,,,,71.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CLUSDT,Bitget,NO_DIRECTION,,,,,65.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GRTUSDT,Bitget,NO_DIRECTION,,,,,65.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HUSDT,Bitget,NO_DIRECTION,,,,,63.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CFXUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.7503,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,ANTHROPICUSDT,Bitget,NO_DIRECTION,,,,,62.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,60.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CETUSUSDT,Bitget,NO_DIRECTION,,,,,58.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,STGUSDT,Bitget,NO_DIRECTION,,,,,57.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SPCXUSDT,Bitget,NO_DIRECTION,,,,,57.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CAKEUSDT,Bitget,NO_DIRECTION,,,,,56.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AVAXUSDT,Bitget,NO_DIRECTION,,,,,56.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,NILUSDT,Bitget,NO_DIRECTION,,,,,56.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZROUSDT,Bitget,NO_DIRECTION,,,,,56.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MARSCOINUSDT,Bitget,NO_DIRECTION,,,,,54.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,53.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,KMNOUSDT,Bitget,NO_DIRECTION,,,,,52.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PIEVERSEUSDT,Bitget,CONFIDENCE_FAILED,LONG,68.8,0.0,0.9494,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,ENAUSDT,Bitget,NO_DIRECTION,,,,,51.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SPKUSDT,Bitget,NO_DIRECTION,,,,,51.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XMRUSDT,Bitget,NO_DIRECTION,,,,,50.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CFGUSDT,Bitget,WAIT,SHORT,81.2,0.0,2.0926,0.0,1.0,,,,,,execution stop distance exceeds scalping limit
-2026-09-20T19:19:19.540685+00:00,REZUSDT,Bitget,NO_DIRECTION,,,,,48.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,INTWUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.1262,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,BGBUSDT,Bitget,NO_DIRECTION,,,,,47.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,STRKUSDT,Bitget,NO_DIRECTION,,,,,47.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HANMIUSDT,Bitget,NO_DIRECTION,,,,,43.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MORPHOUSDT,Bitget,ACTION,SHORT,81.2,1.0,1.5062,0.0,1.0,1.0,1.0,0.0,0.75,0.8125,EARLY REVERSAL: extreme location + exhaustion + base + trigger
-2026-09-20T19:19:19.540685+00:00,MANTAUSDT,Bitget,NO_DIRECTION,,,,,42.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,41.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BZUSDT,Bitget,NO_DIRECTION,,,,,40.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,INTCUSDT,Bitget,NO_DIRECTION,,,,,40.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CLANKERUSDT,Bitget,WAIT,SHORT,80.0,0.0,5.0915,0.0,1.0,,,,,,execution stop distance exceeds scalping limit
-2026-09-20T19:19:19.540685+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,38.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,VIRTUALUSDT,Bitget,NO_DIRECTION,,,,,37.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HYPEUSDT,Bitget,NO_DIRECTION,,,,,37.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ALGOUSDT,Bitget,NO_DIRECTION,,,,,36.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,FUSDT,Bitget,NO_DIRECTION,,,,,35.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MINIMAXUSDT,Bitget,NO_DIRECTION,,,,,35.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,POWERUSDT,Bitget,NO_DIRECTION,,,,,34.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,USTCUSDT,Bitget,NO_DIRECTION,,,,,34.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BNBUSDT,Bitget,NO_DIRECTION,,,,,34.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZECUSDT,Bitget,NO_DIRECTION,,,,,33.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GUNUSDT,Bitget,NO_DIRECTION,,,,,33.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CRVUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.7192,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,HUMAUSDT,Bitget,NO_DIRECTION,,,,,33.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PROSUSDT,Bitget,NO_DIRECTION,,,,,31.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BLESSUSDT,Bitget,NO_DIRECTION,,,,,31.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CVCUSDT,Bitget,NO_DIRECTION,,,,,31.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZILUSDT,Bitget,NO_DIRECTION,,,,,31.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,NEARUSDT,Bitget,NO_DIRECTION,,,,,30.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GRASSUSDT,Bitget,NO_DIRECTION,,,,,30.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,29.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LUNAUSDT,Bitget,NO_DIRECTION,,,,,29.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MYXUSDT,Bitget,NO_DIRECTION,,,,,29.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CAPUSDT,Bitget,NO_DIRECTION,,,,,29.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,EPICUSDT,Bitget,NO_DIRECTION,,,,,28.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,JCTUSDT,Bitget,NO_DIRECTION,,,,,28.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,JTOUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.5236,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,XAGUSDT,Bitget,NO_DIRECTION,,,,,28.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PONSUSDT,Bitget,NO_DIRECTION,,,,,28.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SEIUSDT,Bitget,NO_DIRECTION,,,,,28.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LINKUSDT,Bitget,NO_DIRECTION,,,,,28.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SUIUSDT,Bitget,NO_DIRECTION,,,,,27.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,牛来USDT,Bitget,NO_DIRECTION,,,,,27.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,FILUSDT,Bitget,NO_DIRECTION,,,,,26.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PYTHUSDT,Bitget,NO_DIRECTION,,,,,25.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MRVLUSDT,Bitget,NO_DIRECTION,,,,,25.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ATOMUSDT,Bitget,NO_DIRECTION,,,,,25.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZAMAUSDT,Bitget,NO_DIRECTION,,,,,25.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LTCUSDT,Bitget,NO_DIRECTION,,,,,25.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BANKUSDT,Bitget,NO_DIRECTION,,,,,24.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AKEUSDT,Bitget,NO_DIRECTION,,,,,24.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TAGUSDT,Bitget,NO_DIRECTION,,,,,23.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ETHUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MRNAUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ADAUSDT,Bitget,NO_DIRECTION,,,,,23.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CRCLUSDT,Bitget,NO_DIRECTION,,,,,23.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TSLAUSDT,Bitget,NO_DIRECTION,,,,,23.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ARUSDT,Bitget,NO_DIRECTION,,,,,23.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,OPENUSDT,Bitget,NO_DIRECTION,,,,,23.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,KAITOUSDT,Bitget,NO_DIRECTION,,,,,23.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DELLUSDT,Bitget,NO_DIRECTION,,,,,23.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HOODUSDT,Bitget,NO_DIRECTION,,,,,23.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,VELVETUSDT,Bitget,NO_DIRECTION,,,,,22.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BMNRUSDT,Bitget,NO_DIRECTION,,,,,22.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ICPUSDT,Bitget,NO_DIRECTION,,,,,21.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GENIUSUSDT,Bitget,NO_DIRECTION,,,,,21.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TRXUSDT,Bitget,NO_DIRECTION,,,,,21.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,UNITASUSDT,Bitget,NO_DIRECTION,,,,,20.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ATHUSDT,Bitget,NO_DIRECTION,,,,,20.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,20.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ORCLUSDT,Bitget,NO_DIRECTION,,,,,20.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,B2USDT,Bitget,NO_DIRECTION,,,,,20.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LUNCUSDT,Bitget,NO_DIRECTION,,,,,20.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HOMEUSDT,Bitget,ACTION,SHORT,80.0,1.5,0.9995,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
-2026-09-20T19:19:19.540685+00:00,LABUSDT,Bitget,NO_DIRECTION,,,,,19.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SAMSUNGEMUSDT,Bitget,NO_DIRECTION,,,,,19.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AAVEUSDT,Bitget,NO_DIRECTION,,,,,19.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZHIPUHKDUSDT,Bitget,NO_DIRECTION,,,,,19.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,OPUSDT,Bitget,NO_DIRECTION,,,,,19.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,HBARUSDT,Bitget,NO_DIRECTION,,,,,19.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BTCUSDT,Bitget,NO_DIRECTION,,,,,18.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TUTUSDT,Bitget,NO_DIRECTION,,,,,18.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BTWUSDT,Bitget,NO_DIRECTION,,,,,18.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,QQQUSDT,Bitget,NO_DIRECTION,,,,,18.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ETCUSDT,Bitget,NO_DIRECTION,,,,,18.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BEATUSDT,Bitget,ACTION,SHORT,81.2,1.0,0.4261,0.0,1.0,1.0,1.0,0.0,0.75,0.8125,EARLY REVERSAL: extreme location + exhaustion + base + trigger
-2026-09-20T19:19:19.540685+00:00,MSTUUSDT,Bitget,NO_DIRECTION,,,,,17.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XLMUSDT,Bitget,NO_DIRECTION,,,,,17.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZKUSDT,Bitget,NO_DIRECTION,,,,,17.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SNDKUSDT,Bitget,NO_DIRECTION,,,,,17.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LDOUSDT,Bitget,NO_DIRECTION,,,,,17.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TRUMPUSDT,Bitget,NO_DIRECTION,,,,,17.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,COINUSDT,Bitget,NO_DIRECTION,,,,,16.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PUMPUSDT,Bitget,NO_DIRECTION,,,,,16.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,16.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PAXGUSDT,Bitget,NO_DIRECTION,,,,,16.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CHIPUSDT,Bitget,NO_DIRECTION,,,,,16.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ONDOUSDT,Bitget,NO_DIRECTION,,,,,16.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AGLDUSDT,Bitget,NO_DIRECTION,,,,,16.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DASHUSDT,Bitget,ACTION,SHORT,85.0,1.0,0.579,0.0,1.0,1.0,1.0,0.0,1.0,0.85,EARLY REVERSAL: extreme location + exhaustion + base + trigger
-2026-09-20T19:19:19.540685+00:00,LSKUSDT,Bitget,NO_DIRECTION,,,,,16.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SOXLUSDT,Bitget,NO_DIRECTION,,,,,16.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TEAMUSDT,Bitget,NO_DIRECTION,,,,,16.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SYNUSDT,Bitget,NO_DIRECTION,,,,,16.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TAOUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,1.0128,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,INJUSDT,Bitget,NO_DIRECTION,,,,,16.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MSTRUSDT,Bitget,NO_DIRECTION,,,,,16.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SPYUSDT,Bitget,NO_DIRECTION,,,,,15.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ASTERUSDT,Bitget,NO_DIRECTION,,,,,15.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MUUSDT,Bitget,NO_DIRECTION,,,,,15.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DOGEUSDT,Bitget,NO_DIRECTION,,,,,15.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,POLUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.5876,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,XAUTUSDT,Bitget,NO_DIRECTION,,,,,15.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CELRUSDT,Bitget,NO_DIRECTION,,,,,15.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CUSDT,Bitget,NO_DIRECTION,,,,,15.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,COTIUSDT,Bitget,NO_DIRECTION,,,,,15.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SNXXUSDT,Bitget,NO_DIRECTION,,,,,15.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ARKUSDT,Bitget,NO_DIRECTION,,,,,15.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,APTUSDT,Bitget,NO_DIRECTION,,,,,14.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MMTUSDT,Bitget,NO_DIRECTION,,,,,14.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,14.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MONUSDT,Bitget,NO_DIRECTION,,,,,14.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,14.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BCHUSDT,Bitget,NO_DIRECTION,,,,,14.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ENSUSDT,Bitget,NO_DIRECTION,,,,,13.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,NAVERUSDT,Bitget,NO_DIRECTION,,,,,13.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CELOUSDT,Bitget,NO_DIRECTION,,,,,13.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CYSUSDT,Bitget,NO_DIRECTION,,,,,13.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PENGUUSDT,Bitget,NO_DIRECTION,,,,,13.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XRPUSDT,Bitget,NO_DIRECTION,,,,,13.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GOOGLUSDT,Bitget,NO_DIRECTION,,,,,13.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GALAUSDT,Bitget,NO_DIRECTION,,,,,13.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZSUSDT,Bitget,NO_DIRECTION,,,,,12.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BILLUSDT,Bitget,NO_DIRECTION,,,,,12.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SHIBUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.4444,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,SKHYUSDT,Bitget,NO_DIRECTION,,,,,12.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ORDIUSDT,Bitget,NO_DIRECTION,,,,,12.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,12.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AEROUSDT,Bitget,NO_DIRECTION,,,,,12.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,KORUUSDT,Bitget,CONFIDENCE_FAILED,SHORT,72.5,0.0,0.1292,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,EGLDUSDT,Bitget,NO_DIRECTION,,,,,12.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,JUPUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.4776,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,CSOPSK2LHKDUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,NVDAUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ONGUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SPXUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ARXUSDT,Bitget,NO_DIRECTION,,,,,11.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AVAUSDT,Bitget,NO_DIRECTION,,,,,11.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SKHYNIXUSDT,Bitget,NO_DIRECTION,,,,,11.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ARIAUSDT,Bitget,NO_DIRECTION,,,,,11.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SHEINHKDUSDT,Bitget,NO_DIRECTION,,,,,11.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,11.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SKLUSDT,Bitget,NO_DIRECTION,,,,,11.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ENSOUSDT,Bitget,NO_DIRECTION,,,,,11.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MUSDT,Bitget,NO_DIRECTION,,,,,11.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,11.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ALLOUSDT,Bitget,NO_DIRECTION,,,,,10.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LITUSDT,Bitget,NO_DIRECTION,,,,,10.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,10.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,10.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BNCUSDT,Bitget,NO_DIRECTION,,,,,10.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,USUALUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.2943,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,MUBARAKUSDT,Bitget,NO_DIRECTION,,,,,10.3,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DYDXUSDT,Bitget,NO_DIRECTION,,,,,10.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,DRAMUSDT,Bitget,NO_DIRECTION,,,,,10.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XPLUSDT,Bitget,NO_DIRECTION,,,,,10.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,1000BONKUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AIOUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,AMZNUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BRUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BOMEUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BSBUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GRAMUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GPROUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PENDLEUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.3993,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,PLUMEUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SOLUSDT,Bitget,CONFIDENCE_FAILED,SHORT,72.5,0.0,0.4997,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,SHELLUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SOXSUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,STXUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XAUUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,EVAAUSDT,Bitget,NO_DIRECTION,,,,,9.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,IOTXUSDT,Bitget,NO_DIRECTION,,,,,9.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,NEIROCTOUSDT,Bitget,NO_DIRECTION,,,,,9.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,0GUSDT,Bitget,NO_DIRECTION,,,,,9.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,XTZUSDT,Bitget,NO_DIRECTION,,,,,9.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZHIPUUSDT,Bitget,CONFIDENCE_FAILED,SHORT,67.5,0.0,0.3194,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,AAOIUSDT,Bitget,NO_DIRECTION,,,,,9.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,VETUSDT,Bitget,NO_DIRECTION,,,,,8.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,MOODENGUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.2199,0.0,1.0,,,,,,confidence below action threshold
-2026-09-20T19:19:19.540685+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,8.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,龙虾USDT,Bitget,NO_DIRECTION,,,,,8.5,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,EIGENUSDT,Bitget,NO_DIRECTION,,,,,8.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,KASUSDT,Bitget,NO_DIRECTION,,,,,8.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TRBUSDT,Bitget,NO_DIRECTION,,,,,8.2,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,OPENAIUSDT,Bitget,RISK_FAILED,LONG,81.2,0.0,0.0672,0.0,1.0,,,,,,execution risk below configured minimum
-2026-09-20T19:19:19.540685+00:00,CTSIUSDT,Bitget,NO_DIRECTION,,,,,7.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,CHILLGUYUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TIAUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,BERAUSDT,Bitget,NO_DIRECTION,,,,,6.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,VVVUSDT,Bitget,NO_DIRECTION,,,,,6.6,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PROMUSDT,Bitget,NO_DIRECTION,,,,,6.4,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,PEPEUSDT,Bitget,NO_DIRECTION,,,,,6.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ACEUSDT,Bitget,NO_DIRECTION,,,,,5.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,GRVTUSDT,Bitget,NO_DIRECTION,,,,,5.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ONEUSDT,Bitget,NO_DIRECTION,,,,,5.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,SAMSUNGUSDT,Bitget,NO_DIRECTION,,,,,5.0,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,APRUSDT,Bitget,NO_DIRECTION,,,,,4.8,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,4.7,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,ZENUSDT,Bitget,NO_DIRECTION,,,,,3.9,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,TUSDT,Bitget,NO_DIRECTION,,,,,3.1,,,,,,,early reversal direction returned None
-2026-09-20T19:19:19.540685+00:00,LGELECTRONICSUSDT,Bitget,NO_DIRECTION,,,,,0.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FFUSDT,Bitget,NO_DIRECTION,,,,,88.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,USELESSUSDT,Bitget,NO_DIRECTION,,,,,77.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,UBUSDT,Bitget,NO_DIRECTION,,,,,77.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AMDUSDT,Bitget,NO_DIRECTION,,,,,76.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CLUSDT,Bitget,NO_DIRECTION,,,,,74.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ANTHROPICUSDT,Bitget,NO_DIRECTION,,,,,66.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,64.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,64.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HUSDT,Bitget,NO_DIRECTION,,,,,63.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CFXUSDT,Bitget,NO_DIRECTION,,,,,62.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARCUSDT,Bitget,NO_DIRECTION,,,,,61.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,60.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,KMNOUSDT,Bitget,NO_DIRECTION,,,,,60.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SPCXUSDT,Bitget,NO_DIRECTION,,,,,57.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,56.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,STGUSDT,Bitget,NO_DIRECTION,,,,,55.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FLOCKUSDT,Bitget,NO_DIRECTION,,,,,54.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MARSCOINUSDT,Bitget,NO_DIRECTION,,,,,54.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZROUSDT,Bitget,NO_DIRECTION,,,,,54.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CLANKERUSDT,Bitget,NO_DIRECTION,,,,,53.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PIEVERSEUSDT,Bitget,NO_DIRECTION,,,,,52.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XMRUSDT,Bitget,NO_DIRECTION,,,,,52.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CAKEUSDT,Bitget,NO_DIRECTION,,,,,51.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,NILUSDT,Bitget,NO_DIRECTION,,,,,50.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AVAXUSDT,Bitget,NO_DIRECTION,,,,,50.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZECUSDT,Bitget,NO_DIRECTION,,,,,50.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,INTWUSDT,Bitget,NO_DIRECTION,,,,,48.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MANTAUSDT,Bitget,NO_DIRECTION,,,,,48.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BGBUSDT,Bitget,RISK_FAILED,SHORT,68.8,0.0,0.0814,0.0,1.0,,,,,,execution risk below configured minimum
+2026-09-20T19:26:09.848165+00:00,BZUSDT,Bitget,NO_DIRECTION,,,,,45.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HANMIUSDT,Bitget,NO_DIRECTION,,,,,43.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,STRKUSDT,Bitget,NO_DIRECTION,,,,,41.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CFGUSDT,Bitget,NO_DIRECTION,,,,,40.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GRTUSDT,Bitget,WAIT,SHORT,80.0,0.0,2.0853,0.0,1.0,,,,,,execution stop distance exceeds scalping limit
+2026-09-20T19:26:09.848165+00:00,BNBUSDT,Bitget,NO_DIRECTION,,,,,40.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,INTCUSDT,Bitget,NO_DIRECTION,,,,,40.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ENAUSDT,Bitget,WAIT,SHORT,80.0,0.0,3.8111,0.0,1.0,,,,,,execution stop distance exceeds scalping limit
+2026-09-20T19:26:09.848165+00:00,MMTUSDT,Bitget,NO_DIRECTION,,,,,38.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FUSDT,Bitget,NO_DIRECTION,,,,,37.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CVCUSDT,Bitget,NO_DIRECTION,,,,,36.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GUNUSDT,Bitget,NO_DIRECTION,,,,,36.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SPKUSDT,Bitget,ACTION,SHORT,80.0,1.0,1.5369,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,35.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HYPEUSDT,Bitget,NO_DIRECTION,,,,,34.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MINIMAXUSDT,Bitget,NO_DIRECTION,,,,,34.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ALGOUSDT,Bitget,NO_DIRECTION,,,,,33.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BLESSUSDT,Bitget,NO_DIRECTION,,,,,33.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HUMAUSDT,Bitget,NO_DIRECTION,,,,,33.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,33.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,USTCUSDT,Bitget,WAIT,SHORT,68.8,0.0,2.3821,0.0,1.0,,,,,,execution stop distance exceeds scalping limit
+2026-09-20T19:26:09.848165+00:00,POWERUSDT,Bitget,NO_DIRECTION,,,,,32.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PROSUSDT,Bitget,NO_DIRECTION,,,,,31.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,REZUSDT,Bitget,NO_DIRECTION,,,,,31.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MORPHOUSDT,Bitget,NO_DIRECTION,,,,,31.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,30.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MYXUSDT,Bitget,NO_DIRECTION,,,,,30.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,JCTUSDT,Bitget,NO_DIRECTION,,,,,30.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CAPUSDT,Bitget,NO_DIRECTION,,,,,30.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PONSUSDT,Bitget,NO_DIRECTION,,,,,30.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FILUSDT,Bitget,NO_DIRECTION,,,,,30.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,29.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LUNAUSDT,Bitget,NO_DIRECTION,,,,,29.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZILUSDT,Bitget,NO_DIRECTION,,,,,29.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GRASSUSDT,Bitget,NO_DIRECTION,,,,,29.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,KAITOUSDT,Bitget,ACTION,SHORT,87.5,1.0,0.5935,0.0,1.0,0.5,1.0,1.0,1.0,0.875,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,EPICUSDT,Bitget,NO_DIRECTION,,,,,28.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,JTOUSDT,Bitget,NO_DIRECTION,,,,,27.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,NEARUSDT,Bitget,NO_DIRECTION,,,,,27.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,牛来USDT,Bitget,NO_DIRECTION,,,,,27.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SEIUSDT,Bitget,NO_DIRECTION,,,,,26.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SUIUSDT,Bitget,NO_DIRECTION,,,,,25.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZSUSDT,Bitget,NO_DIRECTION,,,,,25.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZAMAUSDT,Bitget,NO_DIRECTION,,,,,25.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ATOMUSDT,Bitget,NO_DIRECTION,,,,,25.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PYTHUSDT,Bitget,NO_DIRECTION,,,,,24.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,VELVETUSDT,Bitget,NO_DIRECTION,,,,,23.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ETHUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MRNAUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TSLAUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LINKUSDT,Bitget,NO_DIRECTION,,,,,23.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LTCUSDT,Bitget,NO_DIRECTION,,,,,23.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,OPENUSDT,Bitget,NO_DIRECTION,,,,,23.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BANKUSDT,Bitget,NO_DIRECTION,,,,,23.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CRCLUSDT,Bitget,NO_DIRECTION,,,,,23.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AAVEUSDT,Bitget,NO_DIRECTION,,,,,23.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,DELLUSDT,Bitget,NO_DIRECTION,,,,,23.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HOODUSDT,Bitget,NO_DIRECTION,,,,,23.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MRVLUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.1347,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,LABUSDT,Bitget,NO_DIRECTION,,,,,22.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,EULUSDT,Bitget,ACTION,SHORT,80.0,1.0,0.4188,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,QQQUSDT,Bitget,NO_DIRECTION,,,,,22.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BMNRUSDT,Bitget,NO_DIRECTION,,,,,22.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AKEUSDT,Bitget,NO_DIRECTION,,,,,22.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CRVUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.9109,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,UNITASUSDT,Bitget,NO_DIRECTION,,,,,21.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HOMEUSDT,Bitget,ACTION,SHORT,80.0,1.5,1.3088,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,ADAUSDT,Bitget,NO_DIRECTION,,,,,21.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARUSDT,Bitget,NO_DIRECTION,,,,,21.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LITUSDT,Bitget,NO_DIRECTION,,,,,20.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ORCLUSDT,Bitget,NO_DIRECTION,,,,,20.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ATHUSDT,Bitget,NO_DIRECTION,,,,,20.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LUNCUSDT,Bitget,NO_DIRECTION,,,,,20.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,B2USDT,Bitget,NO_DIRECTION,,,,,19.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TRXUSDT,Bitget,NO_DIRECTION,,,,,19.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PAXGUSDT,Bitget,NO_DIRECTION,,,,,19.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,19.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ICPUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.7648,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,TAGUSDT,Bitget,NO_DIRECTION,,,,,19.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XAGUSDT,Bitget,ACTION,LONG,80.0,1.0,0.1336,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,BEATUSDT,Bitget,ACTION,SHORT,81.2,1.0,0.5324,0.0,1.0,1.0,1.0,0.0,0.75,0.8125,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,SAMSUNGEMUSDT,Bitget,NO_DIRECTION,,,,,18.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BTCUSDT,Bitget,NO_DIRECTION,,,,,18.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,VIRTUALUSDT,Bitget,ACTION,SHORT,80.0,1.0,0.9467,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,BTWUSDT,Bitget,NO_DIRECTION,,,,,18.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SOXLUSDT,Bitget,NO_DIRECTION,,,,,18.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TUTUSDT,Bitget,NO_DIRECTION,,,,,18.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,HBARUSDT,Bitget,NO_DIRECTION,,,,,18.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MSTUUSDT,Bitget,NO_DIRECTION,,,,,17.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZKUSDT,Bitget,NO_DIRECTION,,,,,17.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ASTERUSDT,Bitget,NO_DIRECTION,,,,,17.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GENIUSUSDT,Bitget,NO_DIRECTION,,,,,16.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,OPUSDT,Bitget,NO_DIRECTION,,,,,16.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SNDKUSDT,Bitget,NO_DIRECTION,,,,,16.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SYNUSDT,Bitget,NO_DIRECTION,,,,,16.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XLMUSDT,Bitget,NO_DIRECTION,,,,,16.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AGLDUSDT,Bitget,NO_DIRECTION,,,,,16.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PUMPUSDT,Bitget,NO_DIRECTION,,,,,16.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TEAMUSDT,Bitget,NO_DIRECTION,,,,,16.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZHIPUHKDUSDT,Bitget,NO_DIRECTION,,,,,16.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SPYUSDT,Bitget,NO_DIRECTION,,,,,15.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,DASHUSDT,Bitget,NO_DIRECTION,,,,,15.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MSTRUSDT,Bitget,NO_DIRECTION,,,,,15.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,NEIROCTOUSDT,Bitget,NO_DIRECTION,,,,,15.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ETCUSDT,Bitget,NO_DIRECTION,,,,,15.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CHIPUSDT,Bitget,NO_DIRECTION,,,,,15.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SPXUSDT,Bitget,NO_DIRECTION,,,,,15.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XPLUSDT,Bitget,NO_DIRECTION,,,,,15.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CELRUSDT,Bitget,NO_DIRECTION,,,,,15.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ONDOUSDT,Bitget,NO_DIRECTION,,,,,15.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PLUMEUSDT,Bitget,NO_DIRECTION,,,,,15.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CUSDT,Bitget,NO_DIRECTION,,,,,14.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LSKUSDT,Bitget,NO_DIRECTION,,,,,14.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MONUSDT,Bitget,NO_DIRECTION,,,,,14.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XAUTUSDT,Bitget,RISK_FAILED,LONG,87.5,0.0,0.0771,0.0,1.0,,,,,,execution risk below configured minimum
+2026-09-20T19:26:09.848165+00:00,INJUSDT,Bitget,NO_DIRECTION,,,,,14.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MUUSDT,Bitget,NO_DIRECTION,,,,,14.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TRUMPUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.7767,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,COINUSDT,Bitget,NO_DIRECTION,,,,,14.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SNXXUSDT,Bitget,NO_DIRECTION,,,,,14.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TAOUSDT,Bitget,ACTION,SHORT,87.5,1.0,1.0173,0.0,1.0,0.5,1.0,1.0,1.0,0.875,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,DOGEUSDT,Bitget,NO_DIRECTION,,,,,13.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SHELLUSDT,Bitget,NO_DIRECTION,,,,,13.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,VVVUSDT,Bitget,NO_DIRECTION,,,,,13.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LDOUSDT,Bitget,NO_DIRECTION,,,,,13.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,13.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,APTUSDT,Bitget,NO_DIRECTION,,,,,13.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CYSUSDT,Bitget,NO_DIRECTION,,,,,13.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,13.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CELOUSDT,Bitget,NO_DIRECTION,,,,,13.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,EGLDUSDT,Bitget,ACTION,SHORT,81.2,1.0,0.2459,0.0,1.0,1.0,1.0,0.0,0.75,0.8125,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,AVAUSDT,Bitget,WAIT,SHORT,80.0,0.0,4.6399,0.0,1.0,,,,,,opposing 15m liquidity target is too close for minimum 2R
+2026-09-20T19:26:09.848165+00:00,GOOGLUSDT,Bitget,NO_DIRECTION,,,,,13.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ENSUSDT,Bitget,NO_DIRECTION,,,,,13.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,COTIUSDT,Bitget,NO_DIRECTION,,,,,12.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BCHUSDT,Bitget,NO_DIRECTION,,,,,12.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BILLUSDT,Bitget,NO_DIRECTION,,,,,12.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,C98USDT,Bitget,NO_DIRECTION,,,,,12.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AEROUSDT,Bitget,NO_DIRECTION,,,,,12.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BOMEUSDT,Bitget,NO_DIRECTION,,,,,12.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GALAUSDT,Bitget,NO_DIRECTION,,,,,12.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ONGUSDT,Bitget,NO_DIRECTION,,,,,12.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ORDIUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.3735,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,SKHYUSDT,Bitget,NO_DIRECTION,,,,,12.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PENGUUSDT,Bitget,NO_DIRECTION,,,,,11.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CSOPSK2LHKDUSDT,Bitget,NO_DIRECTION,,,,,11.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MUSDT,Bitget,NO_DIRECTION,,,,,11.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,NVDAUSDT,Bitget,NO_DIRECTION,,,,,11.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARKUSDT,Bitget,NO_DIRECTION,,,,,11.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,KORUUSDT,Bitget,RISK_FAILED,SHORT,72.5,0.0,0.073,0.0,1.0,,,,,,execution risk below configured minimum
+2026-09-20T19:26:09.848165+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XRPUSDT,Bitget,NO_DIRECTION,,,,,11.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARIAUSDT,Bitget,NO_DIRECTION,,,,,11.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,11.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SOXSUSDT,Bitget,NO_DIRECTION,,,,,11.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,USUALUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.5324,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,ENSOUSDT,Bitget,NO_DIRECTION,,,,,10.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARXUSDT,Bitget,NO_DIRECTION,,,,,10.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SKHYNIXUSDT,Bitget,NO_DIRECTION,,,,,10.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SKLUSDT,Bitget,NO_DIRECTION,,,,,10.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SHIBUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.4373,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,BNCUSDT,Bitget,NO_DIRECTION,,,,,10.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MUBARAKUSDT,Bitget,NO_DIRECTION,,,,,10.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ALLOUSDT,Bitget,NO_DIRECTION,,,,,10.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,XTZUSDT,Bitget,NO_DIRECTION,,,,,10.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AIOUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AMZNUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,1000BONKUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.5887,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,BSBUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BRUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GPROUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GRAMUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PENDLEUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.6429,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,POLUSDT,Bitget,ACTION,SHORT,87.5,1.0,0.8255,0.0,1.0,0.5,1.0,1.0,1.0,0.875,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SOLUSDT,Bitget,CONFIDENCE_FAILED,SHORT,72.5,0.0,0.2284,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,STXUSDT,Bitget,ACTION,SHORT,80.0,1.0,0.5166,0.0,1.0,1.0,0.0,1.0,1.0,0.8,EARLY REVERSAL: extreme location + exhaustion + base + trigger
+2026-09-20T19:26:09.848165+00:00,XAUUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,DYDXUSDT,Bitget,NO_DIRECTION,,,,,9.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,EVAAUSDT,Bitget,NO_DIRECTION,,,,,9.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,JUPUSDT,Bitget,NO_DIRECTION,,,,,9.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TRBUSDT,Bitget,NO_DIRECTION,,,,,9.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,0GUSDT,Bitget,NO_DIRECTION,,,,,9.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,DRAMUSDT,Bitget,NO_DIRECTION,,,,,9.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,9.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,9.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ROSEUSDT,Bitget,NO_DIRECTION,,,,,9.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZHIPUUSDT,Bitget,NO_DIRECTION,,,,,9.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ZENUSDT,Bitget,NO_DIRECTION,,,,,9.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,MOODENGUSDT,Bitget,CONFIDENCE_FAILED,SHORT,68.8,0.0,0.5088,0.0,1.0,,,,,,confidence below action threshold
+2026-09-20T19:26:09.848165+00:00,TIAUSDT,Bitget,NO_DIRECTION,,,,,8.5,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,KASUSDT,Bitget,NO_DIRECTION,,,,,8.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,8.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,8.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,8.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,8.2,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,NAVERUSDT,Bitget,NO_DIRECTION,,,,,8.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,龙虾USDT,Bitget,NO_DIRECTION,,,,,8.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,OPENAIUSDT,Bitget,NO_DIRECTION,,,,,7.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PEPEUSDT,Bitget,NO_DIRECTION,,,,,7.6,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,VETUSDT,Bitget,NO_DIRECTION,,,,,7.3,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CHILLGUYUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,CTSIUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,EIGENUSDT,Bitget,NO_DIRECTION,,,,,7.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,AAOIUSDT,Bitget,NO_DIRECTION,,,,,6.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,BERAUSDT,Bitget,NO_DIRECTION,,,,,6.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SHEINHKDUSDT,Bitget,NO_DIRECTION,,,,,6.7,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,PROMUSDT,Bitget,NO_DIRECTION,,,,,6.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ACEUSDT,Bitget,NO_DIRECTION,,,,,6.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,GRVTUSDT,Bitget,NO_DIRECTION,,,,,5.9,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,ONEUSDT,Bitget,NO_DIRECTION,,,,,5.8,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,TUSDT,Bitget,NO_DIRECTION,,,,,5.1,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,SAMSUNGUSDT,Bitget,NO_DIRECTION,,,,,5.0,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,APRUSDT,Bitget,NO_DIRECTION,,,,,4.4,,,,,,,early reversal direction returned None
+2026-09-20T19:26:09.848165+00:00,LGELECTRONICSUSDT,Bitget,NO_DIRECTION,,,,,1.2,,,,,,,early reversal direction returned None
