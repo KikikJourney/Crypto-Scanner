@@ -7,7 +7,8 @@ import csv
 from collections import Counter
 from pathlib import Path
 
-from scalping_intelligence import infer_direction, build_plan
+from scalping_intelligence import build_plan
+from early_reversal_engine import infer_direction as infer_early_reversal_direction
 
 SUMMARY_FILE = Path("data/signal_funnel_summary.csv")
 SYMBOL_FILE = Path("data/signal_funnel_symbols.csv")
@@ -21,7 +22,7 @@ SUMMARY_FIELDS = [
 
 SYMBOL_FIELDS = [
     "timestamp", "symbol", "provider", "stage", "direction",
-    "confidence", "alignment", "risk_pct", "v2_score", "reason",
+    "confidence", "alignment", "risk_pct", "v2_score", "location_15m", "exhaustion_15m", "base_15m", "structure_shift_5m", "reversal_trigger_5m", "early_reversal_score", "reason",
 ]
 
 
@@ -32,7 +33,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
 
     for x in results:
         counts["data_valid"] += 1
-        direction = infer_direction(x["scalping_rows_15m"], x["scalping_rows_5m"])
+        direction = infer_early_reversal_direction(x["scalping_rows_15m"], x["scalping_rows_5m"])
         extreme = x["extreme"]
         if extreme["status"].startswith("EXTREME REVERSAL"):
             counts["v2_extreme_reversals"] += 1
@@ -43,7 +44,9 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
                 "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
                 "stage": "NO_DIRECTION", "direction": "", "confidence": "",
                 "alignment": "", "risk_pct": "", "v2_score": extreme.get("score", ""),
-                "reason": "MTF infer_direction returned None",
+                "location_15m": "", "exhaustion_15m": "", "base_15m": "",
+                "structure_shift_5m": "", "reversal_trigger_5m": "", "early_reversal_score": "",
+                "reason": "early reversal direction returned None",
             })
             continue
 
@@ -56,6 +59,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         plan = build_plan(
             direction, x["scalping_rows_15m"], x["scalping_rows_5m"],
             v2_score, x["extreme_features"], require_v2_direction=False,
+            early_reversal=True,
         )
         status = plan.get("status")
         reason = plan.get("reason", "")
@@ -96,7 +100,14 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
             "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
             "stage": stage, "direction": direction, "confidence": confidence,
             "alignment": round(alignment, 3), "risk_pct": risk_pct,
-            "v2_score": extreme.get("score", ""), "reason": reason,
+            "v2_score": extreme.get("score", ""),
+            "location_15m": plan.get("location_15m", ""),
+            "exhaustion_15m": plan.get("exhaustion_15m", ""),
+            "base_15m": plan.get("base_15m", ""),
+            "structure_shift_5m": plan.get("structure_shift_5m", ""),
+            "reversal_trigger_5m": plan.get("reversal_trigger_5m", ""),
+            "early_reversal_score": plan.get("early_reversal_score", ""),
+            "reason": reason,
         })
 
     summary = {
