@@ -223,6 +223,13 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         return {"status": "WAIT", "direction": direction, "confidence": 0.0,
                 "location_15m": location_15, "reversal_5m": reversal_5,
                 "reason": "entry location is unfavorable for direction"}
+    # ACTIONs must come from the preferred third of the 15m range.
+    # Keep mid-range setups visible in diagnostics, but do not promote them
+    # to executable ACTIONs.
+    if location_15 < 1.0:
+        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                "location_15m": location_15, "reversal_5m": reversal_5,
+                "reason": "entry location is only mid-range; ACTION requires preferred range location"}
     if reversal_5 == 0.0:
         return {"status": "WAIT", "direction": direction, "confidence": 0.0,
                 "location_15m": location_15, "reversal_5m": reversal_5,
