@@ -34,7 +34,9 @@ ACTIONABLE_FIELDS = [
     "v2_score", "confidence", "location_15m", "reversal_5m", "entry", "entry_low", "entry_high", "trigger",
     "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_15m_timestamp",
     "data_age_seconds", "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
-    "structure_15m", "liquidity_sweep_5m", "volume_5m", "reason",
+    "structure_15m", "liquidity_sweep_5m", "volume_5m",
+    "exhaustion_15m", "base_15m", "structure_shift_5m",
+    "reversal_trigger_5m", "early_reversal_score", "reason",
 ]
 
 
@@ -210,6 +212,11 @@ def _mtf_action(x, timestamp):
         "structure_15m": plan["structure_15m"],
         "liquidity_sweep_5m": plan["liquidity_sweep_5m"],
         "volume_5m": plan["volume_5m"],
+        "exhaustion_15m": plan.get("exhaustion_15m", 0.0),
+        "base_15m": plan.get("base_15m", 0.0),
+        "structure_shift_5m": plan.get("structure_shift_5m", 0.0),
+        "reversal_trigger_5m": plan.get("reversal_trigger_5m", plan.get("reversal_5m", 0.0)),
+        "early_reversal_score": plan.get("early_reversal_score", 0.0),
         "reason": plan["reason"],
     }
 
