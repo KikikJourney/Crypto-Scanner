@@ -7,6 +7,8 @@ context plus 5m entry precision, location, and reversal confirmation.
 from datetime import datetime, timezone, timedelta
 from math import isfinite
 
+from early_reversal_engine import evaluate_setup as evaluate_early_reversal
+
 
 def _f(v, default=None):
     try:
@@ -193,8 +195,9 @@ def infer_direction(rows_15m, rows_5m):
     return None
 
 
-def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_direction=True):
-    """Build a plan only when direction, location, reversal and risk agree."""
+def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_direction=True,
+               early_reversal=False):
+    """Build a plan with either the established MTF gate or early-reversal gate."""
     if direction not in {"LONG", "SHORT"}:
         return {"status": "NO-TRADE", "reason": "no trade direction"}
     if len(rows_15m) < 160 or len(rows_5m) < 60:
@@ -219,37 +222,51 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         (direction == "SHORT" and rsi5 is not None and 32 <= rsi5 <= 55)
     ) else 0.0
 
-    if location_15 == 0.0:
-        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "reason": "entry location is unfavorable for direction"}
-    # ACTIONs must come from the preferred third of the 15m range.
-    # Keep mid-range setups visible in diagnostics, but do not promote them
-    # to executable ACTIONs.
-    if location_15 < 1.0:
-        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "reason": "entry location is only mid-range; ACTION requires preferred range location"}
-    if reversal_5 == 0.0:
-        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "reason": "no 5m pullback/reversal confirmation"}
-    # A generic recovery candle is not enough when momentum is already
-    # stretched against the intended entry. Require either a true sweep
-    # (reversal_5 == 1.0) or supportive RSI for a half-score recovery.
-    if reversal_5 < 1.0 and momentum_5 == 0.0:
-        return {"status": "WAIT", "direction": direction, "confidence": 0.0,
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
-                "reason": "reversal confirmation lacks supportive 5m momentum"}
+    early = evaluate_early_reversal(rows_15m, rows_5m, direction) if early_reversal else None
 
-    confidence = 100.0 * (
-        0.15 * score_4h + 0.15 * score_1h + 0.10 * score_30 + 0.10 * score_15 +
-        0.20 * location_15 + 0.20 * reversal_5 + 0.05 * sweep_5 +
-        0.03 * volume_5 + 0.02 * momentum_5
-    )
+    if early_reversal:
+        if not early["eligible"]:
+            return {
+                "status": "WAIT", "direction": direction, "confidence": round(100.0 * early["score"], 1),
+                "location_15m": early["location_15m"], "reversal_5m": early["reversal_trigger_5m"],
+                "exhaustion_15m": early["exhaustion_15m"], "base_15m": early["base_15m"],
+                "structure_shift_5m": early["structure_shift_5m"],
+                "reversal_trigger_5m": early["reversal_trigger_5m"],
+                "reason": early["reason"],
+            }
+        # Early-reversal mode deliberately does not require trend alignment:
+        # the setup is expected to form while the preceding move is still
+        # directional. V2.2 remains an optional confirmation input.
+        confidence = 100.0 * early["score"]
+        if _f(v2_score, 0.0) >= 80.0:
+            confidence = min(100.0, confidence + 3.0)
+    else:
+        if location_15 == 0.0:
+            return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                    "location_15m": location_15, "reversal_5m": reversal_5,
+                    "reason": "entry location is unfavorable for direction"}
+        # ACTIONs must come from the preferred third of the 15m range.
+        if location_15 < 1.0:
+            return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                    "location_15m": location_15, "reversal_5m": reversal_5,
+                    "reason": "entry location is only mid-range; ACTION requires preferred range location"}
+        if reversal_5 == 0.0:
+            return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                    "location_15m": location_15, "reversal_5m": reversal_5,
+                    "reason": "no 5m pullback/reversal confirmation"}
+        if reversal_5 < 1.0 and momentum_5 == 0.0:
+            return {"status": "WAIT", "direction": direction, "confidence": 0.0,
+                    "location_15m": location_15, "reversal_5m": reversal_5,
+                    "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
+                    "reason": "reversal confirmation lacks supportive 5m momentum"}
 
-    if not require_v2_direction:
+        confidence = 100.0 * (
+            0.15 * score_4h + 0.15 * score_1h + 0.10 * score_30 + 0.10 * score_15 +
+            0.20 * location_15 + 0.20 * reversal_5 + 0.05 * sweep_5 +
+            0.03 * volume_5 + 0.02 * momentum_5
+        )
+
+    if not early_reversal and not require_v2_direction:
         alignment = score_4h + score_1h + score_30 + score_15
         if alignment < 3.0:
             return {"status": "WAIT", "direction": direction,
@@ -332,10 +349,19 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "structure_15m": score_15, "location_15m": location_15,
         "reversal_5m": reversal_5, "liquidity_sweep_5m": sweep_5,
         "volume_5m": round(volume_5, 3),
+        "exhaustion_15m": early["exhaustion_15m"] if early_reversal else 0.0,
+        "base_15m": early["base_15m"] if early_reversal else 0.0,
+        "structure_shift_5m": early["structure_shift_5m"] if early_reversal else 0.0,
+        "reversal_trigger_5m": early["reversal_trigger_5m"] if early_reversal else reversal_5,
+        "early_reversal_score": early["score"] if early_reversal else 0.0,
         "valid_until": valid_until.isoformat() if valid_until else "",
         "latest_closed_5m_timestamp": latest_5m_ts.isoformat() if latest_5m_ts else "",
         "latest_closed_15m_timestamp": latest_15m_ts.isoformat() if latest_15m_ts else "",
         "timeframes": "4H/1H/30m/15m/5m",
-        "reason": ("MTF brain + V2.2 confirmation" if require_v2_direction
-                   else "MTF brain: direction + location + reversal + execution"),
+        "reason": (
+            "EARLY REVERSAL: extreme location + exhaustion + base + trigger"
+            if early_reversal else
+            ("MTF brain + V2.2 confirmation" if require_v2_direction
+             else "MTF brain: direction + location + reversal + execution")
+        ),
     }
