@@ -26,6 +26,7 @@ on:
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_early_reversal.py'
+      - 'tests/test_early_reversal_engine.py'
       - 'tests/test_extreme_reversal.py'
       - 'tests/test_actionable_reversal.py'
       - 'tests/test_actionable_forward_test.py'
@@ -56,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
       - name: Validate Early Reversal
