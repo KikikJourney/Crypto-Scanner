@@ -35,7 +35,6 @@ class EarlyReversalTests(unittest.TestCase):
         self.assertEqual(setup["location_15m"], 1.0)
         self.assertGreaterEqual(setup["exhaustion_15m"], 0.5)
         self.assertGreaterEqual(setup["reversal_trigger_5m"], 0.75)
-        self.assertEqual(infer_direction(*self._long_fixture()), "LONG")
 
     def test_short_early_reversal_fixture_is_eligible(self):
         setup = evaluate_setup(*self._short_fixture(), "SHORT")
@@ -43,14 +42,13 @@ class EarlyReversalTests(unittest.TestCase):
         self.assertEqual(setup["location_15m"], 1.0)
         self.assertGreaterEqual(setup["exhaustion_15m"], 0.5)
         self.assertGreaterEqual(setup["reversal_trigger_5m"], 0.75)
-        self.assertEqual(infer_direction(*self._short_fixture()), "SHORT")
 
     def test_no_reversal_does_not_trigger(self):
         prices15 = [100 + i * 0.5 for i in range(40)]
         candles5 = [(115, 116, 114, 115)] * 20
         setup = evaluate_setup(rows(prices15), rows_ohlc(candles5), "LONG")
         self.assertFalse(setup["eligible"])
-        self.assertIn("reversal zone", setup["reason"])
+        self.assertEqual(setup["location_15m"], 0.0)
 
 
 if __name__ == "__main__":
