@@ -7,7 +7,68 @@ base, and a closed-candle reversal trigger before allowing an entry.
 It is a signal filter, not a profit guarantee. All inputs are closed candles.
 """
 
-from scalping_intelligence import _close, _high, _low, atr, _location_score, _reversal_score
+def _f(v, default=0.0):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
+def _close(r): return _f(r[4])
+def _high(r): return _f(r[2])
+def _low(r): return _f(r[3])
+
+
+def atr(rows, period=14):
+    if len(rows) < period:
+        return None
+    trs, previous = [], None
+    for row in rows:
+        high, low, close = _high(row), _low(row), _close(row)
+        tr = high - low if previous is None else max(
+            high - low, abs(high - previous), abs(low - previous))
+        trs.append(tr)
+        previous = close
+    return sum(trs[-period:]) / period
+
+
+def _location_score(rows, direction, lookback=32):
+    if len(rows) < max(8, lookback):
+        return 0.0
+    window = rows[-lookback:]
+    high = max(_high(x) for x in window)
+    low = min(_low(x) for x in window)
+    span = high - low
+    if span <= 0:
+        return 0.0
+    position = (_close(rows[-1]) - low) / span
+    if direction == "LONG":
+        return 1.0 if position <= 0.35 else 0.5 if position <= 0.50 else 0.0
+    return 1.0 if position >= 0.65 else 0.5 if position >= 0.50 else 0.0
+
+
+def _reversal_score(rows, direction):
+    if len(rows) < 8:
+        return 0.0
+    previous, last = rows[-7:-1], rows[-1]
+    prior_high = max(_high(x) for x in previous)
+    prior_low = min(_low(x) for x in previous)
+    last_open, last_close = _f(last[1], _close(last)), _close(last)
+    last_high, last_low = _high(last), _low(last)
+    candle_range = last_high - last_low
+    if candle_range <= 0:
+        return 0.0
+    bullish = last_close > last_open
+    bearish = last_close < last_open
+    upper = (last_close - last_low) / candle_range >= 0.60
+    lower = (last_high - last_close) / candle_range >= 0.60
+    if direction == "LONG":
+        sweep = last_low < prior_low and last_close > prior_low
+        recovery = bullish and upper and last_close > _close(previous[-1])
+        return 1.0 if sweep else 0.5 if recovery else 0.0
+    sweep = last_high > prior_high and last_close < prior_high
+    recovery = bearish and lower and last_close < _close(previous[-1])
+    return 1.0 if sweep else 0.5 if recovery else 0.0
 
 
 def _closes(rows):
