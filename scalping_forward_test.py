@@ -64,16 +64,36 @@ def _write_rows(path, fields, rows):
         writer.writerows(rows)
 
 
+def _same_setup(a, b, window_minutes=15):
+    if a.get('provider') != b.get('provider') or a.get('symbol') != b.get('symbol'):
+        return False
+    if a.get('direction') != b.get('direction'):
+        return False
+    try:
+        if abs((_ts(a['timestamp']) - _ts(b['timestamp'])).total_seconds()) > window_minutes * 60:
+            return False
+    except (TypeError, ValueError, KeyError):
+        return False
+    return all(
+        _f(a.get(field)) is not None
+        and _f(b.get(field)) is not None
+        and abs(_f(a.get(field)) - _f(b.get(field))) <= max(abs(_f(a.get(field))) * 1e-9, 1e-12)
+        for field in ('entry', 'stop', 'target')
+    )
+
 def archive_actions(actions=None):
     """Append newly generated executable actions to an immutable action history."""
     _migrate_history()
     actions = _load(ACTION_FILE) if actions is None else actions
-    existing = {r.get('id') for r in _load(ACTION_HISTORY_FILE)}
+    existing_rows = _load(ACTION_HISTORY_FILE)
+    existing = {r.get('id') for r in existing_rows}
     fresh = []
     for action in actions:
         if action.get('direction') not in {'LONG', 'SHORT'}:
             continue
         if action.get('id') in existing:
+            continue
+        if any(_same_setup(action, old) for old in existing_rows + fresh):
             continue
         fresh.append({k: action.get(k, '') for k in ACTION_HISTORY_FIELDS})
     if fresh:
