@@ -52,7 +52,11 @@ def _migrate_history():
     if not ACTION_HISTORY_FILE.exists():
         _write_rows(ACTION_HISTORY_FILE, ACTION_HISTORY_FIELDS, [])
     rows = _load(ACTION_HISTORY_FILE)
-    normalized = [{k: r.get(k, '') for k in ACTION_HISTORY_FIELDS} for r in rows]
+    normalized = []
+    for row in sorted(rows, key=lambda x: x.get('timestamp', '')):
+        candidate = {k: row.get(k, '') for k in ACTION_HISTORY_FIELDS}
+        if not any(_same_setup(candidate, old) for old in normalized):
+            normalized.append(candidate)
     _write_rows(ACTION_HISTORY_FILE, ACTION_HISTORY_FIELDS, normalized)
 
 
