@@ -172,11 +172,13 @@ jobs:
           STATE_DIR="$(mktemp -d)"
           cp -R data "$STATE_DIR/data"
           git reset --hard origin/main
+          export SCANNER_STATE_DIR="$STATE_DIR/data"
           python - <<'PY'
           import csv
+          import os
           from pathlib import Path
 
-          state = Path("$STATE_DIR/data")
+          state = Path(os.environ["SCANNER_STATE_DIR"])
           root = Path("data")
           persistent = {
               "scalping_action_history.csv": "id",
