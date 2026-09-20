@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 import scalping_forward_test as ft
 
 
@@ -17,6 +18,25 @@ def candle(ts, high, low):
 
 
 class ScalpingForwardTest(unittest.TestCase):
+    def test_pending_action_refresh_selects_recent_symbols(self):
+        actions = [action("2026-09-20T10:00:00+00:00")]
+        calls = []
+
+        def fake_fetch(symbol, provider):
+            calls.append((symbol, provider))
+            return [["2026-09-20T10:05:00+00:00", "100", "101", "99", "100", "100"]]
+
+        with mock.patch.object(ft, "_load", return_value=actions),              unittest.mock.patch.object(ft, "_migrate_history"),              unittest.mock.patch.object(ft, "archive_market_candles", return_value=1):
+            result = ft.archive_pending_action_candles(
+                fake_fetch,
+                now=ft._ts("2026-09-20T10:30:00+00:00"),
+                per_symbol=32,
+            )
+
+        self.assertEqual(result, 1)
+        self.assertEqual(calls, [("TESTUSDT", "Bitget")])
+
+
     def test_first_touch_long_tp(self):
         self.assertEqual(ft._first_touch("LONG", 102.1, 99.5, 99, 102), "EXPANSION")
         self.assertEqual(ft._first_touch("LONG", 100.5, 98.9, 99, 102), "FAIL")
