@@ -126,6 +126,50 @@ def _rows_5m(sym, provider):
         "/fapi/v1/klines", {"symbol": sym, "interval": "5m", "limit": 195}
     )[:-1]
 
+def _rows_5m_window(sym, provider, start_ms, end_ms):
+    """Fetch the exact historical 5m window needed to resolve pending actions."""
+    if provider == "Bitget":
+        raw = core.bitget(
+            "/api/v2/mix/market/candles",
+            {
+                "symbol": sym,
+                "productType": "USDT-FUTURES",
+                "granularity": "5m",
+                "limit": 200,
+                "startTime": str(start_ms),
+                "endTime": str(end_ms),
+            },
+        )["data"]
+        rows = [r for r in raw if isinstance(r, (list, tuple)) and len(r) >= 6]
+        rows.sort(key=lambda r: int(float(r[0])))
+        return [
+            r for r in rows
+            if int(float(r[0])) + 5 * 60 * 1000 <= int(end_ms)
+        ]
+    if provider == "Bybit":
+        raw = core.bybit(
+            "/v5/market/kline",
+            {
+                "category": "linear",
+                "symbol": sym,
+                "interval": "5",
+                "start": str(start_ms),
+                "end": str(end_ms),
+                "limit": 200,
+            },
+        )["result"]["list"]
+        return core.normalize_bybit_candles(raw)
+    return core.binance(
+        "/fapi/v1/klines",
+        {
+            "symbol": sym,
+            "interval": "5m",
+            "startTime": start_ms,
+            "endTime": end_ms,
+            "limit": 200,
+        },
+    )[:-1]
+
 
 def scan_one(sym, provider, btc24):
     scan_started = datetime.now(timezone.utc)
@@ -400,7 +444,7 @@ def main():
     scalping_actions = _print_action_candidates(results, timestamp)
     archived_actions = archive_scalping_actions(scalping_actions)
     archived_candles = archive_scalping_market(results)
-    refreshed_pending = archive_pending_action_candles(_rows_5m)
+    refreshed_pending = archive_pending_action_candles(_rows_5m_window)
     print(f"Scalping action history added: {archived_actions}")
     print(f"Scalping 5m candles archived: {archived_candles}")
     print(f"Pending-action 5m candles refreshed: {refreshed_pending}")
