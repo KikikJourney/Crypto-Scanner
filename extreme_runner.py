@@ -16,6 +16,7 @@ from scalping_execution_layer import build_plan as legacy_scalping_plan
 from scalping_intelligence import build_plan as mtf_scalping_plan
 from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary
 from scalping_intelligence import _timestamp as mtf_timestamp
+from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
 
 WORKERS = 8
