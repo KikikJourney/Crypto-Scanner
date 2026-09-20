@@ -29,8 +29,8 @@ class ScalpingForwardTest(unittest.TestCase):
         actions = [action("2026-09-20T10:00:00+00:00")]
         calls = []
 
-        def fake_fetch(symbol, provider):
-            calls.append((symbol, provider))
+        def fake_fetch(symbol, provider, start_ms, end_ms):
+            calls.append((symbol, provider, start_ms, end_ms))
             return [["2026-09-20T10:05:00+00:00", "100", "101", "99", "100", "100"]]
 
         with mock.patch.object(ft, "_load", return_value=actions),              unittest.mock.patch.object(ft, "_migrate_history"),              unittest.mock.patch.object(ft, "archive_market_candles", return_value=1):
@@ -41,7 +41,11 @@ class ScalpingForwardTest(unittest.TestCase):
             )
 
         self.assertEqual(result, 1)
-        self.assertEqual(calls, [("TESTUSDT", "Bitget")])
+        self.assertEqual(calls, [(
+            "TESTUSDT", "Bitget",
+            int(ft._ts("2026-09-20T10:00:00+00:00").timestamp() * 1000),
+            int(ft._ts("2026-09-20T10:30:00+00:00").timestamp() * 1000),
+        )])
 
 
     def test_first_touch_long_tp(self):
