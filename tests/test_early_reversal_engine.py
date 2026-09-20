@@ -1,5 +1,5 @@
 import unittest
-from early_reversal_engine import evaluate_setup, infer_direction
+from early_reversal_engine import evaluate_setup
 
 
 def rows(prices, volume=100):
