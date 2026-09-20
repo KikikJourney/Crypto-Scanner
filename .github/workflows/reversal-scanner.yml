@@ -126,6 +126,10 @@ jobs:
           if scalping:
               assert all(r['direction'] in {'LONG','SHORT'} for r in scalping)
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in scalping)
+          funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
+          action_pairs={(r['symbol'],r['direction']) for r in actions}
+          assert action_pairs <= funnel_action_pairs
+          assert len(action_pairs) == min(len(funnel_action_pairs), 20)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
       - name: Archive exact run datasets
