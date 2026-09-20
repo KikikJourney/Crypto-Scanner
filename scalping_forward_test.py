@@ -152,6 +152,13 @@ def _first_touch(direction, high, low, stop, target):
     return None
 
 
+def _candle_close_timestamp(row):
+    value = row.get('close_timestamp')
+    if value:
+        return _ts(value)
+    return _ts(row['timestamp']) + timedelta(minutes=5)
+
+
 def _market_slice(action, market_rows, horizon):
     ts = _ts(action['timestamp'])
     deadline = ts + timedelta(minutes=horizon)
@@ -159,8 +166,7 @@ def _market_slice(action, market_rows, horizon):
         row for row in market_rows
         if row.get('provider') == action.get('provider')
         and row.get('symbol') == action.get('symbol')
-        and row.get('close_timestamp')
-        and ts < _ts(row['close_timestamp']) <= deadline
+        and ts < _candle_close_timestamp(row) <= deadline
     ]
 
 
@@ -223,7 +229,7 @@ def evaluate(actions=None, market_rows=None):
                     row[key] = outcome
                     if first_touch is None:
                         first_touch = outcome
-                        first_touch_ts = candle.get('close_timestamp', candle['timestamp'])
+                        first_touch_ts = _candle_close_timestamp(candle).isoformat()
                         row['resolved_horizon'] = key
                         row['outcome_r'] = (
                             '2.0' if outcome == 'EXPANSION'
