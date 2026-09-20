@@ -111,6 +111,9 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(plan["max_stop_distance_pct"], 2.0)
         self.assertEqual(plan["reason"], "execution stop distance exceeds scalping limit")
 
+    def test_early_reversal_runner_dependency_is_imported(self):
+        from extreme_runner import infer_early_reversal_direction
+        self.assertTrue(callable(infer_early_reversal_direction))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
