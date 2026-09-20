@@ -130,7 +130,7 @@ def _rows_5m_window(sym, provider, start_ms, end_ms):
     """Fetch the exact historical 5m window needed to resolve pending actions."""
     if provider == "Bitget":
         raw = core.bitget(
-            "/api/v2/mix/market/candles",
+            "/api/v2/mix/market/history-candles",
             {
                 "symbol": sym,
                 "productType": "USDT-FUTURES",
