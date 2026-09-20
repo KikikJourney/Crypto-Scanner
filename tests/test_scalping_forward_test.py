@@ -40,9 +40,19 @@ class ScalpingForwardTest(unittest.TestCase):
         ])
         self.assertEqual(result[0]["h15"], "EXPANSION")
         self.assertEqual(result[0]["first_touch"], "EXPANSION")
-        self.assertEqual(result[0]["first_touch_timestamp"], "2026-09-20T10:10:00+00:00")
+        self.assertEqual(result[0]["first_touch_timestamp"], "2026-09-20T10:15:00+00:00")
+        self.assertEqual(result[0]["resolved_horizon"], "15")
+        self.assertEqual(result[0]["outcome_r"], "2.0")
         self.assertEqual(result[0]["mfe_pct"], 2.1)
         self.assertEqual(result[0]["mae_pct"], 0.5)
+
+    def test_close_timestamp_controls_horizon_boundary(self):
+        result = ft.evaluate([action()], [
+            candle("2026-09-20T09:55:00+00:00", 102.5, 100),
+            candle("2026-09-20T10:10:00+00:00", 102.1, 100),
+        ])
+        self.assertEqual(result[0]["h15"], "EXPANSION")
+        self.assertEqual(result[0]["first_touch_timestamp"], "2026-09-20T10:15:00+00:00")
 
     def test_evaluate_ignores_candles_before_signal(self):
         result = ft.evaluate([action()], [
