@@ -23,7 +23,7 @@ class EarlyReversalTests(unittest.TestCase):
         return rows(prices15), rows_ohlc(candles5)
 
     def _short_fixture(self):
-        prices15 = [90.0 + i * 0.45 for i in range(28)]
+        prices15 = [90.0 + i * 0.45 for i in range(36)]
         prices15 += [102.8, 102.9, 102.75, 102.85]
         candles5 = [(102.8, 103.1, 102.5, 102.9)] * 19
         candles5[-1] = (103.0, 103.5, 102.1, 102.3)
