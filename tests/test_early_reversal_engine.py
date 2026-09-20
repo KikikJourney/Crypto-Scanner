@@ -16,17 +16,17 @@ class EarlyReversalTests(unittest.TestCase):
     def _long_fixture(self):
         # 15m: sustained decline into the lower range, then a tight base.
         prices15 = [110.0 - i * 0.45 for i in range(36)]
-        prices15 += [97.2, 97.1, 97.25, 97.15]
+        prices15 += [94.2, 94.1, 94.25, 94.15]
         # 5m: liquidity sweep and close back above the prior low.
-        candles5 = [(97.2, 97.5, 96.9, 97.1)] * 19
-        candles5[-1] = (97.0, 97.9, 96.5, 97.7)
+        candles5 = [(94.2, 94.5, 93.9, 94.1)] * 19
+        candles5[-1] = (94.0, 94.9, 93.5, 94.7)
         return rows(prices15), rows_ohlc(candles5)
 
     def _short_fixture(self):
         prices15 = [90.0 + i * 0.45 for i in range(36)]
-        prices15 += [102.8, 102.9, 102.75, 102.85]
-        candles5 = [(102.8, 103.1, 102.5, 102.9)] * 19
-        candles5[-1] = (103.0, 103.5, 102.1, 102.3)
+        prices15 += [105.8, 105.9, 105.75, 105.85]
+        candles5 = [(105.8, 106.1, 105.5, 105.9)] * 19
+        candles5[-1] = (106.0, 106.5, 105.1, 105.3)
         return rows(prices15), rows_ohlc(candles5)
 
     def test_long_early_reversal_fixture_is_eligible(self):
