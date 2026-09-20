@@ -189,7 +189,17 @@ def archive_pending_action_candles(fetch_rows, now=None, lookback_minutes=960, p
     results = []
     for (provider, symbol), (start, end) in sorted(windows.items()):
         try:
-            rows = fetch_rows(symbol, provider) or []
+            try:
+                rows = fetch_rows(
+                    symbol,
+                    provider,
+                    int(start.timestamp() * 1000),
+                    int(min(end, now).timestamp() * 1000),
+                ) or []
+            except TypeError:
+                # Backward compatibility for test/dummy fetchers that accept only
+                # (symbol, provider).
+                rows = fetch_rows(symbol, provider) or []
         except Exception as exc:
             print(f'Forward-test market refresh failed: {provider} {symbol}: {exc}')
             continue
