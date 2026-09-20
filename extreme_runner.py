@@ -295,6 +295,11 @@ def _brain_action(x, timestamp):
         "structure_15m": plan["structure_15m"],
         "liquidity_sweep_5m": plan["liquidity_sweep_5m"],
         "volume_5m": plan["volume_5m"],
+        "exhaustion_15m": plan.get("exhaustion_15m", 0.0),
+        "base_15m": plan.get("base_15m", 0.0),
+        "structure_shift_5m": plan.get("structure_shift_5m", 0.0),
+        "reversal_trigger_5m": plan.get("reversal_trigger_5m", plan.get("reversal_5m", 0.0)),
+        "early_reversal_score": plan.get("early_reversal_score", 0.0),
         "reason": plan["reason"],
     }
 
