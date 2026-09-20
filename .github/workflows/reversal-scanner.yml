@@ -163,14 +163,72 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # Only generated datasets belong in the persistence commit.
-          # Source/test files are immutable during a scan; including them here can
-          # accidentally replay an old source commit during a concurrent workflow.
+          git fetch origin main
+          # The scanner generates a new snapshot, but two files are persistent state:
+          # action history and the 5m market archive. Never resolve a rebase conflict
+          # by replacing either file wholesale; that silently destroys prior samples.
+          # Instead, snapshot this run's generated data, reset to the latest main,
+          # then merge the append-only state by stable ID.
+          STATE_DIR="$(mktemp -d)"
+          cp -R data "$STATE_DIR/data"
+          git reset --hard origin/main
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          state = Path("$STATE_DIR/data")
+          root = Path("data")
+          persistent = {
+              "scalping_action_history.csv": "id",
+              "scalping_market_5m.csv": "id",
+          }
+
+          def read(path):
+              if not path.exists():
+                  return [], []
+              with path.open(newline="", encoding="utf-8") as f:
+                  reader = csv.DictReader(f)
+                  return list(reader), reader.fieldnames or []
+
+          def write(path, fields, rows):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              with path.open("w", newline="", encoding="utf-8") as f:
+                  w = csv.DictWriter(f, fieldnames=fields)
+                  w.writeheader()
+                  w.writerows(rows)
+
+          for name, key in persistent.items():
+              current_rows, current_fields = read(state / name)
+              upstream_rows, upstream_fields = read(root / name)
+              fields = current_fields or upstream_fields
+              merged = {row.get(key): row for row in upstream_rows if row.get(key)}
+              merged.update({row.get(key): row for row in current_rows if row.get(key)})
+              write(root / name, fields, sorted(merged.values(), key=lambda r: r.get("timestamp", "")))
+
+          # All other generated datasets represent this exact scan and can replace
+          # the older snapshot after the reset.
+          for path in (state / "actionable_signals.csv",
+                       state / "signal_funnel_summary.csv",
+                       state / "signal_funnel_symbols.csv",
+                       state / "scalping_optimization_report.csv",
+                       state / "extreme_market_snapshots.csv",
+                       state / "extreme_reversal_forward_test.csv",
+                       state / "actionable_forward_test.csv",
+                       state / "universe_watchlist.csv",
+                       state / "telegram_sent_actions.csv"):
+              if path.exists():
+                  target = root / path.name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(path.read_bytes())
+
+          # Recompute the forward-test from the merged persistent history and market
+          # archive. This guarantees the committed report includes older actions and
+          # newly completed horizons, rather than only the current scan's actions.
+          import scalping_forward_test as ft
+          rows = ft.evaluate()
+          print(ft.format_summary(rows))
+          PY
+
           git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
-          # Scheduled runs can finish against an older main revision. Rebase the
-          # generated-data commit onto the newest main and prefer this run's data
-          # when the same generated CSV changed upstream.
-          git fetch origin main
-          git rebase -X theirs origin/main
           git push origin HEAD:main
