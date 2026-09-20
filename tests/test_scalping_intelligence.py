@@ -91,17 +91,24 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(_reversal_score(rows_ohlc(candles), "SHORT"), 1.0)
 
     def test_max_stop_distance_returns_wait(self):
-        # Keep 15m price in the lower range and within the preferred
-        # location zone so the risk gate, not the location gate, is exercised.
+        # Isolate the stop-distance gate: use preferred LONG location and a
+        # true 5m sweep so the momentum guard cannot short-circuit the test.
         prices15 = [100.0] * 194
-        prices15[-32:] = [100.0 + i * 0.005 for i in range(32)]
-        prices5 = [103.5 + i * 0.005 for i in range(194)]
-        prices5[-7:-1] = [100, 100.2, 100.1, 100.3, 100.0, 100.2]
-        execution_rows = prices_to_rows(prices5, 180)
-        # Last candle is a valid bullish recovery; structural stop remains far
-        # enough away to exercise the >2% risk gate.
-        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "103.0", "105.0", "180"]
-        plan = build_plan("LONG", prices15 and prices_to_rows(prices15, 120),
+        prices15[-32:] = [100.0 + i * 0.005 for i in range(31)] + [99.5]
+        execution_rows = prices_to_rows([103.5] * 194, 180)
+        execution_rows[-7:-1] = [
+            [execution_rows[-7][0], "100", "101", "99", "100", "180"],
+            [execution_rows[-6][0], "100", "101", "99", "100.2", "180"],
+            [execution_rows[-5][0], "100.2", "101.2", "99.2", "100.1", "180"],
+            [execution_rows[-4][0], "100.1", "101.3", "99.0", "100.3", "180"],
+            [execution_rows[-3][0], "100.3", "101.0", "99.1", "100.0", "180"],
+            [execution_rows[-2][0], "100.0", "101.2", "99.0", "100.2", "180"],
+        ]
+        # Last candle sweeps the prior low and closes strongly higher. The
+        # preceding structure remains near 99, so the execution stop is >2%
+        # below the entry and the intended risk gate is reached.
+        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "98.0", "105.0", "180"]
+        plan = build_plan("LONG", prices_to_rows(prices15, 120),
                           execution_rows, 88,
                           {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
         self.assertEqual(plan["status"], "WAIT")
