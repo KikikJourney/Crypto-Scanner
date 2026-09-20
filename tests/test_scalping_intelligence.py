@@ -67,19 +67,18 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_midrange_location_cannot_be_action(self):
         prices15 = [100.0] * 194
         prices5 = [100.0] * 194
-        # Put the latest 15m close around the middle of a defined range.
         for i in range(32):
             prices15[-32 + i] = 90.0 + i * (20.0 / 31.0)
         prices15[-1] = 100.0
         execution_rows = prices_to_rows(prices5, 180)
-        # Valid bullish recovery candle; location gate should stop promotion first.
         execution_rows[-2] = [execution_rows[-2][0], "99", "100", "98", "99", "180"]
         execution_rows[-1] = [execution_rows[-1][0], "99", "101", "99", "100.5", "180"]
         plan = build_plan("LONG", prices_to_rows(prices15, 120),
                           execution_rows, 90,
                           {"extreme_low_24": 80, "extreme_high_24": 120, "atr": 1.0})
         self.assertEqual(plan["status"], "WAIT")
-        self.assertIn("mid-range", plan["reason"])
+        self.assertEqual(plan["location_15m"], 0.0)
+        self.assertIn("unfavorable", plan["reason"])
 
     def test_reversal_detects_long_sweep(self):
         candles = [(100, 101, 99, 100)] * 8
@@ -92,8 +91,10 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(_reversal_score(rows_ohlc(candles), "SHORT"), 1.0)
 
     def test_max_stop_distance_returns_wait(self):
-        # Keep 15m price in the lower range so the location gate passes.
+        # Keep 15m price in the lower range and within the preferred
+        # location zone so the risk gate, not the location gate, is exercised.
         prices15 = [100.0] * 194
+        prices15[-32:] = [100.0 + i * 0.005 for i in range(32)]
         prices5 = [103.5 + i * 0.005 for i in range(194)]
         prices5[-7:-1] = [100, 100.2, 100.1, 100.3, 100.0, 100.2]
         execution_rows = prices_to_rows(prices5, 180)
