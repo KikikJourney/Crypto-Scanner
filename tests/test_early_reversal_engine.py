@@ -15,7 +15,7 @@ def rows_ohlc(prices, volume=100):
 class EarlyReversalTests(unittest.TestCase):
     def _long_fixture(self):
         # 15m: sustained decline into the lower range, then a tight base.
-        prices15 = [110.0 - i * 0.45 for i in range(28)]
+        prices15 = [110.0 - i * 0.45 for i in range(36)]
         prices15 += [97.2, 97.1, 97.25, 97.15]
         # 5m: liquidity sweep and close back above the prior low.
         candles5 = [(97.2, 97.5, 96.9, 97.1)] * 19
