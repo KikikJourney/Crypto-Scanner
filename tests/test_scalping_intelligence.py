@@ -150,6 +150,15 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(plan["max_stop_distance_pct"], 2.0)
         self.assertEqual(plan["reason"], "execution stop distance exceeds scalping limit")
 
+    def test_live_action_gate_is_disabled_by_default(self):
+        import os
+        from unittest.mock import patch
+        import send_telegram_actions
+
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertNotEqual(os.environ.get("ENABLE_SCANNER_ACTIONS"), "true")
+            self.assertEqual(send_telegram_actions.main(), 0)
+
     def test_early_reversal_runner_dependency_is_imported(self):
         from extreme_runner import infer_early_reversal_direction
         self.assertTrue(callable(infer_early_reversal_direction))
