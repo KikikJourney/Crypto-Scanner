@@ -18,7 +18,18 @@ def candle(ts, high, low):
 
 
 class ScalpingForwardTest(unittest.TestCase):
-\n    def test_overlapping_open_candle_is_excluded(self):\n        action = self._action("2026-09-20T10:25:21+00:00")\n        market = [\n            self._candle("2026-09-20T10:25:00+00:00", 110, 90, 100),\n            self._candle("2026-09-20T10:30:00+00:00", 101, 99, 100),\n        ]\n        rows = evaluate([action], market)\n        self.assertEqual(rows[0]["first_touch"], "")\n        self.assertEqual(rows[0]["mfe_pct"], "0.0")\n        self.assertEqual(rows[0]["mae_pct"], "1.0")\n\n    def test_archive_actions_deduplicates_same_setup_within_window(self):
+    def test_overlapping_open_candle_is_excluded(self):
+        act = action("2026-09-20T10:25:21+00:00")
+        market = [
+            candle("2026-09-20T10:25:00+00:00", 110, 90),
+            candle("2026-09-20T10:30:00+00:00", 101, 99),
+        ]
+        rows = ft.evaluate([act], market)
+        self.assertEqual(rows[0]["first_touch"], "")
+        self.assertEqual(rows[0]["mfe_pct"], 1.0)
+        self.assertEqual(rows[0]["mae_pct"], 1.0)
+
+    def test_archive_actions_deduplicates_same_setup_within_window(self):
         first = action("2026-09-20T10:00:00+00:00")
         duplicate = action("2026-09-20T10:10:00+00:00")
         with mock.patch.object(ft, "_migrate_history"),              mock.patch.object(ft, "_load", return_value=[first]):
