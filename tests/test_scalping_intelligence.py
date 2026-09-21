@@ -104,9 +104,9 @@ class ScalpingIntelligenceTests(unittest.TestCase):
 
     def test_structure_target_rejects_stale_extreme_and_prefers_nearest_swing(self):
         prices = [100.0] * 32
-        prices[10] = 104.5
-        prices[11] = 103.5
-        prices[12] = 104.0
+        prices[10] = 103.5
+        prices[11] = 102.5
+        prices[12] = 103.0
         prices[25] = 150.0  # stale far extreme
         target = _opposing_structure_target(rows(prices), "LONG", 100.0, 2.0)
         self.assertEqual(target, 104.5)
@@ -132,7 +132,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_max_stop_distance_returns_wait(self):
         # Isolate the stop-distance gate: preferred LONG location + true sweep.
         prices15 = [100.0] * 194
-        prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [120.0, 99.0]
+        prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [130.0, 99.0]
         execution_rows = prices_to_rows([103.5] * 194, 180)
         execution_rows[-7:-1] = [
             [execution_rows[-7][0], "100", "101", "99", "100", "180"],
