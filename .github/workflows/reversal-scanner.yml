@@ -39,12 +39,7 @@ on:
       - 'tests/test_scalping_forward_test.py'
       - 'tests/test_telegram_notifier.py'
       - '.github/workflows/reversal-scanner.yml'
-  pull_request:
-    paths:
-      - '**.py'
-      - 'tests/**'
-      - '.github/workflows/reversal-scanner.yml'
-  workflow_dispatch:
+    workflow_dispatch:
   schedule:
     - cron: '*/15 * * * *'
 permissions:
