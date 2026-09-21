@@ -6,7 +6,7 @@ import scalping_forward_test as ft
 def action(ts="2026-09-20T10:00:00+00:00", direction="LONG"):
     return {
         "id": f"A-{direction}-{ts}", "timestamp": ts, "symbol": "TESTUSDT",
-        "provider": "Bitget", "direction": direction, "entry": "100",
+        "provider": "Bitget", "direction": direction, "strategy_version": ft.CURRENT_STRATEGY_VERSION, "entry": "100",
         "stop": "99", "target": "102",
     }
 
@@ -47,6 +47,13 @@ class ScalpingForwardTest(unittest.TestCase):
             int(ft._ts("2026-09-20T10:30:00+00:00").timestamp() * 1000),
         )])
 
+
+    def test_output_preserves_injected_fixture_strategy_version(self):
+        result = ft.evaluate([action()], [
+            candle("2026-09-20T10:05:00+00:00", 101, 99.5),
+            candle("2026-09-20T10:10:00+00:00", 102.1, 100),
+        ])
+        self.assertEqual(result[0]["strategy_version"], ft.CURRENT_STRATEGY_VERSION)
 
     def test_first_touch_long_tp(self):
         self.assertEqual(ft._first_touch("LONG", 102.1, 99.5, 99, 102), "EXPANSION")
