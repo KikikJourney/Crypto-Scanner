@@ -72,6 +72,19 @@ def _still_actionable(row, live_price):
 
 
 def main():
+    # Safety lock: forward-test results are currently negative, so scanner
+    # actions remain research/paper signals until an explicit operator enables
+    # live notifications.
+    live_actions_enabled = __import__("os").environ.get(
+        "ENABLE_SCANNER_ACTIONS", ""
+    ).strip().lower() in {"1", "true", "yes"}
+    if not live_actions_enabled:
+        print(
+            "TELEGRAM: LIVE ACTIONS LOCKED — research/paper mode; "
+            "set ENABLE_SCANNER_ACTIONS=true only after positive out-of-sample validation"
+        )
+        return 0
+
     if not ACTIONS.exists():
         print("TELEGRAM: no actionable signal file")
         return 0
