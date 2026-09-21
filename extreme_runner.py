@@ -15,7 +15,7 @@ from extreme_event_stats import format_summary
 from scalping_execution_layer import build_plan as legacy_scalping_plan
 from scalping_intelligence import build_plan as mtf_scalping_plan
 from scalping_forward_test import evaluate as evaluate_scalping, format_summary as scalping_summary, archive_actions as archive_scalping_actions, archive_market_candles as archive_scalping_market, archive_pending_action_candles
-from scalping_intelligence import _timestamp as mtf_timestamp
+from scalping_intelligence import _timestamp as mtf_timestamp, SCALPING_STRATEGY_VERSION
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
 
@@ -32,6 +32,7 @@ def _issue_valid_until(timestamp):
 
 ACTIONABLE_FIELDS = [
     "id", "timestamp", "scan_timestamp", "symbol", "provider", "direction", "score",
+    "strategy_version",
     "v2_score", "confidence", "location_15m", "reversal_5m", "entry", "entry_low", "entry_high", "trigger",
     "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_15m_timestamp",
     "data_age_seconds", "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
@@ -234,6 +235,7 @@ def _mtf_action(x, timestamp):
         "direction": plan["direction"],
         "score": plan["v2_score"],
         "v2_score": plan["v2_score"],
+        "strategy_version": plan.get("strategy_version", SCALPING_STRATEGY_VERSION),
         "confidence": plan["confidence"],
         "location_15m": plan["location_15m"],
         "reversal_5m": plan["reversal_5m"],
