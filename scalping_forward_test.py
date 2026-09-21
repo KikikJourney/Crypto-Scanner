@@ -13,16 +13,18 @@ ACTION_HISTORY_FILE = Path('data/scalping_action_history.csv')
 MARKET_FILE = Path('data/scalping_market_5m.csv')
 OUTPUT_FILE = Path('data/scalping_forward_test.csv')
 CRYPTO_UNIVERSE_FILE = Path('data/crypto_universe.csv')
+CURRENT_STRATEGY_VERSION = 'scalp-structure-v1'
+LEGACY_STRATEGY_VERSION = 'legacy'
 HORIZONS_MINUTES = (15, 30, 60, 120)
 FIELDS = [
-    'id','timestamp','symbol','provider','direction','score','v2_score','confidence',
+    'id','timestamp','symbol','provider','direction','score','v2_score','confidence','strategy_version',
     'location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m',
     'reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct',
     'reward_r','h15','h30','h60','h120',
     'first_touch','first_touch_timestamp','resolved_horizon','outcome_r','mfe_pct','mae_pct',
 ]
 ACTION_HISTORY_FIELDS = [
-    'id','timestamp','symbol','provider','direction','score','v2_score','confidence',
+    'id','timestamp','symbol','provider','direction','score','v2_score','confidence','strategy_version',
     'location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m',
     'reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r',
 ]
@@ -64,6 +66,8 @@ def _migrate_history():
     normalized = []
     for row in sorted(rows, key=lambda x: x.get('timestamp', '')):
         candidate = {k: row.get(k, '') for k in ACTION_HISTORY_FIELDS}
+        if not candidate.get('strategy_version'):
+            candidate['strategy_version'] = LEGACY_STRATEGY_VERSION
         if not any(_same_setup(candidate, old) for old in normalized):
             normalized.append(candidate)
     _write_rows(ACTION_HISTORY_FILE, ACTION_HISTORY_FIELDS, normalized)
@@ -108,7 +112,9 @@ def archive_actions(actions=None):
             continue
         if any(_same_setup(action, old) for old in existing_rows + fresh):
             continue
-        fresh.append({k: action.get(k, '') for k in ACTION_HISTORY_FIELDS})
+        fresh_row = {k: action.get(k, '') for k in ACTION_HISTORY_FIELDS}
+        fresh_row['strategy_version'] = action.get('strategy_version') or CURRENT_STRATEGY_VERSION
+        fresh.append(fresh_row)
     if fresh:
         with ACTION_HISTORY_FILE.open('a', newline='', encoding='utf-8') as f:
             csv.DictWriter(f, fieldnames=ACTION_HISTORY_FIELDS).writerows(fresh)
@@ -294,6 +300,8 @@ def evaluate(actions=None, market_rows=None):
     eligible = _crypto_symbols()
     if actions_from_file and eligible:
         actions = [r for r in actions if str(r.get('symbol', '')).upper() in eligible]
+    if actions_from_file:
+        actions = [r for r in actions if r.get('strategy_version') == CURRENT_STRATEGY_VERSION]
     market_from_file = market_rows is None
     market_rows = _load(MARKET_FILE) if market_from_file else market_rows
     if market_from_file and eligible:
