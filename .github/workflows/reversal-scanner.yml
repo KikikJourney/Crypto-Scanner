@@ -23,6 +23,8 @@ on:
       - 'send_telegram_actions.py'
       - 'signal_funnel_diagnostic.py'
       - 'scalping_optimizer.py'
+      - 'validation_gate.py'
+      - 'tests/test_validation_gate.py'
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_scalping_forward_test.py'
@@ -36,6 +38,11 @@ on:
       - 'tests/test_scalping_intelligence.py'
       - 'tests/test_scalping_forward_test.py'
       - 'tests/test_telegram_notifier.py'
+      - '.github/workflows/reversal-scanner.yml'
+  pull_request:
+    paths:
+      - '**.py'
+      - 'tests/**'
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
   schedule:
@@ -128,10 +135,14 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_early_reversal_engine.py' -v
       - name: Build optimization report
         run: python scalping_optimizer.py
+      - name: Build statistical validation report
+        run: python validation_gate.py
       - name: Validate Scalping Optimizer
         run: python -m unittest discover -s tests -p 'test_scalping_optimizer.py' -v
       - name: Validate Scalping forward-test
         run: python -m unittest discover -s tests -p 'test_scalping_forward_test.py' -v
+      - name: Validate statistical evidence gate
+        run: python -m unittest discover -s tests -p 'test_validation_gate.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -282,6 +293,10 @@ jobs:
           # newly completed horizons, rather than only the current scan's actions.
           import scalping_forward_test as ft
           rows = ft.evaluate()
+          import scalping_optimizer as optimizer
+          optimizer.write(rows)
+          import validation_gate
+          validation_gate.write(rows)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
