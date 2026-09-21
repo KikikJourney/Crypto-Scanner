@@ -33,6 +33,22 @@ class ValidationGateTests(unittest.TestCase):
         self.assertEqual(result["unresolved"], 1)
         self.assertFalse(result["sample_gate_pass"])
 
+    def test_negative_confidence_interval_is_classified(self):
+        rows = [row(f"2026-09-20T{10 + i // 60:02d}:{i % 60:02d}:00+00:00", "FAIL", "-1.0") for i in range(30)]
+        result = build_report(rows)
+        self.assertTrue(result["sample_gate_pass"])
+        self.assertEqual(result["evidence_status"], "NEGATIVE_CI")
+
+    def test_mixed_evidence_is_inconclusive(self):
+        rows = [
+            row(f"2026-09-20T{10 + i // 60:02d}:{i % 60:02d}:00+00:00",
+                "EXPANSION" if i % 2 == 0 else "FAIL",
+                "2.0" if i % 2 == 0 else "-1.0")
+            for i in range(30)
+        ]
+        result = build_report(rows)
+        self.assertEqual(result["evidence_status"], "INCONCLUSIVE_CI")
+
     def test_bootstrap_is_deterministic(self):
         rows = [
             row("2026-09-20T10:00:00+00:00", "EXPANSION", "2.0"),
