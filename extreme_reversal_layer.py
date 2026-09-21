@@ -83,6 +83,7 @@ def append_rows(rows):
     combined=existing_rows+fresh;_assign_events(combined);_write_forward(combined);return len(fresh)
 def append_snapshots(rows):
     _migrate_snapshots()
+    eligible=_crypto_symbols()
     with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:existing={r['id'] for r in csv.DictReader(f)}
     fresh=[r for r in rows if r and (not eligible or str(r.get('symbol','')).upper() in eligible) and r['id'] not in existing]
     if not fresh:return 0
