@@ -289,12 +289,14 @@ def _metrics(direction, entry, candles):
 def evaluate(actions=None, market_rows=None):
     """Resolve persistent actions from future closed 5m OHLC candles."""
     _migrate_history()
-    actions = _load(ACTION_HISTORY_FILE) if actions is None else actions
+    actions_from_file = actions is None
+    actions = _load(ACTION_HISTORY_FILE) if actions_from_file else actions
     eligible = _crypto_symbols()
-    if eligible:
+    if actions_from_file and eligible:
         actions = [r for r in actions if str(r.get('symbol', '')).upper() in eligible]
-    market_rows = _load(MARKET_FILE) if market_rows is None else market_rows
-    if eligible:
+    market_from_file = market_rows is None
+    market_rows = _load(MARKET_FILE) if market_from_file else market_rows
+    if market_from_file and eligible:
         market_rows = [r for r in market_rows if str(r.get('symbol', '')).upper() in eligible]
     market_rows = sorted(market_rows, key=lambda r: _ts(r['timestamp']))
     output = []
