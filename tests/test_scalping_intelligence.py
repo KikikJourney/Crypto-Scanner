@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from extreme_runner import _normalize_bitget_mtf_candles
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
-    _location_score, _reversal_score,
+    _location_score, _reversal_score, _opposing_structure_target,
 )
 
 
@@ -100,6 +100,21 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(plan["status"], "WAIT")
         self.assertEqual(plan["reversal_5m"], 0.5)
         self.assertIn("true sweep", plan["reason"])
+
+    def test_structure_target_rejects_stale_extreme_and_prefers_nearest_swing(self):
+        prices = [100.0] * 32
+        prices[10] = 104.5
+        prices[11] = 103.5
+        prices[12] = 104.0
+        prices[25] = 150.0  # stale far extreme
+        target = _opposing_structure_target(rows(prices), "LONG", 100.0, 2.0)
+        self.assertEqual(target, 104.5)
+
+    def test_structure_target_rejects_only_stale_extreme(self):
+        prices = [100.0] * 32
+        prices[25] = 150.0
+        target = _opposing_structure_target(rows(prices), "LONG", 100.0, 2.0)
+        self.assertIsNone(target)
 
     def test_structure_target_must_support_two_r(self):
         prices15 = [100.0] * 194
