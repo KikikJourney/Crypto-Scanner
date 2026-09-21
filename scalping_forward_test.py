@@ -180,7 +180,10 @@ def archive_pending_action_candles(fetch_rows, now=None, lookback_minutes=960, p
     """Backfill recent action windows from the provider even when symbols leave the deep scan."""
     _migrate_history()
     now = now or datetime.now().astimezone()
-    actions = _load(ACTION_HISTORY_FILE)
+    actions = [
+        r for r in _load(ACTION_HISTORY_FILE)
+        if r.get('strategy_version') == CURRENT_STRATEGY_VERSION
+    ]
     cutoff = now - timedelta(minutes=lookback_minutes)
     windows = {}
     for action in actions:
