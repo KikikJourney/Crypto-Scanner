@@ -178,12 +178,12 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, m
     candidates = []
     for i in range(2, len(window) - 2):
         if direction == "LONG":
-            level = _high(window[i])
-            if level >= min_target and level >= _high(window[i-1]) and level >= _high(window[i+1]):
+            level = _close(window[i])
+            if level >= min_target and level >= _close(window[i-1]) and level >= _close(window[i+1]):
                 candidates.append(level)
         else:
-            level = _low(window[i])
-            if level <= min_target and level <= _low(window[i-1]) and level <= _low(window[i+1]):
+            level = _close(window[i])
+            if level <= min_target and level <= _close(window[i-1]) and level <= _close(window[i+1]):
                 candidates.append(level)
     candidates = sorted(set(candidates))
     if direction == "LONG":
@@ -335,8 +335,23 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
 
-    # TP uses the nearest meaningful opposing 15m swing. Absolute extremes
-    # can be stale and produced unrealistic 10R-40R objectives in the audit.
+    # Apply the hard stop-distance gate before target selection. The stop limit
+    # is independent of whether a reachable opposing swing exists.
+    risk_pct = risk / price * 100.0
+    max_stop_distance_pct = 2.0
+    if risk_pct > max_stop_distance_pct:
+        return {"status": "WAIT", "reason": "execution stop distance exceeds scalping limit",
+                "confidence": round(confidence, 1), "location_15m": location_15,
+                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
+                "max_stop_distance_pct": max_stop_distance_pct}
+    if risk_pct < 0.10:
+        return {"status": "NO-TRADE", "reason": "execution risk below configured minimum",
+                "confidence": round(confidence, 1), "location_15m": location_15,
+                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
+                "max_stop_distance_pct": max_stop_distance_pct}
+
+    # TP uses the nearest meaningful opposing 15m closing-price swing. Absolute
+    # extremes can be stale and produced unrealistic 10R-40R objectives in the audit.
     structural_target = _opposing_structure_target(rows_15m, direction, price, risk)
     if structural_target is None:
         return {
@@ -353,19 +368,6 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         if direction == "LONG"
         else (entry_low - target) / risk
     )
-    risk_pct = risk / price * 100.0
-    max_stop_distance_pct = 2.0
-    if risk_pct > max_stop_distance_pct:
-        return {"status": "WAIT", "reason": "execution stop distance exceeds scalping limit",
-                "confidence": round(confidence, 1), "location_15m": location_15,
-                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
-                "max_stop_distance_pct": max_stop_distance_pct}
-    if risk_pct < 0.10:
-        return {"status": "NO-TRADE", "reason": "execution risk below configured minimum",
-                "confidence": round(confidence, 1), "location_15m": location_15,
-                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
-                "max_stop_distance_pct": max_stop_distance_pct}
-
     if confidence < 80.0:
         return {
             "status": "WAIT", "direction": direction,
