@@ -45,8 +45,36 @@ WATCHLIST_FIELDS = [
 ]
 
 
+# Defense-in-depth blocklist for Bitget TradFi perps observed in the live
+# universe. Bitget documents symbolType=crypto/stock/metal/commodity, but the
+# production snapshots demonstrated that relying on that field alone was not
+# sufficient to keep newly listed TradFi contracts out of the scanner.
+KNOWN_NON_CRYPTO_SYMBOLS = {
+    'TSLAUSDT', 'AAPLUSDT', 'NVDAUSDT', 'AMZNUSDT', 'METAUSDT', 'QQQUSDT',
+    'SPYUSDT', 'XAUUSDT', 'XAGUSDT', 'CLUSDT', 'BZUSDT', 'NATGASUSDT',
+    'SAMSUNGUSDT', 'SKHYNIXUSDT', 'MRNAUSDT', 'EURUSDUSDT', 'USDJPYUSDT',
+    'GBPUSDUSDT', 'FCXUSDT', 'HPQUSDT', 'VALEUSDT', 'H100USDT',
+    'KUAISHOUUSDT', 'COINUSDT', 'CRCLUSDT', 'GOOGLUSDT', 'HOODUSDT',
+    'INTCUSDT', 'MSFTUSDT', 'MSTRUSDT', 'MUUSDT', 'PLTRUSDT', 'ORCLUSDT',
+    'ARMUSDT', 'BAUSDT', 'EWHUSDT', 'EWJUSDT', 'EWYUSDT', 'INDAUSDT',
+    'NFLXUSDT', 'TSMUSDT', 'WMTUSDT', 'COSTUSDT', 'GMEUSDT', 'JDUSDT',
+    'IBMUSDT', 'MCDUSDT', 'LLYUSDT', 'CSCOUSDT', 'PEPUSDT', 'ACNUSDT',
+    'MAUSDT', 'UNHUSDT', 'BABAUSDT', 'DELLUSDT', 'QCOMUSDT', 'WDCUSDT',
+    'SMCIUSDT', 'SMRUSDT', 'VRTUSDT', 'ETNUSDT', 'AXTIUSDT', 'KOPNUSDT',
+    'NIOUSDT', 'JOBYUSDT', 'LMTUSDT', 'LWLGUSDT', 'MRVLUSDT', 'NOWUSDT',
+    'OKLOUSDT', 'OXYUSDT', 'PANWUSDT', 'POETUSDT', 'QBTSUSDT', 'QUBTUSDT',
+    'RDDTUSDT', 'RDWUSDT', 'RKLBUSDT', 'SNOWUSDT', 'SOXLUSDT', 'SOXSUSDT',
+    'SQQQUSDT', 'TQQQUSDT', 'VOOUSDT', 'SOXXUSDT', 'AALUSDT', 'TXNUSDT',
+    'BACUSDT', 'CRMUSDT', 'AMKRUSDT', 'PDDUSDT', 'ASXUSDT', 'DDOGUSDT',
+    'UBERUSDT', 'MELIUSDT', 'BKNGUSDT', 'XLEUSDT', 'VSTUSDT', 'EWZUSDT',
+    'SHOPUSDT', 'PYPLUSDT', 'ZMUSDT', 'SOFIUSDT', 'HSIUSDT', 'NVDLUSDT',
+    'TSLLUSDT', 'AMZUUSDT', 'METUUSDT', 'AAPUUSDT', 'MSFUUSDT', 'TZAUSDT',
+    'CPNGUSDT', 'PKXUSDT', 'MUFGUSDT', 'TMUSDT',
+}
+
+
 def active_bitget_symbols():
-    """Return only crypto USDT perpetuals, excluding stock/metal/commodity perps."""
+    """Return only crypto USDT perpetuals, with a defense-in-depth TradFi denylist."""
     data = core.bitget(
         '/api/v3/market/instruments',
         {'category': PRODUCT},
@@ -62,8 +90,9 @@ def active_bitget_symbols():
         if str(x.get('symbolType', '')).lower() != 'crypto':
             continue
         sym = str(x.get('symbol', '')).upper()
-        if sym.endswith('USDT'):
-            out.append(sym)
+        if not sym.endswith('USDT') or sym in KNOWN_NON_CRYPTO_SYMBOLS:
+            continue
+        out.append(sym)
     return sorted(set(out))
 
 
