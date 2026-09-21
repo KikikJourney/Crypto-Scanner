@@ -104,12 +104,12 @@ class ScalpingIntelligenceTests(unittest.TestCase):
 
     def test_structure_target_rejects_stale_extreme_and_prefers_nearest_swing(self):
         prices = [100.0] * 32
-        prices[10] = 103.5
+        prices[10] = 104.5
         prices[11] = 102.5
         prices[12] = 103.0
         prices[25] = 150.0  # stale far extreme
         target = _opposing_structure_target(rows(prices), "LONG", 100.0, 2.0)
-        self.assertEqual(target, 103.5)
+        self.assertEqual(target, 104.5)
 
     def test_structure_target_rejects_only_stale_extreme(self):
         prices = [100.0] * 32
