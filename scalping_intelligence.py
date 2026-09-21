@@ -10,6 +10,11 @@ from math import isfinite
 from early_reversal_engine import evaluate_setup as evaluate_early_reversal
 
 
+# Version boundary for forward-test evidence. Historical rows without this
+# version are legacy evidence and must not be mixed with the current rules.
+SCALPING_STRATEGY_VERSION = "scalp-structure-v1"
+
+
 def _f(v, default=None):
     try:
         x = float(v)
@@ -402,7 +407,8 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     latest_5m_ts = _timestamp(rows_5m[-1])
     latest_15m_ts = _timestamp(rows_15m[-1])
     return {
-        "status": status, "direction": direction, "confidence": round(confidence, 1),
+        "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
+        "confidence": round(confidence, 1),
         "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(price, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
