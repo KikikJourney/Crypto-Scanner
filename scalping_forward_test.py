@@ -12,6 +12,7 @@ ACTION_FILE = Path('data/actionable_signals.csv')
 ACTION_HISTORY_FILE = Path('data/scalping_action_history.csv')
 MARKET_FILE = Path('data/scalping_market_5m.csv')
 OUTPUT_FILE = Path('data/scalping_forward_test.csv')
+CRYPTO_UNIVERSE_FILE = Path('data/crypto_universe.csv')
 HORIZONS_MINUTES = (15, 30, 60, 120)
 FIELDS = [
     'id','timestamp','symbol','provider','direction','score','v2_score','confidence',
@@ -47,11 +48,19 @@ def _load(path, fields=None):
         return list(csv.DictReader(f))
 
 
+def _crypto_symbols():
+    if not CRYPTO_UNIVERSE_FILE.exists():
+        return set()
+    return {str(r.get('symbol', '')).upper() for r in _load(CRYPTO_UNIVERSE_FILE) if r.get('symbol')}
+
 def _migrate_history():
     ACTION_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     if not ACTION_HISTORY_FILE.exists():
         _write_rows(ACTION_HISTORY_FILE, ACTION_HISTORY_FIELDS, [])
     rows = _load(ACTION_HISTORY_FILE)
+    eligible = _crypto_symbols()
+    if eligible:
+        rows = [r for r in rows if str(r.get('symbol', '')).upper() in eligible]
     normalized = []
     for row in sorted(rows, key=lambda x: x.get('timestamp', '')):
         candidate = {k: row.get(k, '') for k in ACTION_HISTORY_FIELDS}
@@ -281,7 +290,12 @@ def evaluate(actions=None, market_rows=None):
     """Resolve persistent actions from future closed 5m OHLC candles."""
     _migrate_history()
     actions = _load(ACTION_HISTORY_FILE) if actions is None else actions
+    eligible = _crypto_symbols()
+    if eligible:
+        actions = [r for r in actions if str(r.get('symbol', '')).upper() in eligible]
     market_rows = _load(MARKET_FILE) if market_rows is None else market_rows
+    if eligible:
+        market_rows = [r for r in market_rows if str(r.get('symbol', '')).upper() in eligible]
     market_rows = sorted(market_rows, key=lambda r: _ts(r['timestamp']))
     output = []
 
