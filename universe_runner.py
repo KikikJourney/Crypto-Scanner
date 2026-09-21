@@ -45,32 +45,72 @@ WATCHLIST_FIELDS = [
 
 
 def active_bitget_symbols():
-    data = core.bitget('/api/v2/mix/market/contracts', {'productType': PRODUCT})['data']
+    """Return only crypto USDT perpetuals, excluding stock/metal/commodity perps."""
+    data = core.bitget(
+        '/api/v3/market/instruments',
+        {'category': PRODUCT},
+    )['data']
     out = []
     for x in data:
-        if str(x.get('symbolStatus', '')).lower() != 'normal': continue
-        if str(x.get('quoteCoin', '')).upper() != 'USDT': continue
-        if str(x.get('symbolType', '')).lower() != 'perpetual': continue
+        if str(x.get('status', '')).lower() != 'online':
+            continue
+        if str(x.get('quoteCoin', '')).upper() != 'USDT':
+            continue
+        if str(x.get('type', '')).lower() != 'perpetual':
+            continue
+        if str(x.get('symbolType', '')).lower() != 'crypto':
+            continue
         sym = str(x.get('symbol', '')).upper()
-        if sym.endswith('USDT'): out.append(sym)
+        if sym.endswith('USDT'):
+            out.append(sym)
     return sorted(set(out))
 
 
 def active_binance_symbols():
+    """Return only Binance USDⓈ-M perpetuals whose underlying is crypto."""
     data = core.binance('/fapi/v1/exchangeInfo')
-    return sorted({x['symbol'] for x in data['symbols'] if x.get('status') == 'TRADING' and x.get('contractType') == 'PERPETUAL' and x.get('quoteAsset') == 'USDT'})
+    out = []
+    for x in data['symbols']:
+        if x.get('status') != 'TRADING':
+            continue
+        if x.get('contractType') != 'PERPETUAL':
+            continue
+        if x.get('quoteAsset') != 'USDT':
+            continue
+        if str(x.get('underlyingType', '')).upper() != 'COIN':
+            continue
+        subtypes = {str(v).strip().lower() for v in x.get('underlyingSubType', [])}
+        if 'crypto' not in subtypes:
+            continue
+        out.append(x['symbol'])
+    return sorted(set(out))
 
 
 def active_bybit_symbols():
+    """Return only crypto linear perpetuals, excluding Bybit TradFi perpetuals."""
     out, cursor = [], ''
     while True:
         params = {'category': 'linear', 'limit': 1000}
-        if cursor: params['cursor'] = cursor
+        if cursor:
+            params['cursor'] = cursor
         d = core.bybit('/v5/market/instruments-info', params)['result']
         for x in d.get('list', []):
-            if x.get('status') == 'Trading' and x.get('quoteCoin') == 'USDT' and x.get('contractType') == 'LinearPerpetual': out.append(x['symbol'])
+            if x.get('status') != 'Trading':
+                continue
+            if x.get('quoteCoin') != 'USDT':
+                continue
+            if x.get('contractType') != 'LinearPerpetual':
+                continue
+            # Bybit exposes marketRegion/underlyingTicker for TradFi perps.
+            # Crypto perpetuals do not carry a TradFi market region or ticker.
+            if str(x.get('marketRegion', '')).strip():
+                continue
+            if str(x.get('underlyingTicker', '')).strip():
+                continue
+            out.append(x['symbol'])
         cursor = d.get('nextPageCursor', '')
-        if not cursor: break
+        if not cursor:
+            break
     return sorted(set(out))
 
 
