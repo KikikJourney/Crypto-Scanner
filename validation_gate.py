@@ -116,6 +116,24 @@ def walk_forward(values, segments=3):
     return report
 
 
+def evidence_status(report):
+    """Classify evidence separately from sample sufficiency.
+    
+    This is descriptive research status only; it never changes scanner behavior.
+    """
+    if report["resolved_trades"] < MIN_SAMPLE:
+        return "INSUFFICIENT_SAMPLE"
+    low = report["bootstrap_ci95_low"]
+    high = report["bootstrap_ci95_high"]
+    if low is None or high is None:
+        return "INSUFFICIENT_SAMPLE"
+    if high < 0:
+        return "NEGATIVE_CI"
+    if low > 0:
+        return "POSITIVE_CI"
+    return "INCONCLUSIVE_CI"
+
+
 def build_report(rows=None):
     rows = load_rows() if rows is None else rows
     resolved = resolved_r(rows)
@@ -131,6 +149,11 @@ def build_report(rows=None):
         "ambiguous_rate": round(ambiguous / len(rows), 6) if rows else 0.0,
         "min_sample_for_gate": MIN_SAMPLE,
         "sample_gate_pass": len(values) >= MIN_SAMPLE,
+        "evidence_status": evidence_status({
+            "resolved_trades": len(values),
+            "bootstrap_ci95_low": ci_low,
+            "bootstrap_ci95_high": ci_high,
+        }),
         "bootstrap_expectancy_r": mean,
         "bootstrap_ci95_low": ci_low,
         "bootstrap_ci95_high": ci_high,
@@ -159,7 +182,8 @@ if __name__ == "__main__":
         f"expectancy_R={report['expectancy_r']:.4f} net_R={report['net_r']:.2f} "
         f"maxDD_R={report['max_drawdown_r']:.2f} "
         f"bootstrap95=[{report['bootstrap_ci95_low']}, {report['bootstrap_ci95_high']}] "
-        f"sample_gate={'PASS' if report['sample_gate_pass'] else 'COLLECTING'}"
+        f"sample_gate={'PASS' if report['sample_gate_pass'] else 'COLLECTING'} "
+        f"evidence_status={report['evidence_status']}"
     )
     for segment in report["walk_forward"]:
         print(
