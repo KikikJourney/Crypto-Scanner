@@ -65,9 +65,7 @@ class ScalpingForwardTest(unittest.TestCase):
         def fake_fetch(symbol, provider, start_ms, end_ms):
             return [["2026-09-20T10:05:00", "100", "101", "99.5", "100", "100"]]
 
-        with mock.patch.object(ft, "_load", return_value=actions), \\
-             mock.patch.object(ft, "_migrate_history"), \\
-             mock.patch.object(ft, "archive_market_candles", return_value=1):
+        with mock.patch.object(ft, "_load", return_value=actions), mock.patch.object(ft, "_migrate_history"), mock.patch.object(ft, "archive_market_candles", return_value=1):
             self.assertEqual(
                 ft.archive_pending_action_candles(
                     fake_fetch,
