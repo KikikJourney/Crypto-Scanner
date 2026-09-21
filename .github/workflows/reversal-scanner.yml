@@ -174,8 +174,9 @@ jobs:
           funnel=check('data/signal_funnel_summary.csv', {'timestamp','provider','universe','deep_scan','data_valid','data_errors','direction_long','direction_short','no_direction','alignment_failed','location_failed','reversal_failed','confidence_failed','risk_failed','actions'})
           funnel_symbols=check('data/signal_funnel_symbols.csv', {'timestamp','symbol','provider','stage','direction','confidence','alignment','reason'})
           optimization=check('data/scalping_optimization_report.csv', {'dimension','bucket','resolved','expansion','fail','ambiguous','expansion_rate','fail_rate','min_sample_for_review'})
-          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','v2_score','confidence','location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m','reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120','first_touch','first_touch_timestamp','resolved_horizon','outcome_r'})
+          scalping=check('data/scalping_forward_test.csv', {'id','timestamp','symbol','provider','direction','score','v2_score','confidence','strategy_version','location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m','reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct','reward_r','h15','h30','h60','h120','first_touch','first_touch_timestamp','resolved_horizon','outcome_r'})
           if scalping:
+              assert all(r['strategy_version'] == 'scalp-structure-v1' for r in scalping), 'legacy scalping evidence leaked into current forward-test'
               assert all(r['direction'] in {'LONG','SHORT'} for r in scalping)
               assert all(float(r['entry'])>0 and float(r['stop'])>0 and float(r['target'])>0 for r in scalping)
               assert all(r['first_touch'] in {'', 'EXPANSION', 'FAIL', 'AMBIGUOUS'} for r in scalping)
