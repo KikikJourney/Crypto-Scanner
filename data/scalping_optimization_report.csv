@@ -1,6 +1,6 @@
 dimension,bucket,resolved,expansion,fail,ambiguous,expansion_rate,fail_rate,min_sample_for_review
-confidence,80-84.9,6,0,6,0,0.0,1.0,30
-confidence,85-89.9,1,0,1,0,0.0,1.0,30
-location_15m,1.0,7,0,7,0,0.0,1.0,30
-reversal_5m,0.5,6,0,6,0,0.0,1.0,30
-reversal_5m,1.0,1,0,1,0,0.0,1.0,30
+confidence,80-84.9,9,1,8,0,0.1111,0.8889,30
+confidence,85-89.9,3,0,3,0,0.0,1.0,30
+location_15m,1.0,12,1,11,0,0.0833,0.9167,30
+reversal_5m,0.5,9,1,8,0,0.1111,0.8889,30
+reversal_5m,1.0,3,0,3,0,0.0,1.0,30
