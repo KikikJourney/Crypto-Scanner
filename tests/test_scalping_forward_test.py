@@ -22,12 +22,12 @@ class ScalpingForwardTest(unittest.TestCase):
         act = action("2026-09-20T10:25:21+00:00")
         market = [
             candle("2026-09-20T10:25:00+00:00", 110, 90),
-            candle("2026-09-20T10:30:00+00:00", 101, 99),
+            candle("2026-09-20T10:30:00+00:00", 101, 100),
         ]
         rows = ft.evaluate([act], market)
         self.assertEqual(rows[0]["first_touch"], "")
         self.assertEqual(rows[0]["mfe_pct"], 1.0)
-        self.assertEqual(rows[0]["mae_pct"], 1.0)
+        self.assertEqual(rows[0]["mae_pct"], 0.0)
 
     def test_archive_actions_deduplicates_same_setup_within_window(self):
         first = action("2026-09-20T10:00:00+00:00")
