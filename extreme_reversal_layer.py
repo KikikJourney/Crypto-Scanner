@@ -3,7 +3,7 @@ import csv
 from datetime import datetime,timedelta
 from pathlib import Path
 from scanner_v2 import clamp
-EXTREME_FORWARD_FILE=Path('data/extreme_reversal_forward_test.csv');EXTREME_SNAPSHOT_FILE=Path('data/extreme_market_snapshots.csv')
+EXTREME_FORWARD_FILE=Path('data/extreme_reversal_forward_test.csv');EXTREME_SNAPSHOT_FILE=Path('data/extreme_market_snapshots.csv');CRYPTO_UNIVERSE_FILE=Path('data/crypto_universe.csv')
 HORIZONS=(1,4,12,24);MIN_EXTREME_SCORE=70.0;MAX_1H_POS_LONG=.30;MIN_1H_POS_SHORT=.70;MAX_24H_POS_LONG=.25;MIN_24H_POS_SHORT=.75;MAX_ATR_FROM_LOW=1.;MAX_ATR_FROM_HIGH=1.;MIN_MOVE_ATR=.75;MIN_TURN=.25;MAX_TRIGGER_GAP_ATR=1.25;EVENT_GAP_HOURS=2
 CSV_FIELDS=['id','timestamp','symbol','provider','direction','signal','score','price','atr_pct','trigger','action_stop','action_target','action_risk_pct','action_reward_r','event_id','event_role','h1','h4','h12','h24'];SNAPSHOT_FIELDS=['id','timestamp','symbol','provider','price']
 def _score_long(f):
@@ -33,6 +33,12 @@ def signal_row(result,features,timestamp,action_plan=None):
     return {'id':f'{provider}_{ts}_{result["symbol"]}_EXTREME','timestamp':ts,'symbol':result['symbol'],'provider':provider,'direction':d['direction'],'signal':d['status'],'score':d['score'],'price':features['price'],'atr_pct':features['atr_pct'],'trigger':p.get('trigger',''),'action_stop':p.get('stop',''),'action_target':p.get('target',''),'action_risk_pct':p.get('risk_pct',''),'action_reward_r':p.get('reward_r',''),'event_id':'','event_role':'','h1':'','h4':'','h12':'','h24':''}
 def snapshot_row(result,features,timestamp):
     ts=timestamp;provider=result['provider'];return {'id':f'{provider}_{ts}_{result["symbol"]}','timestamp':ts,'symbol':result['symbol'],'provider':provider,'price':features['price']}
+def _crypto_symbols():
+    if not CRYPTO_UNIVERSE_FILE.exists():
+        return set()
+    with CRYPTO_UNIVERSE_FILE.open(newline='',encoding='utf-8') as f:
+        return {str(r.get('symbol','')).upper() for r in csv.DictReader(f) if r.get('symbol')}
+
 def _parse_ts(v):return datetime.fromisoformat(v.replace('Z','+00:00'))
 def _outcome(direction,entry,future,atr_pct):
     move=(future-entry)/entry*100;fav=move>=2*atr_pct if direction=='LONG' else move<=-2*atr_pct;adv=move<=-atr_pct if direction=='LONG' else move>=atr_pct
@@ -56,6 +62,9 @@ def _migrate():
     EXTREME_FORWARD_FILE.parent.mkdir(parents=True,exist_ok=True)
     if not EXTREME_FORWARD_FILE.exists():_write_forward([]);return
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
+    eligible=_crypto_symbols()
+    if eligible:
+        rows=[r for r in rows if str(r.get('symbol','')).upper() in eligible]
     _assign_events(rows);_write_forward(rows)
 def _migrate_snapshots():
     EXTREME_SNAPSHOT_FILE.parent.mkdir(parents=True,exist_ok=True)
@@ -63,18 +72,19 @@ def _migrate_snapshots():
         with EXTREME_SNAPSHOT_FILE.open('w',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writeheader()
         return
     with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:rows=list(csv.DictReader(f))
-    clean=[{k:r.get(k,'') for k in SNAPSHOT_FIELDS} for r in rows]
+    eligible=_crypto_symbols()
+    clean=[{k:r.get(k,'') for k in SNAPSHOT_FIELDS} for r in rows if not eligible or str(r.get('symbol','')).upper() in eligible]
     with EXTREME_SNAPSHOT_FILE.open('w',newline='',encoding='utf-8') as f:w=csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS);w.writeheader();w.writerows(clean)
 def append_rows(rows):
     _migrate()
     with EXTREME_FORWARD_FILE.open(newline='',encoding='utf-8') as f:existing_rows=list(csv.DictReader(f))
-    existing={r['id'] for r in existing_rows};fresh=[r for r in rows if r and r['id'] not in existing]
+    existing={r['id'] for r in existing_rows};eligible=_crypto_symbols();fresh=[r for r in rows if r and (not eligible or str(r.get('symbol','')).upper() in eligible) and r['id'] not in existing]
     if not fresh:return 0
     combined=existing_rows+fresh;_assign_events(combined);_write_forward(combined);return len(fresh)
 def append_snapshots(rows):
     _migrate_snapshots()
     with EXTREME_SNAPSHOT_FILE.open(newline='',encoding='utf-8') as f:existing={r['id'] for r in csv.DictReader(f)}
-    fresh=[r for r in rows if r and r['id'] not in existing]
+    fresh=[r for r in rows if r and (not eligible or str(r.get('symbol','')).upper() in eligible) and r['id'] not in existing]
     if not fresh:return 0
     with EXTREME_SNAPSHOT_FILE.open('a',newline='',encoding='utf-8') as f:csv.DictWriter(f,fieldnames=SNAPSHOT_FIELDS).writerows(fresh)
     return len(fresh)
