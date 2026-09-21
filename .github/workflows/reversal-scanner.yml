@@ -24,7 +24,9 @@ on:
       - 'signal_funnel_diagnostic.py'
       - 'scalping_optimizer.py'
       - 'validation_gate.py'
+      - 'evidence_audit.py'
       - 'tests/test_validation_gate.py'
+      - 'tests/test_evidence_audit.py'
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_scalping_forward_test.py'
@@ -138,6 +140,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_scalping_forward_test.py' -v
       - name: Validate statistical evidence gate
         run: python -m unittest discover -s tests -p 'test_validation_gate.py' -v
+      - name: Build forward-test evidence audit
+        run: python evidence_audit.py
+      - name: Validate forward-test evidence audit
+        run: python -m unittest discover -s tests -p 'test_evidence_audit.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
