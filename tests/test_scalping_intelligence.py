@@ -4,6 +4,7 @@ from extreme_runner import _normalize_bitget_mtf_candles
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
     _location_score, _reversal_score, _opposing_structure_target,
+    _countertrend_early_reversal_allowed,
 )
 
 
@@ -150,6 +151,11 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(plan["max_stop_distance_pct"], 2.0)
         self.assertEqual(plan["reason"], "execution stop distance exceeds scalping limit")
 
+    def test_countertrend_early_reversal_requires_stronger_confirmation(self):
+        self.assertFalse(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.875, 0.0))
+        self.assertTrue(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.90, 0.0))
+        self.assertTrue(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.80, 80.0))
+        self.assertTrue(_countertrend_early_reversal_allowed("LONG", 1.0, 1.0, 0.80, 0.0))
     def test_live_action_gate_is_disabled_by_default(self):
         import os
         from unittest.mock import patch
