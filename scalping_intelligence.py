@@ -82,6 +82,22 @@ def atr(rows, period=14):
     return sum(trs[-period:]) / period
 
 
+def _countertrend_early_reversal_allowed(direction, score_4h, score_1h, early_score, v2_score):
+    """Allow early reversals against MTF trend only with stronger confirmation.
+
+    Early-reversal mode intentionally runs before a trend flip, but an isolated
+    countertrend setup during a strong 4H+1H trend is a materially higher-risk
+    trade. Require either a very strong early-reversal score or matching V2.2
+    confirmation before allowing it through the ACTION gate.
+    """
+    countertrend = (
+        (direction == "LONG" and score_4h == 0.0 and score_1h == 0.0)
+        or (direction == "SHORT" and score_4h == 0.0 and score_1h == 0.0)
+    )
+    if not countertrend:
+        return True
+    return early_score >= 0.90 or v2_score >= 80.0
+
 def _trend_score(rows, direction):
     closes = [_close(x) for x in rows]
     n = len(closes)
@@ -286,8 +302,20 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         # the setup is expected to form while the preceding move is still
         # directional. V2.2 remains an optional confirmation input.
         confidence = 100.0 * early["score"]
-        if _f(v2_score, 0.0) >= 80.0:
+        v2_confirmation = _f(v2_score, 0.0)
+        if v2_confirmation >= 80.0:
             confidence = min(100.0, confidence + 3.0)
+        if not _countertrend_early_reversal_allowed(
+            direction, score_4h, score_1h, early["score"], v2_confirmation
+        ):
+            return {
+                "status": "WAIT",
+                "direction": direction,
+                "confidence": round(confidence, 1),
+                "location_15m": early["location_15m"],
+                "reversal_5m": early["reversal_trigger_5m"],
+                "reason": "countertrend early reversal requires stronger confirmation",
+            }
     else:
         if location_15 == 0.0:
             return {"status": "WAIT", "direction": direction, "confidence": 0.0,
