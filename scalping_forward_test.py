@@ -272,7 +272,8 @@ def _market_slice(action, market_rows, horizon):
         row for row in market_rows
         if row.get('provider') == action.get('provider')
         and row.get('symbol') == action.get('symbol')
-        and ts < _candle_close_timestamp(row) <= deadline
+        and ts < _ts(row['timestamp'])
+        and _candle_close_timestamp(row) <= deadline
     ]
 
 
