@@ -1,0 +1,2 @@
+sample_total,resolved_trades,ambiguous,unresolved,ambiguous_rate,min_sample_for_gate,sample_gate_pass,bootstrap_expectancy_r,bootstrap_ci95_low,bootstrap_ci95_high,n,win_rate,expectancy_r,profit_factor,net_r,max_drawdown_r,walk_forward_segments
+47,41,0,6,0.0,30,True,-0.707317,-0.926829,-0.414634,41,0.097561,-0.707317,0.216216,-29.0,-30.0,3
