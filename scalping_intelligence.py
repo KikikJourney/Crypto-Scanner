@@ -169,33 +169,46 @@ def _reversal_score(rows, direction):
 
 
 def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, max_reward_r=6.0):
-    """Return the nearest meaningful opposing 15m swing within a sane R range."""
+    """Return the strongest opposing closing-price swing within a sane R range."""
     if len(rows) < 7 or entry <= 0 or risk <= 0:
         return None
+
     window = rows[-32:]
-    min_target = entry + min_reward_r * risk if direction == "LONG" else entry - min_reward_r * risk
-    max_target = entry + max_reward_r * risk if direction == "LONG" else entry - max_reward_r * risk
+    min_target = (
+        entry + min_reward_r * risk
+        if direction == "LONG"
+        else entry - min_reward_r * risk
+    )
+    max_target = (
+        entry + max_reward_r * risk
+        if direction == "LONG"
+        else entry - max_reward_r * risk
+    )
+
     candidates = []
     for i in range(2, len(window) - 2):
+        level = _close(window[i])
+        left = _close(window[i - 1])
+        right = _close(window[i + 1])
+
         if direction == "LONG":
-            level = _close(window[i])
-            if level >= min_target and level >= _close(window[i-1]) and level >= _close(window[i+1]):
+            if level >= min_target and level >= left and level >= right:
                 candidates.append(level)
         else:
-            level = _close(window[i])
-            if level <= min_target and level <= _close(window[i-1]) and level <= _close(window[i+1]):
+            if level <= min_target and level <= left and level <= right:
                 candidates.append(level)
-    candidates = sorted(set(candidates))
+
     if direction == "LONG":
-        # For LONG, choose the highest valid opposing swing within the 2R-6R
-        # window. Lower local closes can be intermediate pivots, not the
-        # meaningful opposing structure.
+        # Prefer the highest meaningful opposing swing while respecting the
+        # configured reward ceiling. This avoids stale absolute highs while
+        # preserving the strongest nearby resistance structure.
         valid = [level for level in candidates if level <= max_target]
         return max(valid) if valid else None
-    # For SHORT, mirror the rule: choose the lowest valid opposing swing.
+
+    # Mirror the LONG rule for SHORT: prefer the lowest meaningful opposing
+    # swing while respecting the configured reward ceiling.
     valid = [level for level in candidates if level >= max_target]
     return min(valid) if valid else None
-
 
 def _timestamp(row):
     try:
