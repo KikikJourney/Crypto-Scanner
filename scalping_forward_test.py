@@ -5,7 +5,7 @@ Outcomes use first-touch logic: SL/TP is resolved from candle high/low; if both
 levels occur in one candle, the result is AMBIGUOUS rather than guessed.
 """
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ACTION_FILE = Path('data/actionable_signals.csv')
@@ -33,7 +33,8 @@ FORWARD_ACTION_FIELDS = FIELDS
 
 
 def _ts(value):
-    return datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+    dt = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+    return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
 
 
 def _f(value):
