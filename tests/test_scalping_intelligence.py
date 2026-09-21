@@ -156,6 +156,16 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertTrue(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.90, 0.0))
         self.assertTrue(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.80, 80.0))
         self.assertTrue(_countertrend_early_reversal_allowed("LONG", 1.0, 1.0, 0.80, 0.0))
+        self.assertFalse(
+            _countertrend_early_reversal_allowed(
+                "SHORT", 0.0, 0.0, 1.0, 0.0, 0.0, 1.0
+            )
+        )
+        self.assertTrue(
+            _countertrend_early_reversal_allowed(
+                "SHORT", 0.0, 0.0, 1.0, 80.0, 0.0, 1.0
+            )
+        )
     def test_live_action_gate_is_disabled_by_default(self):
         import os
         from unittest.mock import patch
