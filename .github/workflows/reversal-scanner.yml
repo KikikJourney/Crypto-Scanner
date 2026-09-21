@@ -23,6 +23,8 @@ on:
       - 'send_telegram_actions.py'
       - 'signal_funnel_diagnostic.py'
       - 'scalping_optimizer.py'
+      - 'validation_gate.py'
+      - 'tests/test_validation_gate.py'
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_scalping_forward_test.py'
@@ -37,7 +39,7 @@ on:
       - 'tests/test_scalping_forward_test.py'
       - 'tests/test_telegram_notifier.py'
       - '.github/workflows/reversal-scanner.yml'
-  workflow_dispatch:
+    workflow_dispatch:
   schedule:
     - cron: '*/15 * * * *'
 permissions:
@@ -128,10 +130,14 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_early_reversal_engine.py' -v
       - name: Build optimization report
         run: python scalping_optimizer.py
+      - name: Build statistical validation report
+        run: python validation_gate.py
       - name: Validate Scalping Optimizer
         run: python -m unittest discover -s tests -p 'test_scalping_optimizer.py' -v
       - name: Validate Scalping forward-test
         run: python -m unittest discover -s tests -p 'test_scalping_forward_test.py' -v
+      - name: Validate statistical evidence gate
+        run: python -m unittest discover -s tests -p 'test_validation_gate.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -266,7 +272,7 @@ jobs:
           for path in (state / "actionable_signals.csv",
                        state / "signal_funnel_summary.csv",
                        state / "signal_funnel_symbols.csv",
-                       state / "scalping_optimization_report.csv",
+                       state / "scalping_optimization_report.csv",\n                       state / "scalping_validation_report.csv",
                        state / "extreme_market_snapshots.csv",
                        state / "extreme_reversal_forward_test.csv",
                        state / "actionable_forward_test.csv",
@@ -282,6 +288,10 @@ jobs:
           # newly completed horizons, rather than only the current scan's actions.
           import scalping_forward_test as ft
           rows = ft.evaluate()
+          import scalping_optimizer as optimizer
+          optimizer.write(rows)
+          import validation_gate
+          validation_gate.write(rows)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
@@ -289,6 +299,6 @@ jobs:
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
