@@ -187,8 +187,14 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, m
                 candidates.append(level)
     candidates = sorted(set(candidates))
     if direction == "LONG":
-        return candidates[0] if candidates and candidates[0] <= max_target else None
-    return candidates[-1] if candidates and candidates[-1] >= max_target else None
+        # For LONG, choose the highest valid opposing swing within the 2R-6R
+        # window. Lower local closes can be intermediate pivots, not the
+        # meaningful opposing structure.
+        valid = [level for level in candidates if level <= max_target]
+        return max(valid) if valid else None
+    # For SHORT, mirror the rule: choose the lowest valid opposing swing.
+    valid = [level for level in candidates if level >= max_target]
+    return min(valid) if valid else None
 
 
 def _timestamp(row):
