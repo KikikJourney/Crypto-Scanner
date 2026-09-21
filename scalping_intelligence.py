@@ -82,20 +82,24 @@ def atr(rows, period=14):
     return sum(trs[-period:]) / period
 
 
-def _countertrend_early_reversal_allowed(direction, score_4h, score_1h, early_score, v2_score):
+def _countertrend_early_reversal_allowed(
+    direction, score_4h, score_1h, early_score, v2_score,
+    opposing_score_4h=0.0, opposing_score_1h=0.0,
+):
     """Allow early reversals against MTF trend only with stronger confirmation.
 
-    Early-reversal mode intentionally runs before a trend flip, but an isolated
-    countertrend setup during a strong 4H+1H trend is a materially higher-risk
-    trade. Require either a very strong early-reversal score or matching V2.2
-    confirmation before allowing it through the ACTION gate.
+    A candidate is countertrend when neither its 4H nor 1H trend score supports
+    the trade direction. If the opposite direction is actually confirmed on
+    either higher timeframe, early reversal must wait for V2.2 confirmation.
+    This prevents a perfect local reversal score from overriding a live 1H/4H
+    trend without independent confirmation.
     """
-    countertrend = (
-        (direction == "LONG" and score_4h == 0.0 and score_1h == 0.0)
-        or (direction == "SHORT" and score_4h == 0.0 and score_1h == 0.0)
-    )
+    countertrend = score_4h == 0.0 and score_1h == 0.0
     if not countertrend:
         return True
+    opposing_trend = opposing_score_4h >= 1.0 or opposing_score_1h >= 1.0
+    if opposing_trend:
+        return v2_score >= 80.0
     return early_score >= 0.90 or v2_score >= 80.0
 
 def _trend_score(rows, direction):
@@ -305,8 +309,12 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         v2_confirmation = _f(v2_score, 0.0)
         if v2_confirmation >= 80.0:
             confidence = min(100.0, confidence + 3.0)
+        opposite_direction = "SHORT" if direction == "LONG" else "LONG"
+        opposing_score_4h = _trend_score(tf4h, opposite_direction)
+        opposing_score_1h = _trend_score(tf1h, opposite_direction)
         if not _countertrend_early_reversal_allowed(
-            direction, score_4h, score_1h, early["score"], v2_confirmation
+            direction, score_4h, score_1h, early["score"], v2_confirmation,
+            opposing_score_4h, opposing_score_1h,
         ):
             return {
                 "status": "WAIT",
