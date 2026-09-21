@@ -62,6 +62,54 @@ jobs:
         run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
+      - name: Validate crypto-only universe filters
+        run: |
+          python - <<'PY'
+          import universe_runner as u
+          from unittest.mock import patch
+
+          bitget = {
+              "data": [
+                  {"symbol": "BTCUSDT", "quoteCoin": "USDT", "type": "perpetual", "status": "online", "symbolType": "crypto"},
+                  {"symbol": "AAPLUSDT", "quoteCoin": "USDT", "type": "perpetual", "status": "online", "symbolType": "stock"},
+                  {"symbol": "XAUUSDT", "quoteCoin": "USDT", "type": "perpetual", "status": "online", "symbolType": "metal"},
+                  {"symbol": "CLUSDT", "quoteCoin": "USDT", "type": "perpetual", "status": "online", "symbolType": "commodity"},
+              ]
+          }
+          with patch.object(u.core, "bitget", return_value=bitget):
+              assert u.active_bitget_symbols() == ["BTCUSDT"]
+
+          binance = {
+              "symbols": [
+                  {"symbol": "BTCUSDT", "status": "TRADING", "contractType": "PERPETUAL", "quoteAsset": "USDT",
+                   "underlyingType": "COIN", "underlyingSubType": ["Layer-1", "Crypto"]},
+                  {"symbol": "AAPLUSDT", "status": "TRADING", "contractType": "PERPETUAL", "quoteAsset": "USDT",
+                   "underlyingType": "EQUITY", "underlyingSubType": ["TradFi"]},
+                  {"symbol": "SPYUSDT", "status": "TRADING", "contractType": "PERPETUAL", "quoteAsset": "USDT",
+                   "underlyingType": "INDEX", "underlyingSubType": ["TradFi"]},
+              ]
+          }
+          with patch.object(u.core, "binance", return_value=binance):
+              assert u.active_binance_symbols() == ["BTCUSDT"]
+
+          bybit = {
+              "result": {
+                  "list": [
+                      {"symbol": "BTCUSDT", "status": "Trading", "quoteCoin": "USDT", "contractType": "LinearPerpetual",
+                       "marketRegion": "", "underlyingTicker": ""},
+                      {"symbol": "AAPLUSDT", "status": "Trading", "quoteCoin": "USDT", "contractType": "LinearPerpetual",
+                       "marketRegion": "US", "underlyingTicker": "AAPL"},
+                      {"symbol": "XAUUSDT", "status": "Trading", "quoteCoin": "USDT", "contractType": "LinearPerpetual",
+                       "marketRegion": "US", "underlyingTicker": "XAUUSD"},
+                  ],
+                  "nextPageCursor": "",
+              }
+          }
+          with patch.object(u.core, "bybit", return_value=bybit):
+              assert u.active_bybit_symbols() == ["BTCUSDT"]
+
+          print("Crypto-only universe filter tests PASSED")
+          PY
       - name: Validate Early Reversal
         run: python -m unittest discover -s tests -p 'test_early_reversal.py' -v
       - name: Validate Extreme Reversal
