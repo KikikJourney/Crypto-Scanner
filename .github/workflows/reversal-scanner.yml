@@ -255,6 +255,11 @@ jobs:
               merged.update({row.get(key): row for row in current_rows if row.get(key)})
               write(root / name, fields, sorted(merged.values(), key=lambda r: r.get("timestamp", "")))
 
+          # The crypto-only universe is part of the state boundary for forward-test
+          # filtering. Persist it across the reset before recomputing history.
+          if (state / "crypto_universe.csv").exists():
+              (root / "crypto_universe.csv").write_bytes((state / "crypto_universe.csv").read_bytes())
+
           # All other generated datasets represent this exact scan and can replace
           # the older snapshot after the reset.
           for path in (state / "actionable_signals.csv",
@@ -276,9 +281,13 @@ jobs:
           # newly completed horizons, rather than only the current scan's actions.
           import scalping_forward_test as ft
           rows = ft.evaluate()
+          eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
+          assert eligible, "crypto_universe.csv missing or empty after state reset"
+          assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
+          assert all(str(r.get("symbol", "")).upper() in eligible for r in rows), "non-crypto symbol survived forward-test"
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
