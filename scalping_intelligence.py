@@ -167,6 +167,30 @@ def _reversal_score(rows, direction):
     return 1.0 if sweep else 0.5 if recovery else 0.0
 
 
+
+def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, max_reward_r=6.0):
+    """Return the nearest meaningful opposing 15m swing within a sane R range."""
+    if len(rows) < 7 or entry <= 0 or risk <= 0:
+        return None
+    window = rows[-32:]
+    min_target = entry + min_reward_r * risk if direction == "LONG" else entry - min_reward_r * risk
+    max_target = entry + max_reward_r * risk if direction == "LONG" else entry - max_reward_r * risk
+    candidates = []
+    for i in range(2, len(window) - 2):
+        if direction == "LONG":
+            level = _high(window[i])
+            if level >= min_target and level >= _high(window[i-1]) and level >= _high(window[i+1]):
+                candidates.append(level)
+        else:
+            level = _low(window[i])
+            if level <= min_target and level <= _low(window[i-1]) and level <= _low(window[i+1]):
+                candidates.append(level)
+    candidates = sorted(set(candidates))
+    if direction == "LONG":
+        return candidates[0] if candidates and candidates[0] <= max_target else None
+    return candidates[-1] if candidates and candidates[-1] >= max_target else None
+
+
 def _timestamp(row):
     try:
         value = float(row[0])
@@ -311,36 +335,18 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
 
-    # TP is a market-structure objective, not a fixed 2R number.
-    # For a reversal, the first meaningful opposing liquidity/swing is the
-    # natural destination. Require that objective to offer at least 2R;
-    # otherwise WAIT instead of forcing an artificially close target.
-    opposing_high = max(_high(x) for x in rows_15m[-32:])
-    opposing_low = min(_low(x) for x in rows_15m[-32:])
-    if direction == "LONG":
-        structural_target = opposing_high
-        min_target = entry_high + 2.0 * risk
-        if structural_target < min_target:
-            return {
-                "status": "WAIT", "direction": direction,
-                "confidence": round(confidence, 1),
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "risk_pct": round(risk / price * 100.0, 4),
-                "reason": "opposing 15m liquidity target is too close for minimum 2R",
-            }
-        target = structural_target
-    else:
-        structural_target = opposing_low
-        min_target = entry_low - 2.0 * risk
-        if structural_target > min_target:
-            return {
-                "status": "WAIT", "direction": direction,
-                "confidence": round(confidence, 1),
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "risk_pct": round(risk / price * 100.0, 4),
-                "reason": "opposing 15m liquidity target is too close for minimum 2R",
-            }
-        target = structural_target
+    # TP uses the nearest meaningful opposing 15m swing. Absolute extremes
+    # can be stale and produced unrealistic 10R-40R objectives in the audit.
+    structural_target = _opposing_structure_target(rows_15m, direction, price, risk)
+    if structural_target is None:
+        return {
+            "status": "WAIT", "direction": direction,
+            "confidence": round(confidence, 1),
+            "location_15m": location_15, "reversal_5m": reversal_5,
+            "risk_pct": round(risk / price * 100.0, 4),
+            "reason": "no reachable opposing 15m swing supports 2R-6R",
+        }
+    target = structural_target
 
     reward_r = (
         (target - entry_high) / risk
