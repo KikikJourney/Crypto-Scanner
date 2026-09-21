@@ -320,19 +320,10 @@ def evaluate(actions=None, market_rows=None):
         row['outcome_r'] = ''
         first_touch = None
         first_touch_ts = ''
-        all_future = [
-            r for r in market_rows
-            if r.get('provider') == action.get('provider')
-            and r.get('symbol') == action.get('symbol')
-            and _ts(r['timestamp']) > _ts(action['timestamp'])
-        ]
+        resolved_candles = []
         for horizon in HORIZONS_MINUTES:
             key = f'h{horizon}'
             candles = _market_slice(action, market_rows, horizon)
-            if candles:
-                mfe, mae = _metrics(action['direction'], action.get('entry'), candles)
-                if mfe != '':
-                    row['mfe_pct'], row['mae_pct'] = mfe, mae
             if row[key]:
                 continue
             for candle in candles:
@@ -351,7 +342,13 @@ def evaluate(actions=None, market_rows=None):
                             else '-1.0' if outcome == 'FAIL'
                             else ''
                         )
+                        resolved_candles = candles[:candles.index(candle) + 1]
                     break
+        metric_candles = resolved_candles if resolved_candles else _market_slice(action, market_rows, max(HORIZONS_MINUTES))
+        if metric_candles:
+            mfe, mae = _metrics(action['direction'], action.get('entry'), metric_candles)
+            if mfe != '':
+                row['mfe_pct'], row['mae_pct'] = mfe, mae
         if first_touch is not None:
             row['first_touch'] = first_touch
             row['first_touch_timestamp'] = first_touch_ts

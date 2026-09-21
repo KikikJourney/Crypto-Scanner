@@ -71,6 +71,16 @@ class ScalpingForwardTest(unittest.TestCase):
         self.assertEqual(mfe, 3.0)
         self.assertEqual(mae, 2.0)
 
+    def test_mfe_mae_stop_after_resolution_ignores_later_excursion(self):
+        result = ft.evaluate([action()], [
+            candle("2026-09-20T10:05:00+00:00", 100.5, 98.5),
+            candle("2026-09-20T10:10:00+00:00", 103.0, 100.0),
+        ])
+        self.assertEqual(result[0]["first_touch"], "FAIL")
+        self.assertEqual(result[0]["resolved_horizon"], "15")
+        self.assertEqual(result[0]["mfe_pct"], 0.5)
+        self.assertEqual(result[0]["mae_pct"], 1.5)
+
     def test_evaluate_uses_future_ohlc_and_first_touch(self):
         result = ft.evaluate([action()], [
             candle("2026-09-20T10:05:00+00:00", 101, 99.5),
