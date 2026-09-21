@@ -59,6 +59,24 @@ class ScalpingForwardTest(unittest.TestCase):
         )])
 
 
+    def test_pending_action_refresh_handles_naive_provider_timestamp(self):
+        actions = [action("2026-09-20T10:00:00+00:00")]
+
+        def fake_fetch(symbol, provider, start_ms, end_ms):
+            return [["2026-09-20T10:05:00", "100", "101", "99.5", "100", "100"]]
+
+        with mock.patch.object(ft, "_load", return_value=actions), \\
+             mock.patch.object(ft, "_migrate_history"), \\
+             mock.patch.object(ft, "archive_market_candles", return_value=1):
+            self.assertEqual(
+                ft.archive_pending_action_candles(
+                    fake_fetch,
+                    now=ft._ts("2026-09-20T10:30:00+00:00"),
+                    per_symbol=32,
+                ),
+                1,
+            )
+
     def test_output_preserves_injected_fixture_strategy_version(self):
         result = ft.evaluate([action()], [
             candle("2026-09-20T10:05:00+00:00", 101, 99.5),
