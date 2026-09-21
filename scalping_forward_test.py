@@ -344,8 +344,6 @@ def evaluate(actions=None, market_rows=None):
                         )
                         resolved_candles = candles[:candles.index(candle) + 1]
                     break
-            if first_touch is not None:
-                break
         metric_candles = resolved_candles if resolved_candles else _market_slice(action, market_rows, max(HORIZONS_MINUTES))
         if metric_candles:
             mfe, mae = _metrics(action['direction'], action.get('entry'), metric_candles)
