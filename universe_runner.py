@@ -9,6 +9,7 @@ from early_reversal_layer import classify as early_classify, append_rows as appe
 
 PRODUCT = 'USDT-FUTURES'
 WATCHLIST_FILE = Path('data/universe_watchlist.csv')
+CRYPTO_UNIVERSE_FILE = Path('data/crypto_universe.csv')
 LIQUIDITY_BUCKET = 220
 MOVER_BUCKET = 80
 MAX_SCAN_SYMBOLS = LIQUIDITY_BUCKET + MOVER_BUCKET
@@ -136,6 +137,18 @@ def select_scan_symbols(provider, symbols):
     return symbols, len(symbols), 0
 
 
+def write_crypto_universe(provider, symbols, ts):
+    """Persist the exact crypto-only universe used by this scan."""
+    CRYPTO_UNIVERSE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    fields = ['timestamp', 'provider', 'symbol']
+    with CRYPTO_UNIVERSE_FILE.open('w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(
+            {'timestamp': ts, 'provider': provider, 'symbol': symbol}
+            for symbol in sorted(set(symbols))
+        )
+
 def write_watchlist(results, ts):
     WATCHLIST_FILE.parent.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -189,6 +202,7 @@ def main():
     ts = datetime.now(timezone.utc).isoformat()
     early_rows = [early_signal_row(x, ts) for x in results]
     early_added = append_early_rows(early_rows)
+    write_crypto_universe(provider, symbols, ts)
     write_watchlist(results, ts)
     print(f'Deep-scan coverage: {len(results)}/{len(scan_symbols)}')
     print(f'Universe coverage retained as discovery: {len(symbols)}/{len(symbols)}')
