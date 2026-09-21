@@ -5,7 +5,7 @@ import csv
 from pathlib import Path
 
 import scanner_v2 as core
-from universe_runner import active_symbols, select_scan_symbols
+from universe_runner import active_symbols, select_scan_symbols, write_crypto_universe
 from extreme_market_data import build_features
 from extreme_reversal_layer import (
     classify, append_rows, append_snapshots, evaluate_forward,
@@ -407,6 +407,10 @@ def main():
         reverse=True,
     )
     timestamp = datetime.now(timezone.utc).isoformat()
+    # Persist the exact crypto-only universe used by this scanner entrypoint.
+    # extreme_runner does not execute universe_runner.main(), so this must be
+    # written here for forward-test state isolation.
+    write_crypto_universe(provider, symbols, timestamp)
 
     # Historical V2.2 accounting remains intact.
     added = append_rows([
