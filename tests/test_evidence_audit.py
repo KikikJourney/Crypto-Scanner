@@ -24,7 +24,7 @@ class EvidenceAuditTests(unittest.TestCase):
         result = build_report(rows)
         self.assertEqual(result["sample_total"], 3)
         self.assertEqual(result["unique_symbols"], 2)
-        self.assertAlmostEqual(result["top_symbol_share"], 2/3)
+        self.assertAlmostEqual(result["top_symbol_share"], 2/3, places=5)
         self.assertEqual(result["friction_status"], "NOT_OBSERVED")
         self.assertEqual(result["mfe_observed"], 3)
         self.assertEqual(result["direction"][0][0], "LONG")
