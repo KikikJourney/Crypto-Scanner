@@ -204,26 +204,6 @@ jobs:
           assert len(action_pairs) == min(len(funnel_action_pairs), 20)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
-      - name: Archive exact run datasets
-        uses: actions/upload-artifact@v4
-        with:
-          name: scanner-run-${{ github.run_id }}
-          if-no-files-found: error
-          retention-days: 30
-          path: |
-            data/actionable_signals.csv
-            data/signal_funnel_summary.csv
-            data/signal_funnel_symbols.csv
-            data/scalping_execution_calibration_report.csv
-            data/scalping_execution_calibration.csv
-            data/scalping_forward_test.csv
-            data/scalping_action_history.csv
-            data/scalping_market_5m.csv
-            data/extreme_market_snapshots.csv
-            data/extreme_reversal_forward_test.csv
-            data/actionable_forward_test.csv
-            data/scalping_optimization_report.csv
-
       - name: Persist scanner and forward-test data
         run: |
           git config user.name 'github-actions[bot]'
@@ -318,3 +298,24 @@ jobs:
           git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
+
+      - name: Archive persisted audit datasets
+        uses: actions/upload-artifact@v4
+        with:
+          name: scanner-persisted-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            data/actionable_signals.csv
+            data/signal_funnel_summary.csv
+            data/signal_funnel_symbols.csv
+            data/scalping_execution_calibration_report.csv
+            data/scalping_execution_calibration.csv
+            data/scalping_forward_test.csv
+            data/scalping_action_history.csv
+            data/scalping_market_5m.csv
+            data/extreme_market_snapshots.csv
+            data/extreme_reversal_forward_test.csv
+            data/actionable_forward_test.csv
+            data/scalping_optimization_report.csv
+
