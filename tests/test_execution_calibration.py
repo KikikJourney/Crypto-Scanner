@@ -37,7 +37,7 @@ class ExecutionCalibrationTests(unittest.TestCase):
         action = self.action()
         market = [
             self.candle("2026-09-22T00:05:00+00:00", 101, 102, 99.5),
-            self.candle("2026-09-22T00:10:00+00:00", 101, 105, 100),
+            self.candle("2026-09-22T00:10:00+00:00", 101, 108, 100),
         ]
         detail = ec.calibrate([action], market)
         self.assertEqual(detail[0]["status"], "RESOLVED")
