@@ -54,6 +54,21 @@ class ExecutionCalibrationTests(unittest.TestCase):
         self.assertEqual(detail[0]["status"], "SKIPPED")
         self.assertIn("already touched", detail[0]["reason"])
 
+    def test_baseline_drawdown_is_reported(self):
+        base = [
+            {"first_touch": "EXPANSION", "outcome_r": "2.0"},
+            {"first_touch": "FAIL", "outcome_r": "-1.0"},
+            {"first_touch": "FAIL", "outcome_r": "-1.0"},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.csv"
+            detail = Path(tmp) / "detail.csv"
+            with patch.object(ec, "REPORT_FILE", report), patch.object(ec, "DETAIL_FILE", detail), patch.object(ec, "_load", return_value=base):
+                result = ec.write(detail=[])
+            self.assertEqual(result["resolved"], 0)
+            rows = report.read_text(encoding="utf-8").splitlines()
+            self.assertIn("-2.0", rows[1].split(","))
+
 
 if __name__ == "__main__":
     unittest.main()
