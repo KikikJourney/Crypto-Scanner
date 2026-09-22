@@ -13,7 +13,7 @@ class ExecutionCalibrationTests(unittest.TestCase):
             "symbol": "TESTUSDT", "provider": "Bitget",
             "direction": direction, "confidence": "100",
             "strategy_version": ec.CURRENT_STRATEGY_VERSION,
-            "entry": "100", "stop": "98", "target": "104",
+            "entry": "100", "stop": "99", "target": "104",
         }
 
     def candle(self, ts, close, high, low):
