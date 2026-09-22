@@ -33,7 +33,17 @@ FORWARD_ACTION_FIELDS = FIELDS
 
 
 def _ts(value):
-    dt = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+    """Parse ISO timestamps and Unix epoch seconds/milliseconds safely."""
+    text = str(value).strip()
+    try:
+        numeric = float(text)
+        if numeric > 10_000_000_000:
+            return datetime.fromtimestamp(numeric / 1000.0, tz=timezone.utc)
+        if numeric > 1_000_000_000:
+            return datetime.fromtimestamp(numeric, tz=timezone.utc)
+    except (TypeError, ValueError, OverflowError, OSError):
+        pass
+    dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
     return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
 
 

@@ -18,6 +18,16 @@ def candle(ts, high, low):
 
 
 class ScalpingForwardTest(unittest.TestCase):
+    def test_numeric_epoch_millisecond_timestamp(self):
+        ts = "2026-09-22T07:40:00+00:00"
+        epoch_ms = int(ft._ts(ts).timestamp() * 1000)
+        self.assertEqual(ft._ts(str(epoch_ms)), ft._ts(ts))
+
+    def test_numeric_epoch_second_timestamp(self):
+        ts = "2026-09-22T07:40:00+00:00"
+        epoch_s = int(ft._ts(ts).timestamp())
+        self.assertEqual(ft._ts(str(epoch_s)), ft._ts(ts))
+
     def test_overlapping_open_candle_is_excluded(self):
         act = action("2026-09-20T10:25:21+00:00")
         market = [
