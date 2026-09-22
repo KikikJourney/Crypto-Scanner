@@ -25,8 +25,10 @@ on:
       - 'scalping_optimizer.py'
       - 'validation_gate.py'
       - 'evidence_audit.py'
+      - 'execution_calibration.py'
       - 'tests/test_validation_gate.py'
       - 'tests/test_evidence_audit.py'
+      - 'tests/test_execution_calibration.py'
       - 'tests/test_signal_funnel_diagnostic.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_scalping_forward_test.py'
@@ -142,6 +144,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_validation_gate.py' -v
       - name: Validate forward-test evidence audit
         run: python -m unittest discover -s tests -p 'test_evidence_audit.py' -v
+      - name: Validate execution calibration
+        run: python -m unittest discover -s tests -p 'test_execution_calibration.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -210,6 +214,8 @@ jobs:
             data/actionable_signals.csv
             data/signal_funnel_summary.csv
             data/signal_funnel_symbols.csv
+            data/scalping_execution_calibration_report.csv
+            data/scalping_execution_calibration.csv
             data/scalping_forward_test.csv
             data/scalping_action_history.csv
             data/scalping_market_5m.csv
@@ -299,6 +305,9 @@ jobs:
           validation_gate.write(rows)
           import evidence_audit
           evidence_audit.write(rows)
+          import execution_calibration
+          calibration = execution_calibration.write()
+          print('Execution calibration shadow:', calibration)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
@@ -306,6 +315,6 @@ jobs:
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
