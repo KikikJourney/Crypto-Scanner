@@ -213,7 +213,9 @@ jobs:
           path: |
             data/actionable_signals.csv
             data/signal_funnel_summary.csv
-            data/signal_funnel_symbols.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv
+            data/signal_funnel_symbols.csv
+            data/scalping_execution_calibration_report.csv
+            data/scalping_execution_calibration.csv
             data/scalping_forward_test.csv
             data/scalping_action_history.csv
             data/scalping_market_5m.csv
