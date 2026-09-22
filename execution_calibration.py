@@ -93,7 +93,12 @@ def write(detail=None):
     detail=calibrate() if detail is None else detail
     REPORT_FILE.parent.mkdir(parents=True,exist_ok=True)
     base=_load(FORWARD_FILE); br=[r for r in base if r.get("first_touch") in {"EXPANSION","FAIL","AMBIGUOUS"}]; bv=[2.0 if r["first_touch"]=="EXPANSION" else -1.0 if r["first_touch"]=="FAIL" else 0.0 for r in br]
-    baseline={"model":"CURRENT_BASELINE","sample":len(base),"eligible":len(base),"resolved":len(br),"wins":sum(r["first_touch"]=="EXPANSION" for r in br),"losses":sum(r["first_touch"]=="FAIL" for r in br),"ambiguous":sum(r["first_touch"]=="AMBIGUOUS" for r in br),"unresolved":len(base)-len(br),"skipped":0,"win_rate_pct":round(100*sum(r["first_touch"]=="EXPANSION" for r in br)/len(br),4) if br else 0.0,"net_r":round(sum(bv),4),"expectancy_r":round(sum(bv)/len(br),6) if br else 0.0,"max_drawdown_r":0.0,"max_risk_pct":"current","min_sample_for_review":30}
+    eq=peak=baseline_dd=0.0
+    for value in bv:
+        eq += value
+        peak = max(peak, eq)
+        baseline_dd = min(baseline_dd, eq - peak)
+    baseline={"model":"CURRENT_BASELINE","sample":len(base),"eligible":len(base),"resolved":len(br),"wins":sum(r["first_touch"]=="EXPANSION" for r in br),"losses":sum(r["first_touch"]=="FAIL" for r in br),"ambiguous":sum(r["first_touch"]=="AMBIGUOUS" for r in br),"unresolved":len(base)-len(br),"skipped":0,"win_rate_pct":round(100*sum(r["first_touch"]=="EXPANSION" for r in br)/len(br),4) if br else 0.0,"net_r":round(sum(bv),4),"expectancy_r":round(sum(bv)/len(br),6) if br else 0.0,"max_drawdown_r":round(baseline_dd,4),"max_risk_pct":"current","min_sample_for_review":30}
     s=_summary(detail); calibrated={"model":"CONFIRM_5M_CALIBRATED",**s}
     with REPORT_FILE.open("w",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=REPORT_FIELDS); w.writeheader(); w.writerow(baseline); w.writerow(calibrated)
