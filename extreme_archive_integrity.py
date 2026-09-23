@@ -11,6 +11,7 @@ from pathlib import Path
 
 DEFAULT_MAX_FUTURE_MINUTES = 15
 MIN_VALID_YEAR = 2020
+MIN_VALID_YEAR = 2020
 
 
 def _ts(value):
