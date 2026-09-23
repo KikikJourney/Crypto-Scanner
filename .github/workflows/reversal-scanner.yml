@@ -27,6 +27,8 @@ on:
       - 'evidence_audit.py'
       - 'execution_calibration.py'
       - 'execution_retest_calibration.py'
+      - 'execution_adverse_timing.py'
+      - 'tests/test_execution_adverse_timing.py'
       - 'extreme_archive_integrity.py'
       - 'tests/test_extreme_archive_integrity.py'
       - 'tests/test_validation_gate.py'
@@ -68,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py extreme_archive_integrity.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py extreme_archive_integrity.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
       - name: Validate crypto-only universe filters
@@ -151,6 +153,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_calibration.py' -v
       - name: Validate execution retest calibration
         run: python -m unittest discover -s tests -p 'test_execution_retest_calibration.py' -v
+      - name: Validate adverse excursion timing diagnostic
+        run: python -m unittest discover -s tests -p 'test_execution_adverse_timing.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -311,8 +315,11 @@ jobs:
           calibration = execution_calibration.write()
           import execution_retest_calibration
           retest = execution_retest_calibration.write()
+          import execution_adverse_timing
+          timing = execution_adverse_timing.write(rows)
           print('Execution calibration shadow:', calibration)
           print('Execution retest shadow:', retest)
+          print('Execution adverse timing:', timing)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
@@ -338,6 +345,7 @@ jobs:
             data/scalping_execution_calibration.csv
             data/scalping_execution_retest_report.csv
             data/scalping_execution_retest.csv
+            data/scalping_execution_timing_report.csv
             data/scalping_forward_test.csv
             data/scalping_action_history.csv
             data/scalping_market_5m.csv

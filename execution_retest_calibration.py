@@ -110,6 +110,14 @@ def calibrate(actions=None, market_rows=None):
 
         confirmation = candles[0]
         confirmation_close = close0
+        if _touch(direction, confirmation, _f(action.get("stop")), _f(action.get("target"))):
+            row.update({
+                "confirmation_timestamp": _close_ts(confirmation).isoformat(),
+                "confirmation_close": f"{confirmation_close:.12g}",
+                "reason": "confirmation candle already touched original stop/target",
+            })
+            detail.append(row)
+            continue
         retest = None
         for candle in candles[1:]:
             high, low, close = _f(candle.get("high")), _f(candle.get("low")), _f(candle.get("close"))
