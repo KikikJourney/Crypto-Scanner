@@ -1,19 +1,18 @@
-name: Zorathvael Crypto Scanner
+name: Legacy Scanner (Manual Only)
+
+# The production path is .github/workflows/reversal-scanner.yml.
+# This legacy workflow is intentionally manual-only so it cannot race the
+# production persistence workflow or overwrite current research evidence.
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/15 * * * *"
 
-concurrency:
-  group: zorathvael-scanner
-  cancel-in-progress: false
+permissions:
+  contents: read
 
 jobs:
-  scan:
+  legacy-scan:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -21,26 +20,13 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-          cache: "pip"
+          cache: pip
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
-      - name: Sanitize forward-test CSV
-        run: python tools/sanitize_forward_test.py
       - name: Validate scanner syntax
         run: python -m py_compile scanner.py
-      - name: Run scanner
+      - name: Run legacy scanner without persistence
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scanner.py
-      - name: Persist scanner and forward-test data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scanner.py data/forward_test.csv
-          if git diff --cached --quiet; then
-            echo "No scanner/data changes to commit."
-          else
-            git commit -m "chore: persist scanner validation data"
-            git push origin HEAD:main
-          fi
