@@ -26,6 +26,7 @@ on:
       - 'validation_gate.py'
       - 'evidence_audit.py'
       - 'execution_calibration.py'
+      - 'execution_retest_calibration.py'
       - 'extreme_archive_integrity.py'
       - 'tests/test_extreme_archive_integrity.py'
       - 'tests/test_validation_gate.py'
@@ -148,6 +149,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_evidence_audit.py' -v
       - name: Validate execution calibration
         run: python -m unittest discover -s tests -p 'test_execution_calibration.py' -v
+      - name: Validate execution retest calibration
+        run: python -m unittest discover -s tests -p 'test_execution_retest_calibration.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -306,7 +309,10 @@ jobs:
           evidence_audit.write(rows)
           import execution_calibration
           calibration = execution_calibration.write()
+          import execution_retest_calibration
+          retest = execution_retest_calibration.write()
           print('Execution calibration shadow:', calibration)
+          print('Execution retest shadow:', retest)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
@@ -330,6 +336,8 @@ jobs:
             data/signal_funnel_symbols.csv
             data/scalping_execution_calibration_report.csv
             data/scalping_execution_calibration.csv
+            data/scalping_execution_retest_report.csv
+            data/scalping_execution_retest.csv
             data/scalping_forward_test.csv
             data/scalping_action_history.csv
             data/scalping_market_5m.csv
