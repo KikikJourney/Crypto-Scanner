@@ -50,6 +50,25 @@ class ExtremeArchiveIntegrityTests(unittest.TestCase):
             )
             self.assertTrue(result["valid"])
 
+    def test_sanitize_deduplicates_by_stable_id(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "snapshots.csv"
+            path.write_text(
+                "id,timestamp,symbol,provider,price\\n"
+                "same,2026-09-23T10:00:00Z,BTCUSDT,Bitget,100\\n"
+                "same,2026-09-23T10:05:00Z,BTCUSDT,Bitget,101\\n",
+                encoding="utf-8",
+            )
+            kept, rejected = sanitize(
+                path,
+                now=datetime(2026, 9, 23, 11, 0, tzinfo=timezone.utc),
+                universe={"BTCUSDT"},
+                require_price=True,
+            )
+            self.assertEqual(len(kept), 1)
+            self.assertEqual(len(rejected), 1)
+            self.assertEqual(kept[0]["id"], "same")
+
 
 if __name__ == "__main__":
     unittest.main()
