@@ -320,7 +320,7 @@ jobs:
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/scalping_execution_retest_report.csv data/scalping_execution_retest.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
 
