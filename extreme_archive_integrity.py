@@ -114,6 +114,7 @@ def sanitize(path, output=None, *, now=None, max_future_minutes=DEFAULT_MAX_FUTU
                 ok = False
         if ok:
             kept.append(row)
+            kept_ids.add(ident)
         else:
             rejected.append(row)
 
