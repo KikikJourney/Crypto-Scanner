@@ -377,20 +377,24 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     recent_15m_low = min(_low(x) for x in structure_rows_15)
     recent_15m_high = max(_high(x) for x in structure_rows_15)
 
+    # Canonical execution geometry: the published entry, stop-distance and
+    # target must describe the same trade. Previously risk/TP used entry_high
+    # or entry_low while the published entry was price, creating inconsistent
+    # timing/SL/TP calculations.
+    entry = price
     if direction == "LONG":
         structural_stop = recent_5m_low
-        if structural_stop >= entry_low:
+        if structural_stop >= entry:
             structural_stop = recent_15m_low
         stop = structural_stop - 0.20 * micro_atr
-        risk = entry_high - stop
-        target = entry_high + 2.0 * risk
     else:
         structural_stop = recent_5m_high
-        if structural_stop <= entry_high:
+        if structural_stop <= entry:
             structural_stop = recent_15m_high
         stop = structural_stop + 0.20 * micro_atr
-        risk = stop - entry_low
-        target = entry_low - 2.0 * risk
+
+    risk = entry - stop if direction == "LONG" else stop - entry
+    target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
 
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
@@ -424,9 +428,9 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     target = structural_target
 
     reward_r = (
-        (target - entry_high) / risk
+        (target - entry) / risk
         if direction == "LONG"
-        else (entry_low - target) / risk
+        else (entry - target) / risk
     )
     if confidence < 80.0:
         return {
@@ -439,13 +443,15 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         }
     status = "ACTION LONG" if direction == "LONG" else "ACTION SHORT"
     ts = _timestamp(rows_5m[-1])
-    valid_until = ts + timedelta(minutes=15) if ts else None
+    # Execution signals expire after one closed 5m candle. The next scan
+    # must re-evaluate price and structure instead of carrying stale entries.
+    valid_until = ts + timedelta(minutes=5) if ts else None
     latest_5m_ts = _timestamp(rows_5m[-1])
     latest_15m_ts = _timestamp(rows_15m[-1])
     return {
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
         "confidence": round(confidence, 1),
-        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(price, 12),
+        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),

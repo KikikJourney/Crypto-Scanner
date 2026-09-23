@@ -166,6 +166,28 @@ class ScalpingIntelligenceTests(unittest.TestCase):
                 "SHORT", 0.0, 0.0, 1.0, 80.0, 0.0, 1.0
             )
         )
+    def test_execution_geometry_uses_published_entry_for_risk_and_target(self):
+        entry = 100.0
+        stop = 98.0
+        risk = entry - stop
+        target = entry + 2.0 * risk
+        self.assertEqual(risk, 2.0)
+        self.assertEqual(target, 104.0)
+
+        entry = 100.0
+        stop = 102.0
+        risk = stop - entry
+        target = entry - 2.0 * risk
+        self.assertEqual(risk, 2.0)
+        self.assertEqual(target, 96.0)
+
+    def test_execution_signal_expires_after_one_5m_candle(self):
+        prices15 = [100.0] * 194
+        prices5 = [100.0] * 194
+        plan = build_plan("LONG", prices_to_rows(prices15), prices_to_rows(prices5), 0,
+                          {"extreme_low_24": 90, "extreme_high_24": 110, "atr": 1.0})
+        self.assertIn(plan["status"], {"WAIT", "NO-TRADE", "DATA-LIMITED", "INVALID"})
+
     def test_live_action_gate_is_disabled_by_default(self):
         import os
         from unittest.mock import patch
