@@ -47,6 +47,14 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
         ])
         self.assertEqual(detail[0]["status"], "ELIGIBLE_UNRESOLVED")
 
+    def test_confirmation_candle_touch_invalidates_retest(self):
+        detail = rc.calibrate([self.action()], [
+            self.candle("2026-09-22T00:05:00+00:00", 101, 102, 99),
+            self.candle("2026-09-22T00:10:00+00:00", 100, 101, 99.5),
+        ])
+        self.assertEqual(detail[0]["status"], "SKIPPED")
+        self.assertIn("confirmation candle already touched", detail[0]["reason"])
+
 
 if __name__ == "__main__":
     unittest.main()
