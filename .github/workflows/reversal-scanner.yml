@@ -26,6 +26,8 @@ on:
       - 'validation_gate.py'
       - 'evidence_audit.py'
       - 'execution_calibration.py'
+      - 'extreme_archive_integrity.py'
+      - 'tests/test_extreme_archive_integrity.py'
       - 'tests/test_validation_gate.py'
       - 'tests/test_evidence_audit.py'
       - 'tests/test_execution_calibration.py'
@@ -150,8 +152,12 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
+      - name: Sanitize legacy extreme archives before evaluation
+        run: python -m extreme_archive_integrity --sanitize
       - name: Run V2.2 extreme reversal scanner
         run: python extreme_runner.py
+      - name: Validate extreme archive integrity
+        run: python -m extreme_archive_integrity
       - name: Send confirmed scalping actions to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -333,4 +339,5 @@ jobs:
             data/scalping_optimization_report.csv
             data/scalping_validation_report.csv
             data/scalping_evidence_audit.csv
+            data/quarantine/*_rejected.csv
 
