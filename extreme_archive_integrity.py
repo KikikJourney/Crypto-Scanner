@@ -4,6 +4,7 @@ The validator is deliberately strict: malformed timestamps, non-crypto symbols,
 duplicate IDs, non-positive prices, and future-dated observations are rejected.
 No trading rule is changed here.
 """
+import argparse
 import csv
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -125,13 +126,28 @@ def sanitize(path, output=None, *, now=None, max_future_minutes=DEFAULT_MAX_FUTU
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sanitize", action="store_true")
+    args = parser.parse_args()
+
     files = [
         ("data/extreme_market_snapshots.csv", True),
         ("data/extreme_reversal_forward_test.csv", False),
         ("data/actionable_forward_test.csv", False),
     ]
     failed = False
+    quarantine = Path("data/quarantine")
     for path, price in files:
+        if args.sanitize and Path(path).exists():
+            _, rejected = sanitize(path, require_price=price)
+            if rejected:
+                quarantine.mkdir(parents=True, exist_ok=True)
+                rejected_path = quarantine / (Path(path).stem + "_rejected.csv")
+                with rejected_path.open("w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=list(rejected[0]))
+                    writer.writeheader()
+                    writer.writerows(rejected)
+                print(f"{path}: quarantined={len(rejected)} -> {rejected_path}")
         result = validate(path, require_price=price)
         print(f"{path}: rows={result['rows']} valid={result['valid']} errors={len(result['errors'])}")
         if result["errors"]:
