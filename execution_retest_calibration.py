@@ -116,7 +116,7 @@ def calibrate(actions=None, market_rows=None):
             if None in (high, low, close):
                 continue
             touched = low <= confirmation_close <= high
-            preserved = close >= confirmation_close if direction == "LONG" else close <= confirmation_close
+            preserved = close >= entry0 if direction == "LONG" else close <= entry0
             if touched and preserved:
                 retest = candle
                 break
