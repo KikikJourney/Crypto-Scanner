@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 DEFAULT_MAX_FUTURE_MINUTES = 15
+MIN_VALID_YEAR = 2020
 
 
 def _ts(value):
@@ -63,7 +64,7 @@ def validate(path, *, now=None, max_future_minutes=DEFAULT_MAX_FUTURE_MINUTES,
             errors.append(f"line {index}: invalid timestamp {row.get('timestamp')!r}")
             continue
 
-        if ts > now + timedelta(minutes=max_future_minutes):
+        if ts.year < MIN_VALID_YEAR or ts > now + timedelta(minutes=max_future_minutes):
             errors.append(f"line {index}: future timestamp {ts.isoformat()}")
 
         if require_price:
@@ -92,14 +93,17 @@ def sanitize(path, output=None, *, now=None, max_future_minutes=DEFAULT_MAX_FUTU
 
     for row in rows:
         ok = True
-        if not str(row.get("id", "")).strip():
+        ident = str(row.get("id", "")).strip()
+        if not ident:
+            ok = False
+        elif ident in {str(r.get("id", "")).strip() for r in kept}:
             ok = False
         symbol = str(row.get("symbol", "")).strip().upper()
         if universe and symbol not in universe:
             ok = False
         try:
             ts = _ts(row.get("timestamp", ""))
-            if ts > now + timedelta(minutes=max_future_minutes):
+            if ts.year < MIN_VALID_YEAR or ts > now + timedelta(minutes=max_future_minutes):
                 ok = False
         except (TypeError, ValueError):
             ok = False
