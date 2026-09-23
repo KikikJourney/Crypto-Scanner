@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timedelta
 import execution_retest_calibration as rc
 
 
@@ -12,9 +13,11 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
         }
 
     def candle(self, ts, close, high, low):
+        opened = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        closed = opened + timedelta(minutes=5)
         return {
             "timestamp": ts,
-            "close_timestamp": ts.replace("00:00:00", "00:05:00"),
+            "close_timestamp": closed.isoformat(),
             "symbol": "TESTUSDT", "provider": "Bitget",
             "open": str(close), "high": str(high), "low": str(low), "close": str(close),
         }
