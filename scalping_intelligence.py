@@ -263,6 +263,23 @@ def infer_direction(rows_15m, rows_5m):
     return None
 
 
+def _execution_geometry_40(direction, rows_5m, price, atr15):
+    """Build the intended 40-closed-5m entry/SL geometry."""
+    if len(rows_5m) < 40:
+        return None
+    window = rows_5m[-40:]
+    micro_atr = atr(window, 14) or atr15 / 3.0
+    if not micro_atr or micro_atr <= 0:
+        return None
+    anchor = min(_low(x) for x in window) if direction == "LONG" else max(_high(x) for x in window)
+    buffer = max(micro_atr * 0.10, price * 0.0002)
+    entry = anchor + buffer if direction == "LONG" else anchor - buffer
+    stop = anchor - buffer if direction == "LONG" else anchor + buffer
+    return {"anchor_40": anchor, "buffer": buffer, "entry": entry, "stop": stop,
+            "entry_low": entry - buffer, "entry_high": entry + buffer,
+            "micro_atr": micro_atr}
+
+
 def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_direction=True,
                early_reversal=False):
     """Build a plan with either the established MTF gate or early-reversal gate."""
@@ -365,33 +382,18 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if not price or not atr15:
         return {"status": "DATA-LIMITED", "reason": "price/ATR unavailable"}
 
-    micro_atr = atr(rows_5m, 14) or atr15 / 3.0
-    buffer = max(micro_atr * 0.20, price * 0.0003)
-    entry_low, entry_high = price - buffer, price + buffer
-    structure_rows_5, structure_rows_15 = rows_5m[-7:-1], rows_15m[-5:-1]
-    if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
-        return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
-
-    recent_5m_low = min(_low(x) for x in structure_rows_5)
-    recent_5m_high = max(_high(x) for x in structure_rows_5)
-    recent_15m_low = min(_low(x) for x in structure_rows_15)
-    recent_15m_high = max(_high(x) for x in structure_rows_15)
-
-    # Canonical execution geometry: the published entry, stop-distance and
-    # target must describe the same trade. Previously risk/TP used entry_high
-    # or entry_low while the published entry was price, creating inconsistent
-    # timing/SL/TP calculations.
-    entry = price
-    if direction == "LONG":
-        structural_stop = recent_5m_low
-        if structural_stop >= entry:
-            structural_stop = recent_15m_low
-        stop = structural_stop - 0.20 * micro_atr
-    else:
-        structural_stop = recent_5m_high
-        if structural_stop <= entry:
-            structural_stop = recent_15m_high
-        stop = structural_stop + 0.20 * micro_atr
+    geometry = _execution_geometry_40(direction, rows_5m, price, atr15)
+    if geometry is None:
+        return {"status": "DATA-LIMITED", "reason": "40-candle execution geometry unavailable"}
+    entry = geometry["entry"]
+    stop = geometry["stop"]
+    entry_low = geometry["entry_low"]
+    entry_high = geometry["entry_high"]
+    anchor_40 = geometry["anchor_40"]
+    entry_buffer = geometry["buffer"]
+    structure_rows_15 = rows_15m[-5:-1]
+    if len(structure_rows_15) < 2:
+        return {"status": "DATA-LIMITED", "reason": "15m execution structure unavailable"}
 
     risk = entry - stop if direction == "LONG" else stop - entry
     target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
@@ -401,7 +403,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
 
     # Apply the hard stop-distance gate before target selection. The stop limit
     # is independent of whether a reachable opposing swing exists.
-    risk_pct = risk / price * 100.0
+    risk_pct = risk / entry * 100.0
     max_stop_distance_pct = 2.0
     if risk_pct > max_stop_distance_pct:
         return {"status": "WAIT", "reason": "execution stop distance exceeds scalping limit",
@@ -416,13 +418,13 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
 
     # TP uses the nearest meaningful opposing 15m closing-price swing. Absolute
     # extremes can be stale and produced unrealistic 10R-40R objectives in the audit.
-    structural_target = _opposing_structure_target(rows_15m, direction, price, risk)
+    structural_target = _opposing_structure_target(rows_15m, direction, entry, risk)
     if structural_target is None:
         return {
             "status": "WAIT", "direction": direction,
             "confidence": round(confidence, 1),
             "location_15m": location_15, "reversal_5m": reversal_5,
-            "risk_pct": round(risk / price * 100.0, 4),
+            "risk_pct": round(risk / entry * 100.0, 4),
             "reason": "no reachable opposing 15m swing supports 2R-6R",
         }
     target = structural_target
@@ -453,6 +455,8 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
         "confidence": round(confidence, 1),
         "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),
+        "anchor_40": round(anchor_40, 12),
+        "entry_buffer_40": round(entry_buffer, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
