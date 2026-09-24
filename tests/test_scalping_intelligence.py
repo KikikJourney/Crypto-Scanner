@@ -130,19 +130,20 @@ class ScalpingIntelligenceTests(unittest.TestCase):
             self.assertGreaterEqual(plan["target"], plan["target_structure"])
 
     def test_max_stop_distance_returns_wait(self):
-        # Isolate the stop-distance gate: preferred LONG location + true sweep.
+        # Isolate the stop-distance gate while respecting the 40-candle entry
+        # rule: the 5m extreme remains above the fallback 15m structural stop.
         prices15 = [100.0] * 194
         prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [130.0, 99.0]
         execution_rows = prices_to_rows([103.5] * 194, 180)
         execution_rows[-7:-1] = [
-            [execution_rows[-7][0], "100", "101", "99", "100", "180"],
-            [execution_rows[-6][0], "100", "101", "99", "100.2", "180"],
-            [execution_rows[-5][0], "100.2", "101.2", "99.2", "100.1", "180"],
-            [execution_rows[-4][0], "100.1", "101.3", "99.0", "100.3", "180"],
-            [execution_rows[-3][0], "100.3", "101.0", "99.1", "100.0", "180"],
-            [execution_rows[-2][0], "100.0", "101.2", "99.0", "100.2", "180"],
+            [execution_rows[-7][0], "103.0", "104.0", "102.0", "103.2", "180"],
+            [execution_rows[-6][0], "103.2", "104.2", "102.0", "103.4", "180"],
+            [execution_rows[-5][0], "103.4", "104.2", "102.2", "103.3", "180"],
+            [execution_rows[-4][0], "103.3", "104.3", "102.0", "103.5", "180"],
+            [execution_rows[-3][0], "103.5", "104.0", "102.1", "103.2", "180"],
+            [execution_rows[-2][0], "103.2", "104.2", "102.0", "103.4", "180"],
         ]
-        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "98.0", "105.0", "180"]
+        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "101.5", "105.0", "180"]
         plan = build_plan("LONG", prices_to_rows(prices15, 120),
                           execution_rows, 88,
                           {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
