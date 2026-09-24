@@ -38,7 +38,7 @@ HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
 REPORT_FIELDS = [
-    "model", "sample", "anchored", "filled", "resolved", "wins", "losses",
+    "model", "sample", "anchored", "eligible", "filled", "resolved", "wins", "losses",
     "ambiguous", "unfilled", "rejected_geometry", "skipped", "win_rate_pct", "fill_rate_pct",
     "net_r", "expectancy_r", "max_drawdown_r", "avg_entry_improvement_pct",
     "max_risk_pct", "min_reward_r", "max_reward_r", "min_sample_for_review",
