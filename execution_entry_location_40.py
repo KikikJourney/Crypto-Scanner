@@ -34,7 +34,7 @@ ENTRY_BUFFER_ATR = 0.10
 ENTRY_BUFFER_FLOOR_PCT = 0.02
 MAX_RISK_PCT = 2.0
 MIN_REWARD_R = 2.0
-MAX_REWARD_R = 5.0
+MAX_REWARD_R = 8.0
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
@@ -47,6 +47,9 @@ REPORT_FIELDS = [
     "3r_wins", "3r_losses", "3r_ambiguous", "3r_resolved", "3r_net_r", "3r_expectancy_r",
     "4r_wins", "4r_losses", "4r_ambiguous", "4r_resolved", "4r_net_r", "4r_expectancy_r",
     "5r_wins", "5r_losses", "5r_ambiguous", "5r_resolved", "5r_net_r", "5r_expectancy_r",
+    "6r_wins", "6r_losses", "6r_ambiguous", "6r_resolved", "6r_net_r", "6r_expectancy_r",
+    "7r_wins", "7r_losses", "7r_ambiguous", "7r_resolved", "7r_net_r", "7r_expectancy_r",
+    "8r_wins", "8r_losses", "8r_ambiguous", "8r_resolved", "8r_net_r", "8r_expectancy_r",
 ]
 DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry",
