@@ -9,6 +9,28 @@ from telegram_notifier import format_action, send_message
 ACTIONS = Path("data/actionable_signals.csv")
 STATE = Path("data/telegram_sent_actions.csv")
 STATE_FIELDS = ["id"]
+VALIDATION_REPORT = Path("data/scalping_validation_report.csv")
+
+
+def _positive_oos_gate():
+    """Return True only when persisted evidence explicitly authorizes live actions."""
+    if not VALIDATION_REPORT.exists():
+        return False
+    try:
+        with VALIDATION_REPORT.open(newline="", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        if len(rows) != 1:
+            return False
+        row = rows[0]
+        return (
+            row.get("evidence_status") == "POSITIVE_CI"
+            and row.get("sample_gate_pass", "").strip().lower() == "true"
+            and float(row.get("bootstrap_ci95_low", "0")) > 0.0
+            and float(row.get("bootstrap_ci95_high", "0")) > 0.0
+        )
+    except (OSError, TypeError, ValueError):
+        return False
+
 
 
 def _live_price(row):
@@ -78,10 +100,10 @@ def main():
     live_actions_enabled = __import__("os").environ.get(
         "ENABLE_SCANNER_ACTIONS", ""
     ).strip().lower() in {"1", "true", "yes"}
-    if not live_actions_enabled:
+    if not live_actions_enabled or not _positive_oos_gate():
         print(
             "TELEGRAM: LIVE ACTIONS LOCKED — research/paper mode; "
-            "set ENABLE_SCANNER_ACTIONS=true only after positive out-of-sample validation"
+            "requires explicit enable flag AND a persisted POSITIVE_CI out-of-sample gate"
         )
         return 0
 

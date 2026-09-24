@@ -1,6 +1,7 @@
 import unittest
 
 from telegram_notifier import format_action
+import send_telegram_actions as actions
 from send_telegram_actions import _execution_status, _still_actionable
 
 
@@ -101,6 +102,38 @@ class TelegramNotifierTests(unittest.TestCase):
             "target": "115",
         }
         self.assertEqual(_execution_status(row, 106), "TRIGGERED — PRICE IN ENTRY ZONE")
+
+    def test_positive_oos_gate_rejects_negative_ci(self):
+        original = actions.VALIDATION_REPORT
+        try:
+            from pathlib import Path
+            import tempfile
+            with tempfile.TemporaryDirectory() as tmp:
+                actions.VALIDATION_REPORT = Path(tmp) / "validation.csv"
+                actions.VALIDATION_REPORT.write_text(
+                    "evidence_status,sample_gate_pass,bootstrap_ci95_low,bootstrap_ci95_high\n"
+                    "NEGATIVE_CI,True,-0.82,-0.42\n",
+                    encoding="utf-8",
+                )
+                self.assertFalse(actions._positive_oos_gate())
+        finally:
+            actions.VALIDATION_REPORT = original
+
+    def test_positive_oos_gate_accepts_only_positive_ci(self):
+        original = actions.VALIDATION_REPORT
+        try:
+            from pathlib import Path
+            import tempfile
+            with tempfile.TemporaryDirectory() as tmp:
+                actions.VALIDATION_REPORT = Path(tmp) / "validation.csv"
+                actions.VALIDATION_REPORT.write_text(
+                    "evidence_status,sample_gate_pass,bootstrap_ci95_low,bootstrap_ci95_high\n"
+                    "POSITIVE_CI,True,0.10,0.40\n",
+                    encoding="utf-8",
+                )
+                self.assertTrue(actions._positive_oos_gate())
+        finally:
+            actions.VALIDATION_REPORT = original
 
 
 if __name__ == "__main__":
