@@ -222,7 +222,7 @@ def calibrate(actions=None, market_rows=None):
             "status": "SKIPPED",
         })
 
-        if None in (baseline_entry, baseline_stop, planned_target) or baseline_entry <= 0:
+        if None in (baseline_entry, baseline_stop, baseline_target) or baseline_entry <= 0:
             row["reason"] = "invalid baseline execution fields"
             detail.append(row)
             continue
