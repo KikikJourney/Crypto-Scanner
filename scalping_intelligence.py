@@ -416,7 +416,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
 
     # TP uses the nearest meaningful opposing 15m closing-price swing. Absolute
     # extremes can be stale and produced unrealistic 10R-40R objectives in the audit.
-    structural_target = _opposing_structure_target(rows_15m, direction, price, risk)
+    structural_target = _opposing_structure_target(rows_15m, direction, entry, risk)
     if structural_target is None:
         return {
             "status": "WAIT", "direction": direction,
