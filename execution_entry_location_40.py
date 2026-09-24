@@ -39,7 +39,7 @@ MIN_SAMPLE_FOR_REVIEW = 30
 
 REPORT_FIELDS = [
     "model", "sample", "anchored", "filled", "resolved", "wins", "losses",
-    "ambiguous", "unfilled", "skipped", "win_rate_pct", "fill_rate_pct",
+    "ambiguous", "unfilled", "rejected_geometry", "skipped", "win_rate_pct", "fill_rate_pct",
     "net_r", "expectancy_r", "max_drawdown_r", "avg_entry_improvement_pct",
     "max_risk_pct", "min_reward_r", "max_reward_r", "min_sample_for_review",
 ]
@@ -148,7 +148,9 @@ def _entry_touched(direction, candle, entry):
 def _summary(detail):
     anchored = [r for r in detail if r.get("anchor_40")]
     filled_statuses = {"AMBIGUOUS_FILL", "FILLED_UNRESOLVED", "RESOLVED"}
+    rejected_statuses = {"REJECTED_GEOMETRY"}
     filled = [r for r in anchored if r["status"] in filled_statuses]
+    eligible = [r for r in anchored if r["status"] in {"UNFILLED", *filled_statuses}]
     resolved = [r for r in detail if r["outcome"] in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
     values = [
         2.0 if r["outcome"] == "EXPANSION"
@@ -169,17 +171,19 @@ def _summary(detail):
     return {
         "sample": len(detail),
         "anchored": len(anchored),
+        "eligible": len(eligible),
         "filled": len(filled),
         "resolved": len(resolved),
         "wins": sum(r["outcome"] == "EXPANSION" for r in resolved),
         "losses": sum(r["outcome"] == "FAIL" for r in resolved),
         "ambiguous": sum(r["outcome"] == "AMBIGUOUS" for r in resolved),
         "unfilled": sum(r["status"] == "UNFILLED" for r in detail),
+        "rejected_geometry": sum(r["status"] in rejected_statuses for r in detail),
         "skipped": sum(not r.get("anchor_40") for r in detail),
         "win_rate_pct": round(
             100.0 * sum(r["outcome"] == "EXPANSION" for r in resolved) / len(resolved), 4
         ) if resolved else 0.0,
-        "fill_rate_pct": round(100.0 * len(filled) / len(anchored), 4) if anchored else 0.0,
+        "fill_rate_pct": round(100.0 * len(filled) / len(eligible), 4) if eligible else 0.0,
         "net_r": round(sum(values), 4),
         "expectancy_r": round(sum(values) / len(resolved), 6) if resolved else 0.0,
         "max_drawdown_r": round(drawdown, 4),
@@ -259,10 +263,12 @@ def calibrate(actions=None, market_rows=None):
         })
 
         if direction == "LONG" and planned_entry >= current_price:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "40-candle long entry is not below current price"
             detail.append(row)
             continue
         if direction == "SHORT" and planned_entry <= current_price:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "40-candle short entry is not above current price"
             detail.append(row)
             continue
@@ -293,18 +299,22 @@ def calibrate(actions=None, market_rows=None):
         })
 
         if risk <= 0:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "non-positive 40-candle execution risk"
             detail.append(row)
             continue
         if risk_pct is None or risk_pct > MAX_RISK_PCT:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "40-candle stop exceeds 2% price-distance cap"
             detail.append(row)
             continue
         if reward_r is None or reward_r < MIN_REWARD_R:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "baseline target no longer supports minimum 2R"
             detail.append(row)
             continue
         if reward_r > MAX_REWARD_R:
+            row["status"] = "REJECTED_GEOMETRY"
             row["reason"] = "baseline target exceeds maximum 6R geometry"
             detail.append(row)
             continue
@@ -363,7 +373,7 @@ if __name__ == "__main__":
     result = write()
     print(
         "40-candle entry shadow: "
-        f"anchored={result['anchored']} filled={result['filled']} "
+        f"anchored={result['anchored']} eligible={result['eligible']} filled={result['filled']} "
         f"resolved={result['resolved']} wins={result['wins']} "
         f"losses={result['losses']} net_r={result['net_r']:.2f} "
         f"expectancy_r={result['expectancy_r']:.4f}"
