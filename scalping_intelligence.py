@@ -262,6 +262,22 @@ def infer_direction(rows_15m, rows_5m):
         return "SHORT"
     return None
 
+\ndef _execution_geometry_40(direction, rows_5m, price, atr15):
+    """Build the intended 40-closed-5m entry/SL geometry."""
+    if len(rows_5m) < 40:
+        return None
+    window = rows_5m[-40:]
+    micro_atr = atr(window, 14) or atr15 / 3.0
+    if not micro_atr or micro_atr <= 0:
+        return None
+    anchor = min(_low(x) for x in window) if direction == "LONG" else max(_high(x) for x in window)
+    buffer = max(micro_atr * 0.10, price * 0.0002)
+    entry = anchor + buffer if direction == "LONG" else anchor - buffer
+    stop = anchor - buffer if direction == "LONG" else anchor + buffer
+    return {"anchor_40": anchor, "buffer": buffer, "entry": entry, "stop": stop,
+            "entry_low": entry - buffer, "entry_high": entry + buffer,
+            "micro_atr": micro_atr}
+
 
 def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_direction=True,
                early_reversal=False):
@@ -365,30 +381,15 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if not price or not atr15:
         return {"status": "DATA-LIMITED", "reason": "price/ATR unavailable"}
 
-    # Execution geometry is deliberately different from signal geometry.
-    # The signal may be correct while an immediate market entry is too far
-    # from the 40-candle value area. For the executable plan, use only fully
-    # closed 5m candles: LONG enters just above the lowest low; SHORT enters
-    # just below the highest high. The stop is placed on the invalidation side
-    # of that same extreme, so entry/SL describe one coherent trade.
-    if len(rows_5m) < 40:
-        return {"status": "DATA-LIMITED", "reason": "40 closed 5m candles required for execution geometry"}
-    execution_window = rows_5m[-40:]
-    micro_atr = atr(execution_window, 14) or atr15 / 3.0
-    if not micro_atr or micro_atr <= 0:
-        return {"status": "DATA-LIMITED", "reason": "40-candle ATR unavailable"}
-
-    anchor_40 = (
-        min(_low(x) for x in execution_window)
-        if direction == "LONG"
-        else max(_high(x) for x in execution_window)
-    )
-    entry_buffer = max(micro_atr * 0.10, price * 0.0002)
-    entry = anchor_40 + entry_buffer if direction == "LONG" else anchor_40 - entry_buffer
-    stop = anchor_40 - entry_buffer if direction == "LONG" else anchor_40 + entry_buffer
-    entry_low, entry_high = (
-        entry - entry_buffer, entry + entry_buffer
-    )
+    geometry = _execution_geometry_40(direction, rows_5m, price, atr15)
+    if geometry is None:
+        return {"status": "DATA-LIMITED", "reason": "40-candle execution geometry unavailable"}
+    entry = geometry["entry"]
+    stop = geometry["stop"]
+    entry_low = geometry["entry_low"]
+    entry_high = geometry["entry_high"]
+    anchor_40 = geometry["anchor_40"]
+    entry_buffer = geometry["buffer"]
     structure_rows_15 = rows_15m[-5:-1]
     if len(structure_rows_15) < 2:
         return {"status": "DATA-LIMITED", "reason": "15m execution structure unavailable"}
@@ -422,7 +423,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             "status": "WAIT", "direction": direction,
             "confidence": round(confidence, 1),
             "location_15m": location_15, "reversal_5m": reversal_5,
-            "risk_pct": round(risk / price * 100.0, 4),
+            "risk_pct": round(risk / entry * 100.0, 4),
             "reason": "no reachable opposing 15m swing supports 2R-6R",
         }
     target = structural_target
@@ -452,7 +453,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     return {
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
         "confidence": round(confidence, 1),
-        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),
+        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),\n        "anchor_40": round(anchor_40, 12),\n        "entry_buffer_40": round(entry_buffer, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
