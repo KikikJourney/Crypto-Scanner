@@ -1,20 +1,20 @@
 """Shadow calibration for a 40-candle 5m entry-location model.
 
 Research-only: this module does not alter live signal generation or execution.
-The direction and baseline execution fields remain the scanner's reference
-outputs. The 40-candle model is evaluated independently for entry/stop geometry,
-while TP is evaluated separately at 2R, 3R, 4R and 5R.
+The direction and baseline execution fields remain the scanner reference outputs.
+The 40-candle model is evaluated independently for entry/stop geometry.
+TP is evaluated separately as an independent 2R-8R ladder.
 
 Model:
 - use the 40 fully closed 5m candles immediately before the signal;
 - LONG anchor = lowest low, planned entry slightly above that anchor;
 - SHORT anchor = highest high, planned entry slightly below that anchor;
 - derive the small offset from pre-signal 5m ATR (with a tiny price floor);
-- keep the baseline stop as a conservative invalidation boundary;
-- keep the baseline target, then require the new geometry to support >= 2R;
-- fill only when a future closed candle reaches the planned entry;
-- if the fill candle also touches stop/target, mark it ambiguous rather than
-  guessing intrabar order.
+- derive the stop from the same anchor/buffer geometry;
+- evaluate every TP level from 2R through 8R from the same filled entry and risk;
+- fill only when a future candle reaches the planned entry;
+- if the fill candle also touches stop/target for a given TP level, that level is
+  ambiguous rather than guessing intrabar order.
 
 No future candle is used to construct the 40-candle anchor.
 """
@@ -37,20 +37,20 @@ MIN_REWARD_R = 2.0
 MAX_REWARD_R = 8.0
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
+REWARD_LEVELS = tuple(range(int(MIN_REWARD_R), int(MAX_REWARD_R) + 1))
 
 REPORT_FIELDS = [
     "model", "sample", "anchored", "eligible", "filled", "resolved", "wins", "losses",
     "ambiguous", "unfilled", "rejected_geometry", "skipped", "win_rate_pct", "fill_rate_pct",
     "net_r", "expectancy_r", "max_drawdown_r", "avg_entry_improvement_pct",
     "max_risk_pct", "min_reward_r", "max_reward_r", "min_sample_for_review",
-    "2r_wins", "2r_losses", "2r_ambiguous", "2r_resolved", "2r_net_r", "2r_expectancy_r",
-    "3r_wins", "3r_losses", "3r_ambiguous", "3r_resolved", "3r_net_r", "3r_expectancy_r",
-    "4r_wins", "4r_losses", "4r_ambiguous", "4r_resolved", "4r_net_r", "4r_expectancy_r",
-    "5r_wins", "5r_losses", "5r_ambiguous", "5r_resolved", "5r_net_r", "5r_expectancy_r",
-    "6r_wins", "6r_losses", "6r_ambiguous", "6r_resolved", "6r_net_r", "6r_expectancy_r",
-    "7r_wins", "7r_losses", "7r_ambiguous", "7r_resolved", "7r_net_r", "7r_expectancy_r",
-    "8r_wins", "8r_losses", "8r_ambiguous", "8r_resolved", "8r_net_r", "8r_expectancy_r",
 ]
+for level in REWARD_LEVELS:
+    REPORT_FIELDS.extend([
+        f"{level}r_wins", f"{level}r_losses", f"{level}r_ambiguous",
+        f"{level}r_resolved", f"{level}r_net_r", f"{level}r_expectancy_r",
+    ])
+
 DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry",
     "baseline_stop", "baseline_target", "anchor_40", "buffer",
@@ -58,6 +58,8 @@ DETAIL_FIELDS = [
     "risk_pct", "reward_r", "status", "fill_timestamp", "outcome",
     "outcome_r", "outcome_timestamp", "reason",
 ]
+for level in REWARD_LEVELS:
+    DETAIL_FIELDS.extend([f"target_{level}r", f"outcome_{level}r"])
 
 
 def _f(value):
@@ -153,13 +155,31 @@ def _entry_touched(direction, candle, entry):
     return low <= entry if direction == "LONG" else high >= entry
 
 
+def _level_summary(detail, level):
+    outcome_key = f"outcome_{level}r"
+    resolved = [r for r in detail if r.get(outcome_key) in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
+    values = [
+        float(level) if r[outcome_key] == "EXPANSION"
+        else -1.0 if r[outcome_key] == "FAIL"
+        else 0.0
+        for r in resolved
+    ]
+    return {
+        f"{level}r_wins": sum(r[outcome_key] == "EXPANSION" for r in resolved),
+        f"{level}r_losses": sum(r[outcome_key] == "FAIL" for r in resolved),
+        f"{level}r_ambiguous": sum(r[outcome_key] == "AMBIGUOUS" for r in resolved),
+        f"{level}r_resolved": len(resolved),
+        f"{level}r_net_r": round(sum(values), 4),
+        f"{level}r_expectancy_r": round(sum(values) / len(resolved), 6) if resolved else 0.0,
+    }
+
+
 def _summary(detail):
     anchored = [r for r in detail if r.get("anchor_40")]
     filled_statuses = {"AMBIGUOUS_FILL", "FILLED_UNRESOLVED", "RESOLVED"}
-    rejected_statuses = {"REJECTED_GEOMETRY"}
     filled = [r for r in anchored if r["status"] in filled_statuses]
     eligible = [r for r in anchored if r["status"] in {"UNFILLED", *filled_statuses}]
-    resolved = [r for r in detail if r["outcome"] in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
+    resolved = [r for r in detail if r.get("outcome") in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
     values = [
         2.0 if r["outcome"] == "EXPANSION"
         else -1.0 if r["outcome"] == "FAIL"
@@ -176,7 +196,7 @@ def _summary(detail):
         _f(r["entry_improvement_pct"]) for r in filled
         if _f(r["entry_improvement_pct"]) is not None
     ]
-    return {
+    summary = {
         "sample": len(detail),
         "anchored": len(anchored),
         "eligible": len(eligible),
@@ -186,7 +206,7 @@ def _summary(detail):
         "losses": sum(r["outcome"] == "FAIL" for r in resolved),
         "ambiguous": sum(r["outcome"] == "AMBIGUOUS" for r in resolved),
         "unfilled": sum(r["status"] == "UNFILLED" for r in detail),
-        "rejected_geometry": sum(r["status"] in rejected_statuses for r in detail),
+        "rejected_geometry": sum(r["status"] == "REJECTED_GEOMETRY" for r in detail),
         "skipped": sum(not r.get("anchor_40") for r in detail),
         "win_rate_pct": round(
             100.0 * sum(r["outcome"] == "EXPANSION" for r in resolved) / len(resolved), 4
@@ -201,6 +221,9 @@ def _summary(detail):
         "max_reward_r": MAX_REWARD_R,
         "min_sample_for_review": MIN_SAMPLE_FOR_REVIEW,
     }
+    for level in REWARD_LEVELS:
+        summary.update(_level_summary(detail, level))
+    return summary
 
 
 def calibrate(actions=None, market_rows=None):
@@ -281,20 +304,9 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
 
-        # Isolate the 40-candle entry/SL hypothesis from the legacy stop.
         planned_stop = anchor - buffer if direction == "LONG" else anchor + buffer
         risk = planned_entry - planned_stop if direction == "LONG" else planned_stop - planned_entry
-        # Fixed 2R target keeps the geometry experiment comparable.
-        planned_target = planned_entry + MIN_REWARD_R * risk if direction == "LONG" else planned_entry - MIN_REWARD_R * risk
         risk_pct = risk / planned_entry * 100.0 if planned_entry else None
-        reward_r = MIN_REWARD_R if risk > 0 else None
-
-        row.update({
-            "planned_stop": f"{planned_stop:.12g}",
-            "planned_target": f"{planned_target:.12g}",
-            "risk_pct": f"{risk_pct:.6f}" if risk_pct is not None else "",
-            "reward_r": f"{reward_r:.6f}" if reward_r is not None else "",
-        })
 
         if risk <= 0:
             row["status"] = "REJECTED_GEOMETRY"
@@ -306,45 +318,63 @@ def calibrate(actions=None, market_rows=None):
             row["reason"] = "40-candle stop exceeds 2% price-distance cap"
             detail.append(row)
             continue
-        if reward_r is None or reward_r < MIN_REWARD_R:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "baseline target no longer supports minimum 2R"
-            detail.append(row)
-            continue
-        if reward_r > MAX_REWARD_R:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "baseline target exceeds maximum 6R geometry"
-            detail.append(row)
-            continue
+
+        targets = {
+            level: (
+                planned_entry + level * risk
+                if direction == "LONG"
+                else planned_entry - level * risk
+            )
+            for level in REWARD_LEVELS
+        }
+        row.update({
+            "planned_stop": f"{planned_stop:.12g}",
+            "planned_target": f"{targets[int(MIN_REWARD_R)]:.12g}",
+            "risk_pct": f"{risk_pct:.6f}",
+            "reward_r": f"{MIN_REWARD_R:.6f}",
+        })
+        for level, target in targets.items():
+            row[f"target_{level}r"] = f"{target:.12g}"
 
         row["status"] = "UNFILLED"
         future = _future_market(action, market)
-        for index, candle in enumerate(future):
-            if not _entry_touched(direction, candle, planned_entry):
-                continue
+        fill_index = None
 
-            row["fill_timestamp"] = _close_ts(candle).isoformat()
-            same_candle = _touch(direction, candle, planned_stop, planned_target)
-            if same_candle:
-                row["status"] = "AMBIGUOUS_FILL"
-                row["outcome"] = "AMBIGUOUS"
-                row["reason"] = "fill candle also touched stop/target; intrabar order unknown"
+        for index, candle in enumerate(future):
+            if _entry_touched(direction, candle, planned_entry):
+                row["fill_timestamp"] = _close_ts(candle).isoformat()
+                fill_index = index
+                row["status"] = "FILLED_UNRESOLVED"
                 break
 
-            row["status"] = "FILLED_UNRESOLVED"
-            for later in future[index + 1:]:
-                outcome = _touch(direction, later, planned_stop, planned_target)
-                if outcome:
-                    row["status"] = "RESOLVED"
-                    row["outcome"] = outcome
-                    row["outcome_r"] = (
-                        "2.0" if outcome == "EXPANSION"
-                        else "-1.0" if outcome == "FAIL"
-                        else ""
-                    )
-                    row["outcome_timestamp"] = _close_ts(later).isoformat()
+        if fill_index is not None:
+            # Each TP level is an independent measurement using the same entry/SL.
+            # This avoids coupling a 2R result to the 3R-8R ladder.
+            unresolved = set(REWARD_LEVELS)
+            for candle in future[fill_index:]:
+                if not unresolved:
                     break
-            break
+                for level in tuple(unresolved):
+                    outcome = _touch(direction, candle, planned_stop, targets[level])
+                    if outcome:
+                        row[f"outcome_{level}r"] = outcome
+                        unresolved.remove(level)
+                        if level == int(MIN_REWARD_R):
+                            row["outcome"] = outcome
+                            row["outcome_r"] = (
+                                str(float(level)) if outcome == "EXPANSION"
+                                else "-1.0" if outcome == "FAIL"
+                                else ""
+                            )
+                            row["outcome_timestamp"] = _close_ts(candle).isoformat()
+                        break
+
+            if unresolved:
+                row["reason"] = "horizon ended before all TP levels resolved"
+            elif row["outcome"] == "AMBIGUOUS":
+                row["status"] = "RESOLVED"
+            else:
+                row["status"] = "RESOLVED"
 
         detail.append(row)
 
