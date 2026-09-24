@@ -403,6 +403,11 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     entry_low = entry
     entry_high = entry
 
+    if direction == "LONG" and entry >= price:
+        return {"status": "WAIT", "reason": "40-candle long entry is not below current price"}
+    if direction == "SHORT" and entry <= price:
+        return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
+
     # Entry timing is now anchored to the latest 40 fully closed 5m candles:
     # LONG just above the lowest low, SHORT just below the highest high.
     # Direction/trend gates above remain unchanged.
