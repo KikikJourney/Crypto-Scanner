@@ -454,7 +454,9 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     return {
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
         "confidence": round(confidence, 1),
-        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),\n        "anchor_40": round(anchor_40, 12),\n        "entry_buffer_40": round(entry_buffer, 12),
+        "v2_score": round(_f(v2_score, 0.0), 1), "entry": round(entry, 12),
+        "anchor_40": round(anchor_40, 12),
+        "entry_buffer_40": round(entry_buffer, 12),
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
