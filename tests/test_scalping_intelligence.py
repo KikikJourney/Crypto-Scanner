@@ -188,6 +188,18 @@ class ScalpingIntelligenceTests(unittest.TestCase):
                           {"extreme_low_24": 90, "extreme_high_24": 110, "atr": 1.0})
         self.assertIn(plan["status"], {"WAIT", "NO-TRADE", "DATA-LIMITED", "INVALID"})
 
+    def test_action_validity_does_not_reference_uninitialized_close_timestamp(self):
+        prices15 = [100.0] * 194
+        prices5 = [100.0] * 194
+        plan = build_plan(
+            "LONG",
+            prices_to_rows(prices15),
+            prices_to_rows(prices5),
+            90,
+            {"extreme_low_24": 90, "extreme_high_24": 110, "atr": 1.0},
+        )
+        self.assertIn(plan["status"], {"WAIT", "NO-TRADE", "DATA-LIMITED", "INVALID"})
+
     def test_live_action_gate_is_disabled_by_default(self):
         import os
         from unittest.mock import patch
