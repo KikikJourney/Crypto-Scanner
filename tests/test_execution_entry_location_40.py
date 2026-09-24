@@ -82,6 +82,9 @@ class EntryLocation40Tests(unittest.TestCase):
         self.assertAlmostEqual(float(row["target_3r"]), float(row["planned_entry"]) + 3 * risk)
         self.assertAlmostEqual(float(row["target_4r"]), float(row["planned_entry"]) + 4 * risk)
         self.assertAlmostEqual(float(row["target_5r"]), float(row["planned_entry"]) + 5 * risk)
+        self.assertAlmostEqual(float(row["target_6r"]), float(row["planned_entry"]) + 6 * risk)
+        self.assertAlmostEqual(float(row["target_7r"]), float(row["planned_entry"]) + 7 * risk)
+        self.assertAlmostEqual(float(row["target_8r"]), float(row["planned_entry"]) + 8 * risk)
         self.assertEqual(row["outcome_2r"], "EXPANSION")
 
     def test_short_anchor_is_highest_high(self):
