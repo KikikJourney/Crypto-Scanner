@@ -387,7 +387,7 @@ def calibrate(actions=None, market_rows=None):
                     if outcome:
                         row[f"outcome_{level}r"] = outcome
                         unresolved.remove(level)
-                        if level == int(MIN_REWARD_R):
+                        if level == int(MIN_REWARD_R) and not fill_ambiguous:
                             row["outcome"] = outcome
                             row["outcome_r"] = (
                                 str(float(level)) if outcome == "EXPANSION"
