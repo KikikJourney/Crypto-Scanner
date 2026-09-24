@@ -1,8 +1,9 @@
 """Shadow calibration for a 40-candle 5m entry-location model.
 
 Research-only: this module does not alter live signal generation or execution.
-The direction, original stop, and original target remain the baseline scanner's
-outputs. Only the planned entry location is changed.
+The direction and baseline execution fields remain the scanner's reference
+outputs. The 40-candle model is evaluated independently for entry/stop geometry,
+while TP is evaluated separately at 2R, 3R, 4R and 5R.
 
 Model:
 - use the 40 fully closed 5m candles immediately before the signal;
@@ -33,7 +34,7 @@ ENTRY_BUFFER_ATR = 0.10
 ENTRY_BUFFER_FLOOR_PCT = 0.02
 MAX_RISK_PCT = 2.0
 MIN_REWARD_R = 2.0
-MAX_REWARD_R = 6.0
+MAX_REWARD_R = 5.0
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
@@ -42,6 +43,10 @@ REPORT_FIELDS = [
     "ambiguous", "unfilled", "rejected_geometry", "skipped", "win_rate_pct", "fill_rate_pct",
     "net_r", "expectancy_r", "max_drawdown_r", "avg_entry_improvement_pct",
     "max_risk_pct", "min_reward_r", "max_reward_r", "min_sample_for_review",
+    "2r_wins", "2r_losses", "2r_ambiguous", "2r_resolved", "2r_net_r", "2r_expectancy_r",
+    "3r_wins", "3r_losses", "3r_ambiguous", "3r_resolved", "3r_net_r", "3r_expectancy_r",
+    "4r_wins", "4r_losses", "4r_ambiguous", "4r_resolved", "4r_net_r", "4r_expectancy_r",
+    "5r_wins", "5r_losses", "5r_ambiguous", "5r_resolved", "5r_net_r", "5r_expectancy_r",
 ]
 DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry",
