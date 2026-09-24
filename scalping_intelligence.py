@@ -365,33 +365,33 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if not price or not atr15:
         return {"status": "DATA-LIMITED", "reason": "price/ATR unavailable"}
 
-    micro_atr = atr(rows_5m, 14) or atr15 / 3.0
-    buffer = max(micro_atr * 0.20, price * 0.0003)
-    entry_low, entry_high = price - buffer, price + buffer
-    structure_rows_5, structure_rows_15 = rows_5m[-7:-1], rows_15m[-5:-1]
-    if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
-        return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
+    # Execution geometry is deliberately different from signal geometry.
+    # The signal may be correct while an immediate market entry is too far
+    # from the 40-candle value area. For the executable plan, use only fully
+    # closed 5m candles: LONG enters just above the lowest low; SHORT enters
+    # just below the highest high. The stop is placed on the invalidation side
+    # of that same extreme, so entry/SL describe one coherent trade.
+    if len(rows_5m) < 40:
+        return {"status": "DATA-LIMITED", "reason": "40 closed 5m candles required for execution geometry"}
+    execution_window = rows_5m[-40:]
+    micro_atr = atr(execution_window, 14) or atr15 / 3.0
+    if not micro_atr or micro_atr <= 0:
+        return {"status": "DATA-LIMITED", "reason": "40-candle ATR unavailable"}
 
-    recent_5m_low = min(_low(x) for x in structure_rows_5)
-    recent_5m_high = max(_high(x) for x in structure_rows_5)
-    recent_15m_low = min(_low(x) for x in structure_rows_15)
-    recent_15m_high = max(_high(x) for x in structure_rows_15)
-
-    # Canonical execution geometry: the published entry, stop-distance and
-    # target must describe the same trade. Previously risk/TP used entry_high
-    # or entry_low while the published entry was price, creating inconsistent
-    # timing/SL/TP calculations.
-    entry = price
-    if direction == "LONG":
-        structural_stop = recent_5m_low
-        if structural_stop >= entry:
-            structural_stop = recent_15m_low
-        stop = structural_stop - 0.20 * micro_atr
-    else:
-        structural_stop = recent_5m_high
-        if structural_stop <= entry:
-            structural_stop = recent_15m_high
-        stop = structural_stop + 0.20 * micro_atr
+    anchor_40 = (
+        min(_low(x) for x in execution_window)
+        if direction == "LONG"
+        else max(_high(x) for x in execution_window)
+    )
+    entry_buffer = max(micro_atr * 0.10, price * 0.0002)
+    entry = anchor_40 + entry_buffer if direction == "LONG" else anchor_40 - entry_buffer
+    stop = anchor_40 - entry_buffer if direction == "LONG" else anchor_40 + entry_buffer
+    entry_low, entry_high = (
+        entry - entry_buffer, entry + entry_buffer
+    )
+    structure_rows_15 = rows_15m[-5:-1]
+    if len(structure_rows_15) < 2:
+        return {"status": "DATA-LIMITED", "reason": "15m execution structure unavailable"}
 
     risk = entry - stop if direction == "LONG" else stop - entry
     target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
@@ -401,7 +401,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
 
     # Apply the hard stop-distance gate before target selection. The stop limit
     # is independent of whether a reachable opposing swing exists.
-    risk_pct = risk / price * 100.0
+    risk_pct = risk / entry * 100.0
     max_stop_distance_pct = 2.0
     if risk_pct > max_stop_distance_pct:
         return {"status": "WAIT", "reason": "execution stop distance exceeds scalping limit",
