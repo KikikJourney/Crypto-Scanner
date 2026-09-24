@@ -396,11 +396,9 @@ def calibrate(actions=None, market_rows=None):
                             )
                             row["outcome_timestamp"] = _close_ts(candle).isoformat()
 
-            if unresolved:
+            if unresolved and not fill_ambiguous:
                 row["reason"] = "horizon ended before all TP levels resolved"
-            elif row["outcome"] == "AMBIGUOUS":
-                row["status"] = "RESOLVED"
-            else:
+            if not fill_ambiguous:
                 row["status"] = "RESOLVED"
 
         detail.append(row)
