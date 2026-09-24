@@ -29,7 +29,7 @@ class EntryLocation40Tests(unittest.TestCase):
             "direction": direction,
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
-            "stop": "98" if direction == "LONG" else "102",
+            "stop": "98" if direction == "LONG" else "101.2",
             "target": "104" if direction == "LONG" else "99.7",
         }
 
