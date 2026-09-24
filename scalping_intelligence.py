@@ -262,7 +262,8 @@ def infer_direction(rows_15m, rows_5m):
         return "SHORT"
     return None
 
-\ndef _execution_geometry_40(direction, rows_5m, price, atr15):
+
+def _execution_geometry_40(direction, rows_5m, price, atr15):
     """Build the intended 40-closed-5m entry/SL geometry."""
     if len(rows_5m) < 40:
         return None
