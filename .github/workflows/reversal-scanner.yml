@@ -28,7 +28,9 @@ on:
       - 'execution_calibration.py'
       - 'execution_retest_calibration.py'
       - 'execution_adverse_timing.py'
+      - 'execution_entry_location_40.py'
       - 'tests/test_execution_adverse_timing.py'
+      - 'tests/test_execution_entry_location_40.py'
       - 'extreme_archive_integrity.py'
       - 'tests/test_extreme_archive_integrity.py'
       - 'tests/test_validation_gate.py'
@@ -70,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py extreme_archive_integrity.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_40.py extreme_archive_integrity.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
       - name: Validate crypto-only universe filters
@@ -155,6 +157,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_retest_calibration.py' -v
       - name: Validate adverse excursion timing diagnostic
         run: python -m unittest discover -s tests -p 'test_execution_adverse_timing.py' -v
+      - name: Validate 40-candle entry location shadow
+        run: python -m unittest discover -s tests -p 'test_execution_entry_location_40.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate Telegram formatter
@@ -317,9 +321,12 @@ jobs:
           retest = execution_retest_calibration.write()
           import execution_adverse_timing
           timing = execution_adverse_timing.write(rows)
+          import execution_entry_location_40
+          entry_location = execution_entry_location_40.write()
           print('Execution calibration shadow:', calibration)
           print('Execution retest shadow:', retest)
           print('Execution adverse timing:', timing)
+          print('40-candle entry location shadow:', entry_location)
           eligible = {str(r.get("symbol", "")).upper() for r in read(root / "crypto_universe.csv")[0] if r.get("symbol")}
           assert eligible, "crypto_universe.csv missing or empty after state reset"
           assert all(str(r.get("symbol", "")).upper() in eligible for r in read(root / "scalping_action_history.csv")[0]), "non-crypto symbol survived action-history migration"
@@ -327,7 +334,7 @@ jobs:
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/scalping_execution_retest_report.csv data/scalping_execution_retest.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/scalping_execution_retest_report.csv data/scalping_execution_retest.csv data/scalping_entry_location_40_report.csv data/scalping_entry_location_40.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
 
@@ -346,6 +353,8 @@ jobs:
             data/scalping_execution_retest_report.csv
             data/scalping_execution_retest.csv
             data/scalping_execution_timing_report.csv
+            data/scalping_entry_location_40_report.csv
+            data/scalping_entry_location_40.csv
             data/scalping_forward_test.csv
             data/scalping_action_history.csv
             data/scalping_market_5m.csv
