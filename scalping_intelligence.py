@@ -443,12 +443,12 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         }
     status = "ACTION LONG" if direction == "LONG" else "ACTION SHORT"
     ts = _timestamp(rows_5m[-1])
-    # Execution signals expire after one closed 5m candle. The next scan
-    # must re-evaluate price and structure instead of carrying stale entries.
-    valid_until = latest_5m_close_ts + timedelta(minutes=5) if latest_5m_close_ts else None
     latest_5m_ts = _timestamp(rows_5m[-1])
     latest_5m_close_ts = latest_5m_ts + timedelta(minutes=5) if latest_5m_ts else None
     latest_15m_ts = _timestamp(rows_15m[-1])
+    # Execution signals expire after one closed 5m candle. The next scan
+    # must re-evaluate price and structure instead of carrying stale entries.
+    valid_until = latest_5m_close_ts + timedelta(minutes=5) if latest_5m_close_ts else None
     return {
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
         "confidence": round(confidence, 1),
