@@ -348,10 +348,38 @@ def calibrate(actions=None, market_rows=None):
                 break
 
         if fill_index is not None:
+            # The fill candle is not orderable from OHLC alone. If it also
+            # reaches the stop or any TP level, mark the fill itself ambiguous
+            # instead of inventing an intrabar sequence.
+            fill_candle = future[fill_index]
+            fill_touches_stop = (
+                (_f(fill_candle.get("low")) is not None and _f(fill_candle.get("low")) <= planned_stop)
+                if direction == "LONG"
+                else (_f(fill_candle.get("high")) is not None and _f(fill_candle.get("high")) >= planned_stop)
+            )
+            fill_touches_target = any(
+                (
+                    _f(fill_candle.get("high")) is not None
+                    and _f(fill_candle.get("high")) >= target
+                )
+                if direction == "LONG"
+                else (
+                    _f(fill_candle.get("low")) is not None
+                    and _f(fill_candle.get("low")) <= target
+                )
+                for target in targets.values()
+            )
+            fill_ambiguous = fill_touches_stop or fill_touches_target
+            row["status"] = "AMBIGUOUS_FILL" if fill_ambiguous else "RESOLVED"
+            if fill_ambiguous:
+                row["outcome"] = "AMBIGUOUS"
+                row["outcome_timestamp"] = _close_ts(fill_candle).isoformat()
+                row["reason"] = "fill candle also touched stop or target; intrabar order is unknowable"
+
             # Each TP level is an independent measurement using the same entry/SL.
             # This avoids coupling a 2R result to the 3R-8R ladder.
             unresolved = set(REWARD_LEVELS)
-            for candle in future[fill_index:]:
+            for candle in future[fill_index + 1:]:
                 if not unresolved:
                     break
                 for level in tuple(unresolved):
