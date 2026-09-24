@@ -445,8 +445,9 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     ts = _timestamp(rows_5m[-1])
     # Execution signals expire after one closed 5m candle. The next scan
     # must re-evaluate price and structure instead of carrying stale entries.
-    valid_until = ts + timedelta(minutes=5) if ts else None
+    valid_until = latest_5m_close_ts + timedelta(minutes=5) if latest_5m_close_ts else None
     latest_5m_ts = _timestamp(rows_5m[-1])
+    latest_5m_close_ts = latest_5m_ts + timedelta(minutes=5) if latest_5m_ts else None
     latest_15m_ts = _timestamp(rows_15m[-1])
     return {
         "status": status, "direction": direction, "strategy_version": SCALPING_STRATEGY_VERSION,
@@ -468,6 +469,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "early_reversal_score": early["score"] if early_reversal else 0.0,
         "valid_until": valid_until.isoformat() if valid_until else "",
         "latest_closed_5m_timestamp": latest_5m_ts.isoformat() if latest_5m_ts else "",
+        "latest_closed_5m_close_timestamp": latest_5m_close_ts.isoformat() if latest_5m_close_ts else "",
         "latest_closed_15m_timestamp": latest_15m_ts.isoformat() if latest_15m_ts else "",
         "timeframes": "4H/1H/30m/15m/5m",
         "reason": (

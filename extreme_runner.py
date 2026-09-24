@@ -34,7 +34,7 @@ ACTIONABLE_FIELDS = [
     "id", "timestamp", "scan_timestamp", "symbol", "provider", "direction", "score",
     "strategy_version",
     "v2_score", "confidence", "location_15m", "reversal_5m", "entry", "entry_low", "entry_high", "trigger",
-    "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_15m_timestamp",
+    "stop", "target", "risk_pct", "reward_r", "valid_until", "latest_closed_5m_timestamp", "latest_closed_5m_close_timestamp", "latest_closed_15m_timestamp",
     "data_age_seconds", "timeframes", "rsi_5m", "trend_4h", "trend_1h", "structure_30m",
     "structure_15m", "liquidity_sweep_5m", "volume_5m",
     "exhaustion_15m", "base_15m", "structure_shift_5m",
@@ -223,7 +223,8 @@ def _mtf_action(x, timestamp):
     latest15 = plan.get("latest_closed_15m_timestamp", "")
     data_age = ""
     try:
-        data_age = round((datetime.fromisoformat(timestamp.replace("Z", "+00:00")) - datetime.fromisoformat(latest5.replace("Z", "+00:00"))).total_seconds(), 3)
+        latest5_close = (datetime.fromisoformat(latest5.replace("Z", "+00:00")) + timedelta(minutes=5)).isoformat()
+        data_age = round((datetime.fromisoformat(timestamp.replace("Z", "+00:00")) - datetime.fromisoformat(latest5_close.replace("Z", "+00:00"))).total_seconds(), 3)
     except (TypeError, ValueError):
         pass
     return {
@@ -235,6 +236,7 @@ def _mtf_action(x, timestamp):
         "direction": plan["direction"],
         "score": plan["v2_score"],
         "v2_score": plan["v2_score"],
+        "strategy_version": plan.get("strategy_version", SCALPING_STRATEGY_VERSION),
         "strategy_version": plan.get("strategy_version", SCALPING_STRATEGY_VERSION),
         "confidence": plan["confidence"],
         "location_15m": plan["location_15m"],
@@ -249,6 +251,7 @@ def _mtf_action(x, timestamp):
         "reward_r": plan["reward_r"],
         "valid_until": _issue_valid_until(timestamp),
         "latest_closed_5m_timestamp": latest5,
+        "latest_closed_5m_close_timestamp": latest5_close,
         "latest_closed_15m_timestamp": latest15,
         "data_age_seconds": data_age,
         "timeframes": plan["timeframes"],
@@ -319,6 +322,7 @@ def _brain_action(x, timestamp):
         "direction": plan["direction"],
         "score": plan["v2_score"],
         "v2_score": plan["v2_score"],
+        "strategy_version": plan.get("strategy_version", SCALPING_STRATEGY_VERSION),
         "confidence": plan["confidence"],
         "location_15m": plan["location_15m"],
         "reversal_5m": plan["reversal_5m"],
