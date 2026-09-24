@@ -222,7 +222,7 @@ def calibrate(actions=None, market_rows=None):
             "status": "SKIPPED",
         })
 
-        if None in (baseline_entry, baseline_stop, baseline_target) or baseline_entry <= 0:
+        if None in (baseline_entry, baseline_stop, planned_target) or baseline_entry <= 0:
             row["reason"] = "invalid baseline execution fields"
             detail.append(row)
             continue
@@ -273,27 +273,17 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
 
-        planned_stop = (
-            min(baseline_stop, anchor - buffer)
-            if direction == "LONG"
-            else max(baseline_stop, anchor + buffer)
-        )
-        risk = (
-            planned_entry - planned_stop
-            if direction == "LONG"
-            else planned_stop - planned_entry
-        )
-        reward = (
-            baseline_target - planned_entry
-            if direction == "LONG"
-            else planned_entry - baseline_target
-        )
+        # Isolate the 40-candle entry/SL hypothesis from the legacy stop.
+        planned_stop = anchor - buffer if direction == "LONG" else anchor + buffer
+        risk = planned_entry - planned_stop if direction == "LONG" else planned_stop - planned_entry
+        # Fixed 2R target keeps the geometry experiment comparable.
+        planned_target = planned_entry + MIN_REWARD_R * risk if direction == "LONG" else planned_entry - MIN_REWARD_R * risk
         risk_pct = risk / planned_entry * 100.0 if planned_entry else None
-        reward_r = reward / risk if risk and risk > 0 else None
+        reward_r = MIN_REWARD_R if risk > 0 else None
 
         row.update({
             "planned_stop": f"{planned_stop:.12g}",
-            "planned_target": f"{baseline_target:.12g}",
+            "planned_target": f"{planned_target:.12g}",
             "risk_pct": f"{risk_pct:.6f}" if risk_pct is not None else "",
             "reward_r": f"{reward_r:.6f}" if reward_r is not None else "",
         })
@@ -357,7 +347,7 @@ def write(detail=None):
     detail = calibrate() if detail is None else detail
     REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
     summary = _summary(detail)
-    report = {"model": "ENTRY_40C_5M_SHADOW", **summary}
+    report = {"model": "ENTRY_40C_5M_GEOMETRY_SHADOW", **summary}
     with REPORT_FILE.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
         writer.writeheader()
