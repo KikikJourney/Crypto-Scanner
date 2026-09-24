@@ -4,7 +4,7 @@ from extreme_runner import _normalize_bitget_mtf_candles
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
     _location_score, _reversal_score, _opposing_structure_target,
-    _countertrend_early_reversal_allowed,
+    _countertrend_early_reversal_allowed, _execution_geometry_40,
 )
 
 
@@ -212,6 +212,30 @@ class ScalpingIntelligenceTests(unittest.TestCase):
     def test_early_reversal_runner_dependency_is_imported(self):
         from extreme_runner import infer_early_reversal_direction
         self.assertTrue(callable(infer_early_reversal_direction))
+
+    def test_40c_long_entry_is_near_low_and_stop_is_below_entry(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 40)
+        candles[10] = [candles[10][0], "91", "92", "90", "91", "100"]
+        geometry = _execution_geometry_40("LONG", candles, 100.0, 1.0)
+        self.assertIsNotNone(geometry)
+        self.assertAlmostEqual(geometry["anchor_40"], 90.0)
+        self.assertGreater(geometry["entry"], 90.0)
+        self.assertLess(geometry["entry"], 91.0)
+        self.assertLess(geometry["stop"], geometry["entry"])
+
+    def test_40c_short_entry_is_near_high_and_stop_is_above_entry(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 40)
+        candles[10] = [candles[10][0], "109", "110", "108", "109", "100"]
+        geometry = _execution_geometry_40("SHORT", candles, 100.0, 1.0)
+        self.assertIsNotNone(geometry)
+        self.assertAlmostEqual(geometry["anchor_40"], 110.0)
+        self.assertLess(geometry["entry"], 110.0)
+        self.assertGreater(geometry["entry"], 109.0)
+        self.assertGreater(geometry["stop"], geometry["entry"])
+
+    def test_40c_requires_closed_candle_history(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 39)
+        self.assertIsNone(_execution_geometry_40("LONG", candles, 100.0, 1.0))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
