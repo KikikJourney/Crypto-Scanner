@@ -1,2 +1,2 @@
 model,sample,anchored,eligible,filled,resolved,wins,losses,ambiguous,unfilled,rejected_geometry,skipped,win_rate_pct,fill_rate_pct,net_r,expectancy_r,max_drawdown_r,avg_entry_improvement_pct,max_risk_pct,min_reward_r,max_reward_r,min_sample_for_review
-ENTRY_40C_5M_SHADOW,108,106,1,1,1,0,0,1,0,105,2,0.0,100.0,0.0,0.0,0.0,0.05618,2.0,2.0,6.0,30
+ENTRY_40C_5M_SHADOW,111,109,1,1,1,0,0,1,0,108,2,0.0,100.0,0.0,0.0,0.0,0.05618,2.0,2.0,6.0,30
