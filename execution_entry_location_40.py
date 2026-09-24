@@ -367,7 +367,6 @@ def calibrate(actions=None, market_rows=None):
                                 else ""
                             )
                             row["outcome_timestamp"] = _close_ts(candle).isoformat()
-                        break
 
             if unresolved:
                 row["reason"] = "horizon ended before all TP levels resolved"
