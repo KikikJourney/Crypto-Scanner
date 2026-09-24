@@ -316,7 +316,7 @@ def calibrate(actions=None, market_rows=None):
                 continue
 
             row["fill_timestamp"] = _close_ts(candle).isoformat()
-            same_candle = _touch(direction, candle, planned_stop, baseline_target)
+            same_candle = _touch(direction, candle, planned_stop, planned_target)
             if same_candle:
                 row["status"] = "AMBIGUOUS_FILL"
                 row["outcome"] = "AMBIGUOUS"
@@ -325,7 +325,7 @@ def calibrate(actions=None, market_rows=None):
 
             row["status"] = "FILLED_UNRESOLVED"
             for later in future[index + 1:]:
-                outcome = _touch(direction, later, planned_stop, baseline_target)
+                outcome = _touch(direction, later, planned_stop, planned_target)
                 if outcome:
                     row["status"] = "RESOLVED"
                     row["outcome"] = outcome
