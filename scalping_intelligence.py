@@ -399,7 +399,6 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         return {"status": "DATA-LIMITED", "reason": "40-candle 5m entry location unavailable"}
 
     entry = location_40["entry"]
-    stop = location_40["stop"]
     entry_low = entry
     entry_high = entry
 
@@ -408,9 +407,28 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if direction == "SHORT" and entry <= price:
         return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
 
-    # Entry timing is now anchored to the latest 40 fully closed 5m candles:
-    # LONG just above the lowest low, SHORT just below the highest high.
-    # Direction/trend gates above remain unchanged.
+    structure_rows_5, structure_rows_15 = rows_5m[-7:-1], rows_15m[-5:-1]
+    if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
+        return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
+
+    recent_5m_low = min(_low(x) for x in structure_rows_5)
+    recent_5m_high = max(_high(x) for x in structure_rows_5)
+    recent_15m_low = min(_low(x) for x in structure_rows_15)
+    recent_15m_high = max(_high(x) for x in structure_rows_15)
+
+    # Keep the established SL geometry/risk gate unchanged. Only the entry
+    # location is anchored to the 40-candle 5m extreme.
+    if direction == "LONG":
+        structural_stop = recent_5m_low
+        if structural_stop >= entry:
+            structural_stop = recent_15m_low
+        stop = structural_stop - 0.20 * micro_atr
+    else:
+        structural_stop = recent_5m_high
+        if structural_stop <= entry:
+            structural_stop = recent_15m_high
+        stop = structural_stop + 0.20 * micro_atr
+
     risk = entry - stop if direction == "LONG" else stop - entry
     target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
 
@@ -432,41 +450,17 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
                 "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
                 "max_stop_distance_pct": max_stop_distance_pct}
 
-    # Keep the existing 2R-6R reward envelope, but place TP near the
-    # strongest recent 15m extreme when that level is reachable.
-    window_15 = rows_15m[-32:]
-    if direction == "LONG":
-        extreme_15 = max(_high(row) for row in window_15)
-        target = extreme_15 - max(micro_atr * 0.05, extreme_15 * 0.0002)
-    else:
-        extreme_15 = min(_low(row) for row in window_15)
-        target = extreme_15 + max(micro_atr * 0.05, extreme_15 * 0.0002)
-
-    min_target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
-    max_target = entry + 6.0 * risk if direction == "LONG" else entry - 6.0 * risk
-    if direction == "LONG":
-        if target > max_target:
-            target = max_target
-        if target < min_target:
-            return {
-                "status": "WAIT", "direction": direction,
-                "confidence": round(confidence, 1),
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "risk_pct": round(risk / price * 100.0, 4),
-                "reason": "15m high does not support existing 2R-6R target range",
-            }
-    else:
-        if target < max_target:
-            target = max_target
-        if target > min_target:
-            return {
-                "status": "WAIT", "direction": direction,
-                "confidence": round(confidence, 1),
-                "location_15m": location_15, "reversal_5m": reversal_5,
-                "risk_pct": round(risk / price * 100.0, 4),
-                "reason": "15m low does not support existing 2R-6R target range",
-            }
-    structural_target = target
+    # Keep the established TP selection and 2R-6R reward constraints unchanged.
+    structural_target = _opposing_structure_target(rows_15m, direction, entry, risk)
+    if structural_target is None:
+        return {
+            "status": "WAIT", "direction": direction,
+            "confidence": round(confidence, 1),
+            "location_15m": location_15, "reversal_5m": reversal_5,
+            "risk_pct": round(risk / price * 100.0, 4),
+            "reason": "no reachable opposing 15m swing supports 2R-6R",
+        }
+    target = structural_target
 
     reward_r = (
         (target - entry) / risk
