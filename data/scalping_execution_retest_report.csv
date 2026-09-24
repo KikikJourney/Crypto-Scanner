@@ -1,2 +1,2 @@
 model,sample,eligible,resolved,wins,losses,ambiguous,unresolved,skipped,win_rate_pct,net_r,expectancy_r,max_drawdown_r,max_risk_pct,min_sample_for_review
-CONFIRM_RETEST_5M_SHADOW,108,37,24,3,21,0,13,71,12.5,-15.0,-0.625,-15.0,2.0,30
+CONFIRM_RETEST_5M_SHADOW,108,44,27,3,24,0,17,64,11.1111,-18.0,-0.666667,-18.0,2.0,30
