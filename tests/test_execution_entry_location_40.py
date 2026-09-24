@@ -68,9 +68,21 @@ class EntryLocation40Tests(unittest.TestCase):
         action = self.action()
         rows = self.market(fill=True)
         rows[-2]["high"] = "100.2"
+        rows[-2]["low"] = "98.8"
         detail = m.calibrate([action], rows)
         self.assertEqual(detail[0]["status"], "AMBIGUOUS_FILL")
         self.assertEqual(detail[0]["outcome"], "AMBIGUOUS")
+
+    def test_tp_is_independent_2_to_5r_ladder(self):
+        action = self.action()
+        detail = m.calibrate([action], self.market(fill=True))
+        row = detail[0]
+        risk = float(row["planned_entry"]) - float(row["planned_stop"])
+        self.assertAlmostEqual(float(row["target_2r"]), float(row["planned_entry"]) + 2 * risk)
+        self.assertAlmostEqual(float(row["target_3r"]), float(row["planned_entry"]) + 3 * risk)
+        self.assertAlmostEqual(float(row["target_4r"]), float(row["planned_entry"]) + 4 * risk)
+        self.assertAlmostEqual(float(row["target_5r"]), float(row["planned_entry"]) + 5 * risk)
+        self.assertEqual(row["outcome_2r"], "EXPANSION")
 
     def test_short_anchor_is_highest_high(self):
         action = self.action("SHORT")
