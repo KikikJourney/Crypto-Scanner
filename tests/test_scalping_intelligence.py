@@ -134,6 +134,10 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         prices15 = [100.0] * 194
         prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [130.0, 99.0]
         execution_rows = prices_to_rows([103.5] * 194, 180)
+        execution_rows[-21:-7] = [
+            [row[0], "100", "130", "98", "105", "180"]
+            for row in execution_rows[-21:-7]
+        ]
         execution_rows[-7:-1] = [
             [execution_rows[-7][0], "100", "101", "99", "100", "180"],
             [execution_rows[-6][0], "100", "101", "99", "100.2", "180"],
@@ -142,7 +146,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
             [execution_rows[-3][0], "100.3", "101.0", "99.1", "100.0", "180"],
             [execution_rows[-2][0], "100.0", "101.2", "99.0", "100.2", "180"],
         ]
-        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "98.0", "105.0", "180"]
+        execution_rows[-1] = [execution_rows[-1][0], "103.5", "130.0", "97.5", "105.0", "180"]
         plan = build_plan("LONG", prices_to_rows(prices15, 120),
                           execution_rows, 88,
                           {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
