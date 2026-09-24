@@ -41,7 +41,7 @@ class EntryLocation40Tests(unittest.TestCase):
             rows[-1]["low"] = "99"
             if fill:
                 rows.append(self.candle(245, 99.2, high=99.3, low=99.05))
-                rows.append(self.candle(250, 99.6, high=99.7, low=99.4))
+                rows.append(self.candle(250, 100.1, high=100.2, low=99.8))
             else:
                 rows.append(self.candle(245, 101, high=102, low=100.5))
         else:
@@ -67,7 +67,7 @@ class EntryLocation40Tests(unittest.TestCase):
     def test_fill_candle_with_stop_or_target_is_ambiguous(self):
         action = self.action()
         rows = self.market(fill=True)
-        rows[-2]["high"] = "99.7"
+        rows[-2]["high"] = "100.2"
         detail = m.calibrate([action], rows)
         self.assertEqual(detail[0]["status"], "AMBIGUOUS_FILL")
         self.assertEqual(detail[0]["outcome"], "AMBIGUOUS")
