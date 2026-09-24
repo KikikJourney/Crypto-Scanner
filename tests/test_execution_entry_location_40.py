@@ -40,15 +40,15 @@ class EntryLocation40Tests(unittest.TestCase):
         if direction == "LONG":
             rows[-1]["low"] = "99"
             if fill:
-                rows.append(self.candle(245, 100, high=101, low=98.9))
-                rows.append(self.candle(250, 103, high=104.5, low=99.5))
+                rows.append(self.candle(245, 99.2, high=99.3, low=99.05))
+                rows.append(self.candle(250, 99.6, high=99.7, low=99.4))
             else:
                 rows.append(self.candle(245, 101, high=102, low=100.5))
         else:
             rows[-1]["high"] = "101"
             if fill:
-                rows.append(self.candle(245, 100, high=101.1, low=99))
-                rows.append(self.candle(250, 99, high=100.5, low=99.0))
+                rows.append(self.candle(245, 100.8, high=100.95, low=100.7))
+                rows.append(self.candle(250, 100.4, high=100.6, low=100.3))
         return rows
 
     def test_uses_only_pre_signal_candles(self):
@@ -67,7 +67,7 @@ class EntryLocation40Tests(unittest.TestCase):
     def test_fill_candle_with_stop_or_target_is_ambiguous(self):
         action = self.action()
         rows = self.market(fill=True)
-        rows[-2]["high"] = "104.5"
+        rows[-2]["high"] = "99.7"
         detail = m.calibrate([action], rows)
         self.assertEqual(detail[0]["status"], "AMBIGUOUS_FILL")
         self.assertEqual(detail[0]["outcome"], "AMBIGUOUS")
