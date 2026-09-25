@@ -1,0 +1,57 @@
+name: Alpha Opportunity Hunter
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '2,17,32,47 * * * *'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'alpha_opportunity_hunter.py'
+      - 'tests/test_alpha_opportunity_hunter.py'
+      - '.github/workflows/alpha-opportunity-hunter.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alpha-opportunity-hunter
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile alpha_opportunity_hunter.py
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p 'test_alpha_opportunity_hunter.py' -v
+      - name: Live opportunity scan
+        run: python alpha_opportunity_hunter.py
+      - name: Validate output
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          path = Path('data/alpha_opportunity_watch.csv')
+          with path.open(newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+          allowed = {'ALPHA_READY_SHADOW','DEVELOPING','WATCH'}
+          assert all(r['state'] in allowed for r in rows)
+          assert all(r['direction'] in {'LONG','SHORT'} for r in rows)
+          assert all(0 <= float(r['alpha_score']) <= 100 for r in rows)
+          print('VALID opportunity rows:', len(rows))
+          for r in rows[:10]:
+              print(r['state'], r['direction'], r['symbol'], r['alpha_score'], r['reason'])
+          PY
+      - name: Upload opportunity map
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpha-opportunity-\${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: data/alpha_opportunity_watch.csv
