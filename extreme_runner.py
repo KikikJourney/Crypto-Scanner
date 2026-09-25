@@ -324,6 +324,7 @@ def _brain_action(x, timestamp):
         data_age = round((datetime.fromisoformat(timestamp.replace("Z", "+00:00")) - datetime.fromisoformat(latest5.replace("Z", "+00:00"))).total_seconds(), 3)
     except (TypeError, ValueError):
         pass
+    market = traderspy_diagnose(x.get("scalping_rows_15m", []), plan.get("direction"), x)
     return {
         "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
         "timestamp": timestamp,
@@ -363,6 +364,14 @@ def _brain_action(x, timestamp):
         "reversal_trigger_5m": plan.get("reversal_trigger_5m", plan.get("reversal_5m", 0.0)),
         "early_reversal_score": plan.get("early_reversal_score", 0.0),
         "reason": plan["reason"],
+        "market_context_score": market["context_score"],
+        "market_state": traderspy_label(market),
+        "market_reasons": "|".join(market["reasons"]),
+        "market_atr_pct": market["atr_pct"],
+        "market_adx": market["adx"],
+        "market_volume_ratio": market["volume_ratio"],
+        "market_rsi": market["rsi"],
+        "market_range_position": market["range_position"],
     }
 
 
