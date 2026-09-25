@@ -1,6 +1,8 @@
 name: Zorathvael Alpha Hunter Shadow
 
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '7,22,37,52 * * * *'
