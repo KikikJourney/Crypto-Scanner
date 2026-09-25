@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '7,22,37,52 * * * *'
   push:
-    branches: [main]
+    branches: [main, alpha-hunter-v1]
     paths:
       - 'alpha_hunter.py'
       - 'tests/test_alpha_hunter.py'
