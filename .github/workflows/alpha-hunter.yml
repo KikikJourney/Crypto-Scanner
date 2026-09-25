@@ -1,0 +1,74 @@
+name: Zorathvael Alpha Hunter Shadow
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  push:
+    branches: [main, alpha-hunter-v1]
+    paths:
+      - 'alpha_hunter.py'
+      - 'tests/test_alpha_hunter.py'
+      - '.github/workflows/alpha-hunter.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zorathvael-alpha-hunter
+  cancel-in-progress: true
+
+jobs:
+  alpha-hunter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate syntax
+        run: python -m py_compile alpha_hunter.py
+      - name: Validate Alpha Hunter
+        run: python -m unittest discover -s tests -p 'test_alpha_hunter.py' -v
+      - name: Build shadow opportunity map
+        run: python alpha_hunter.py
+      - name: Validate generated Alpha Hunter datasets
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          def rows(path):
+              with Path(path).open(newline='', encoding='utf-8') as f:
+                  return list(csv.DictReader(f))
+
+          watch = rows('data/alpha_hunter_watchlist.csv')
+          summary = rows('data/alpha_hunter_summary.csv')
+          assert len(summary) == 1
+          assert summary[0]['version'] == 'alpha-hunter-v1'
+          required = {
+              'timestamp','symbol','provider','stage','state','direction',
+              'alpha_score','confidence','v2_score','early_score',
+              'alignment_score','structural_score','persistence_count',
+              'blockers','reason'
+          }
+          assert required <= set(watch[0]) if watch else True
+          assert all(0 <= float(r['alpha_score']) <= 100 for r in watch)
+          assert all(r['state'] != 'ACTION' for r in watch)
+          assert all(r['state'] in {'ALPHA_READY_SHADOW','DEVELOPING','WATCH'} for r in watch)
+          print('VALID Alpha Hunter rows:', len(watch))
+          print('SUMMARY:', summary[0])
+          PY
+      - name: Archive Alpha Hunter report
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpha-hunter-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            data/alpha_hunter_watchlist.csv
+            data/alpha_hunter_summary.csv
