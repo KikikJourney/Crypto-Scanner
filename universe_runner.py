@@ -6,6 +6,7 @@ from pathlib import Path
 import scanner_v2 as core
 from diagnostic_v21 import diagnostic_status
 from early_reversal_layer import classify as early_classify, append_rows as append_early_rows, evaluate_forward as evaluate_early_forward, stats as early_stats, signal_row as early_signal_row
+from traderspy_blueprint import diagnose as traderspy_diagnose, blueprint_label as traderspy_label
 
 PRODUCT = 'USDT-FUTURES'
 WATCHLIST_FILE = Path('data/universe_watchlist.csv')
@@ -37,6 +38,7 @@ core.make_result = _make_result_with_components
 
 WATCHLIST_FIELDS = [
     'timestamp','rank','symbol','score','long_score','short_score','score_gap_to_70','bias','diagnostic_status','blocker','long_blocker','short_blocker',
+    'market_context_score','market_state','market_reasons','market_atr_pct','market_adx','market_volume_ratio','market_rsi','market_range_position',
     'early_status','early_direction','early_score','early_blocker','early_location','early_exhaustion','early_flow','early_structure',
     'direction','signal','location','exhaustion','flow','reclaim','expansion',
     'long_location','long_exhaustion','long_flow','long_reclaim','long_expansion',
@@ -184,6 +186,7 @@ def write_watchlist(results, ts):
     for rank, x in enumerate(results, 1):
         d = diagnostic_status(x)
         e = early_classify(x)
+        market = traderspy_diagnose(x.get('scalping_rows_15m', []), x.get('direction'), x)
         if x['direction'] in ('LONG', 'SHORT') and x['score'] >= 70: selection = 'TARGET'
         elif e['direction'] in ('LONG', 'SHORT') and e['status'].startswith('EARLY REVERSAL'): selection = 'EARLY'
         elif x['direction'] in ('LONG', 'SHORT') and x['score'] >= 55: selection = 'WATCH'
@@ -198,6 +201,10 @@ def write_watchlist(results, ts):
             'early_blocker': e['blocker'], 'early_location': e['location'] if e['location'] is not None else '',
             'early_exhaustion': e['exhaustion'] if e['exhaustion'] is not None else '', 'early_flow': e['flow'] if e['flow'] is not None else '',
             'early_structure': e['structure'] if e['structure'] is not None else '',
+            'market_context_score': market['context_score'], 'market_state': traderspy_label(market),
+            'market_reasons': '|'.join(market['reasons']), 'market_atr_pct': market['atr_pct'],
+            'market_adx': market['adx'], 'market_volume_ratio': market['volume_ratio'],
+            'market_rsi': market['rsi'], 'market_range_position': market['range_position'],
             'direction': x['direction'], 'signal': x['signal'], 'location': round(x['location'], 3),
             'exhaustion': round(x['exhaustion'], 3), 'flow': round(x['flow'], 3), 'reclaim': round(x['reclaim'], 3),
             'expansion': round(x['expansion'], 3),
@@ -238,8 +245,9 @@ def main():
     print('TOP DIAGNOSTIC CANDIDATES:')
     for rank, x in enumerate(results[:25], 1):
         d = diagnostic_status(x); e = early_classify(x)
+        market = traderspy_diagnose(x.get('scalping_rows_15m', []), x.get('direction'), x)
         early_tag = f" | EARLY {e['score']:.1f}" if e['status'].startswith('EARLY REVERSAL') else ''
-        print(f"{rank}. {x['symbol']} | L {d['long_score']:.1f} S {d['short_score']:.1f} | {d['status']} | gap {d['score_gap_to_70']:.1f} | {d['blocker']}{early_tag}")
+        print(f"{rank}. {x['symbol']} | L {d['long_score']:.1f} S {d['short_score']:.1f} | {d['status']} | gap {d['score_gap_to_70']:.1f} | {d['blocker']} | MARKET {traderspy_label(market)} {market['context_score']:.0f} | {','.join(market['reasons'][:2])}{early_tag}")
     if errors:
         print(f'Symbol errors: {len(errors)}')
         for symbol, error in errors[:20]: print(f' - {symbol}: {error}')
