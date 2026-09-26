@@ -15,7 +15,6 @@ DETAIL_FILE = Path("data/scalping_execution_calibration.csv")
 CURRENT_STRATEGY_VERSION = "scalp-structure-v1"
 HORIZON_MINUTES = 120
 MAX_RISK_PCT = 2.0
-REWARD_R = 2.0
 
 REPORT_FIELDS = ["model","sample","eligible","resolved","wins","losses","ambiguous","unresolved","skipped","win_rate_pct","net_r","expectancy_r","max_drawdown_r","max_risk_pct","min_sample_for_review"]
 DETAIL_FIELDS = ["id","timestamp","symbol","direction","confidence","baseline_outcome","confirmation_timestamp","confirmation_close","calibrated_entry","calibrated_stop","calibrated_target","risk_pct","status","outcome","outcome_r","outcome_timestamp","reason"]
@@ -72,18 +71,18 @@ def calibrate(actions=None,market_rows=None):
         if risk<=0: row["reason"]="non-positive calibrated risk"; detail.append(row); continue
         risk_pct=risk/entry*100
         if risk_pct>MAX_RISK_PCT: row["reason"]="calibrated stop exceeds 2% risk cap"; detail.append(row); continue
-        target=entry+REWARD_R*risk if direction=="LONG" else entry-REWARD_R*risk
+        target=target0
         row.update({"confirmation_timestamp":_close_ts(c).isoformat(),"confirmation_close":f"{close:.12g}","calibrated_entry":f"{entry:.12g}","calibrated_stop":f"{stop:.12g}","calibrated_target":f"{target:.12g}","risk_pct":f"{risk_pct:.6f}","status":"ELIGIBLE_UNRESOLVED","reason":"confirmed 5m close; calibrated execution"})
         for candle in candles[1:]:
             outcome=_touch(direction,candle,stop,target)
             if outcome:
-                row.update({"outcome":outcome,"status":"RESOLVED","outcome_r":"2.0" if outcome=="EXPANSION" else "-1.0" if outcome=="FAIL" else "","outcome_timestamp":_close_ts(candle).isoformat()}); break
+                row.update({"outcome":outcome,"status":"RESOLVED","outcome_r":f"{abs((target-entry)/risk):.6f}" if outcome=="EXPANSION" else "-1.0" if outcome=="FAIL" else "","outcome_timestamp":_close_ts(candle).isoformat()}); break
         detail.append(row)
     return detail
 
 def _summary(detail):
     resolved=[r for r in detail if r["outcome"] in {"EXPANSION","FAIL","AMBIGUOUS"}]
-    vals=[2.0 if r["outcome"]=="EXPANSION" else -1.0 if r["outcome"]=="FAIL" else 0.0 for r in resolved]
+    vals=[_f(r.get("outcome_r")) or 0.0 if r["outcome"]=="EXPANSION" else -1.0 if r["outcome"]=="FAIL" else 0.0 for r in resolved]
     eq=peak=dd=0.0
     for v in vals:
         eq+=v; peak=max(peak,eq); dd=min(dd,eq-peak)
@@ -92,7 +91,7 @@ def _summary(detail):
 def write(detail=None):
     detail=calibrate() if detail is None else detail
     REPORT_FILE.parent.mkdir(parents=True,exist_ok=True)
-    base=_load(FORWARD_FILE); br=[r for r in base if r.get("first_touch") in {"EXPANSION","FAIL","AMBIGUOUS"}]; bv=[2.0 if r["first_touch"]=="EXPANSION" else -1.0 if r["first_touch"]=="FAIL" else 0.0 for r in br]
+    base=_load(FORWARD_FILE); br=[r for r in base if r.get("first_touch") in {"EXPANSION","FAIL","AMBIGUOUS"}]; bv=[_f(r.get("outcome_r")) or 0.0 if r["first_touch"]=="EXPANSION" else -1.0 if r["first_touch"]=="FAIL" else 0.0 for r in br]
     eq=peak=baseline_dd=0.0
     for value in bv:
         eq += value
