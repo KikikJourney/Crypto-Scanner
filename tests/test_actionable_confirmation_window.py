@@ -14,9 +14,9 @@ class ActionableConfirmationWindowTests(unittest.TestCase):
             'event_id': 'Bitget_TESTUSDT_LONG_' + ts,
             'trigger': '100',
             'action_stop': '98',
-            'action_target': '104',
+            'action_target': '103.5',
             'action_risk_pct': '2',
-            'action_reward_r': '2',
+            'action_reward_r': '1.75',
             'atr_pct': '1',
             'score': '90',
         }
