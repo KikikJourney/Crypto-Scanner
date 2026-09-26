@@ -10,7 +10,7 @@ class ScalpingExecutionTests(unittest.TestCase):
     def features(self):
         return {
             'data_ok': True, 'price': 100.0, 'atr': 2.0,
-            'extreme_low_24': 95.0, 'extreme_high_24': 105.0,
+            'extreme_low_24': 99.0, 'extreme_high_24': 104.5,
         }
 
     def test_30m_aggregation_uses_two_15m_candles(self):
@@ -35,10 +35,10 @@ class ScalpingExecutionTests(unittest.TestCase):
         self.assertTrue(plan['confirmed'])
         self.assertEqual(plan['trigger_timeframe'], '15m')
         self.assertEqual(plan['confirmation_timeframe'], '30m')
-        self.assertEqual(plan['reward_r'], 2.0)
+        self.assertAlmostEqual(plan['reward_r'], 1.4, places=6)
 
     def test_short_action_requires_closed_30m_confirmation(self):
-        f = self.features(); f['price'] = 97
+        f = self.features(); f['price'] = 97; f['extreme_low_24'] = 95.0; f['extreme_high_24'] = 101.0
         # Prior 30m low = 99; latest closed 30m close = 97.
         plan = build_plan(f, rows([101, 99, 98, 97]), 'SHORT')
         self.assertEqual(plan['status'], 'ACTION SHORT')
