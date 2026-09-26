@@ -22,6 +22,7 @@ on:
       - 'telegram_notifier.py'
       - 'send_telegram_actions.py'
       - 'signal_funnel_diagnostic.py'
+      - 'traderspy_style_engine.py'
       - 'scalping_optimizer.py'
       - 'validation_gate.py'
       - 'evidence_audit.py'
@@ -37,6 +38,7 @@ on:
       - 'tests/test_evidence_audit.py'
       - 'tests/test_execution_calibration.py'
       - 'tests/test_signal_funnel_diagnostic.py'
+      - 'tests/test_traderspy_style_engine.py'
       - 'tests/test_scalping_optimizer.py'
       - 'tests/test_scalping_forward_test.py'
       - 'tests/test_early_reversal.py'
@@ -73,7 +75,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_40.py extreme_archive_integrity.py
+        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py traderspy_style_engine.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_40.py extreme_archive_integrity.py
       - name: Validate diagnostic
         run: python diagnostic_v21.py
       - name: Validate crypto-only universe filters
@@ -162,6 +164,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_entry_location_40.py' -v
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
+      - name: Validate TraderSpy-style confluence
+        run: python -m unittest discover -s tests -p 'test_traderspy_style_engine.py' -v
       - name: Validate Telegram formatter
         run: python -m unittest discover -s tests -p 'test_telegram_notifier.py' -v
       - name: Sanitize legacy extreme archives before evaluation
@@ -198,7 +202,11 @@ jobs:
           if actions:
               assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
               assert all(0 <= float(r['confidence']) <= 100 for r in actions)
-              assert all(float(r['score']) == float(r['v2_score']) for r in actions)
+              assert all(
+                  (r.get('strategy_version') == 'traderspy-style-v1')
+                  or float(r['score']) == float(r['v2_score'])
+                  for r in actions
+              )
               assert all(float(r['data_age_seconds']) >= 0 and float(r['data_age_seconds']) <= 900 for r in actions)
               assert all(r['latest_closed_5m_timestamp'] and r['latest_closed_15m_timestamp'] for r in actions)
               assert all(float(r['entry_low']) <= float(r['entry_high']) for r in actions)
@@ -217,9 +225,10 @@ jobs:
               assert all(r['outcome_r'] in {'', '-1.0', '2.0'} for r in scalping)
               assert all((not r['first_touch']) == (not r['outcome_r']) for r in scalping)
           funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
-          action_pairs={(r['symbol'],r['direction']) for r in actions}
+          core_actions=[r for r in actions if r.get('strategy_version') != 'traderspy-style-v1']
+          action_pairs={(r['symbol'],r['direction']) for r in core_actions}
           assert action_pairs <= funnel_action_pairs
-          assert len(action_pairs) == min(len(funnel_action_pairs), 20)
+          assert len(action_pairs) == min(len(funnel_action_pairs), len(core_actions), 20)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
       - name: Persist scanner and forward-test data

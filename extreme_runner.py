@@ -18,6 +18,7 @@ from scalping_forward_test import evaluate as evaluate_scalping, format_summary 
 from scalping_intelligence import _timestamp as mtf_timestamp, SCALPING_STRATEGY_VERSION
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
+from traderspy_style_engine import build_plan as traderspy_style_plan
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
@@ -363,9 +364,45 @@ def _brain_action(x, timestamp):
 def _print_action_candidates(results, timestamp):
     print("SCALPING BRAIN OUTPUT:")
     actions = []
+    style_actions = 0
     for x in results:
         try:
             action = _brain_action(x, timestamp)
+            if action is None:
+                plan = traderspy_style_plan(x["scalping_rows_15m"], x.get("scalping_rows_5m"))
+                if plan.get("status") in {"ACTION LONG", "ACTION SHORT"}:
+                    latest5 = mtf_timestamp(x["scalping_rows_5m"][-1])
+                    latest15 = mtf_timestamp(x["scalping_rows_15m"][-1])
+                    latest5_s = latest5.isoformat() if latest5 else ""
+                    latest15_s = latest15.isoformat() if latest15 else ""
+                    action = {
+                        "id": _signal_id(x["provider"], x["symbol"], plan["direction"], latest5_s),
+                        "timestamp": timestamp, "scan_timestamp": timestamp,
+                        "symbol": x["symbol"], "provider": x["provider"],
+                        "direction": plan["direction"], "score": plan["confidence"],
+                        "v2_score": "", "strategy_version": "traderspy-style-v1",
+                        "confidence": plan["confidence"],
+                        "location_15m": 1.0, "reversal_5m": 1.0,
+                        "entry": plan["entry"], "entry_low": plan["entry_low"], "entry_high": plan["entry_high"],
+                        "trigger": plan["entry"], "stop": plan["stop"], "target": plan["target"],
+                        "risk_pct": plan["risk_pct"], "reward_r": plan["reward_r"],
+                        "valid_until": _issue_valid_until(timestamp),
+                        "latest_closed_5m_timestamp": latest5_s,
+                        "latest_closed_15m_timestamp": latest15_s,
+                        "data_age_seconds": round(
+                            (datetime.fromisoformat(timestamp.replace("Z", "+00:00")) -
+                             datetime.fromisoformat(latest5_s.replace("Z", "+00:00"))).total_seconds(), 3
+                        ) if latest5_s else 0.0,
+                        "timeframes": plan["timeframes"],
+                        "rsi_5m": plan["rsi_15m"], "trend_4h": plan["rsi_4h"], "trend_1h": plan["rsi_1h"],
+                        "structure_30m": "", "structure_15m": plan["ema50_distance_atr"],
+                        "liquidity_sweep_5m": "", "volume_5m": plan["volume_15m"],
+                        "exhaustion_15m": 0.0, "base_15m": 0.0, "structure_shift_5m": 0.0,
+                        "reversal_trigger_5m": 1.0, "early_reversal_score": 0.0,
+                        "reason": plan["reason"],
+                    }
+                    style_actions += 1
+                    print(f'{x["symbol"]} | TRADERSPY-STYLE ACTION {action["direction"]} | confidence {action["confidence"]} | entry {action["entry"]} | SL {action["stop"]} | TP {action["target"]} | RR {action["reward_r"]}')
         except Exception as exc:
             action = None
             print(f'{x["symbol"]} | DATA-LIMITED | brain error: {exc}')
@@ -380,6 +417,7 @@ def _print_action_candidates(results, timestamp):
     actions = actions[:20]
     _write_actionable(actions)
     print(f"Confirmed MTF scalping brain actions: {len(actions)}")
+    print(f"TraderSpy-style discovery actions: {style_actions}")
     return actions
 
 def _load_forward_rows():
