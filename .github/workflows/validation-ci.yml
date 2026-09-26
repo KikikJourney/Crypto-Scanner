@@ -55,9 +55,10 @@ jobs:
           items=[a for a in payload.get("artifacts",[]) if a.get("name","").startswith("alpha-opportunity-") and not a.get("expired",False)]
           items=sorted(items,key=lambda a:a.get("created_at",""),reverse=True)[:24]
           for a in items:
-              req=urllib.request.Request(f"https://api.github.com/repos/{repo}/actions/artifacts/{a['id']}/zip",headers=headers)
-              with urllib.request.urlopen(req,timeout=60) as resp: data=resp.read()
-              archive=Path("/tmp/alpha_artifacts")/f"{a['id']}.zip"; archive.write_bytes(data)
+              import requests
+              response=requests.get(f"https://api.github.com/repos/{repo}/actions/artifacts/{a['id']}/zip",headers=headers,timeout=60,allow_redirects=True)
+              response.raise_for_status()
+              archive=Path("/tmp/alpha_artifacts")/f"{a['id']}.zip"; archive.write_bytes(response.content)
               with zipfile.ZipFile(archive) as z: z.extractall(Path("/tmp/alpha_artifacts")/str(a["id"]))
               for p in (Path("/tmp/alpha_artifacts")/str(a["id"])).rglob("alpha_opportunity_watch.csv"):
                   (Path("data/alpha_history")/f"{a['id']}.csv").write_bytes(p.read_bytes())
