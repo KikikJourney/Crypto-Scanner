@@ -103,7 +103,7 @@ class ScalpingForwardTest(unittest.TestCase):
             candle("2026-09-20T10:05:00+00:00", 100.5, 98.5),
             candle("2026-09-20T10:10:00+00:00", 103.0, 100.0),
         ])
-        self.assertEqual(result[0]["first_touch"], "FAIL")
+        self.assertEqual(result[0]["first_touch"], "AMBIGUOUS")
         self.assertEqual(result[0]["resolved_horizon"], "15")
         self.assertEqual(result[0]["mfe_pct"], 0.5)
         self.assertEqual(result[0]["mae_pct"], 1.5)

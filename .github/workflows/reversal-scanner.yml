@@ -203,7 +203,7 @@ jobs:
               assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
               assert all(0 <= float(r['confidence']) <= 100 for r in actions)
               assert all(
-                  (r.get('strategy_version') == 'traderspy-style-v1')
+                  (r.get('strategy_version') in {'traderspy-style-v1', 'alpha-hunter-v1'})
                   or float(r['score']) == float(r['v2_score'])
                   for r in actions
               )

@@ -19,6 +19,7 @@ from scalping_intelligence import _timestamp as mtf_timestamp, SCALPING_STRATEGY
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
 from traderspy_style_engine import build_plan as traderspy_style_plan
+from alpha_hunter import build_plan as alpha_hunter_plan, ALPHA_HUNTER_VERSION
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
@@ -361,6 +362,44 @@ def _brain_action(x, timestamp):
     }
 
 
+def _alpha_action(x, plan, timestamp):
+    latest5 = mtf_timestamp(x["scalping_rows_5m"][-1])
+    latest15 = mtf_timestamp(x["scalping_rows_15m"][-1])
+    latest5_s = latest5.isoformat() if latest5 else ""
+    latest15_s = latest15.isoformat() if latest15 else ""
+    data_age = 0.0
+    if latest5_s:
+        data_age = round(
+            (datetime.fromisoformat(timestamp.replace("Z", "+00:00")) -
+             datetime.fromisoformat(latest5_s.replace("Z", "+00:00"))).total_seconds(), 3
+        )
+    latest5_close = (
+        datetime.fromisoformat(latest5_s.replace("Z", "+00:00")) + timedelta(minutes=5)
+    ).isoformat() if latest5_s else ""
+    return {
+        "id": _signal_id(x["provider"], x["symbol"], plan["direction"], latest5_s),
+        "timestamp": timestamp, "scan_timestamp": timestamp,
+        "symbol": x["symbol"], "provider": x["provider"],
+        "direction": plan["direction"], "score": plan["confidence"],
+        "v2_score": plan["confidence"], "strategy_version": ALPHA_HUNTER_VERSION,
+        "confidence": plan["confidence"], "location_15m": plan["location_15m"],
+        "reversal_5m": plan["liquidity_sweep_5m"],
+        "entry": plan["entry"], "entry_low": plan["entry_low"], "entry_high": plan["entry_high"],
+        "trigger": plan["entry"], "stop": plan["stop"], "target": plan["target"],
+        "risk_pct": plan["risk_pct"], "reward_r": plan["reward_r"],
+        "valid_until": _issue_valid_until(timestamp),
+        "latest_closed_5m_timestamp": latest5_s, "latest_closed_5m_close_timestamp": latest5_close,
+        "latest_closed_15m_timestamp": latest15_s, "data_age_seconds": data_age,
+        "timeframes": plan["timeframes"], "rsi_5m": "",
+        "trend_4h": "", "trend_1h": "", "structure_30m": "",
+        "structure_15m": plan["location_15m"], "liquidity_sweep_5m": plan["liquidity_sweep_5m"],
+        "volume_5m": plan["volume_ratio_5m"], "exhaustion_15m": 0.0,
+        "base_15m": plan["participation"], "structure_shift_5m": plan["impulse_5m"],
+        "reversal_trigger_5m": plan["liquidity_sweep_5m"], "early_reversal_score": 0.0,
+        "reason": plan["reason"],
+    }
+
+
 def _style_action(x, plan, timestamp):
     latest5 = mtf_timestamp(x["scalping_rows_5m"][-1])
     latest15 = mtf_timestamp(x["scalping_rows_15m"][-1])
@@ -401,6 +440,7 @@ def _print_action_candidates(results, timestamp):
     candidates = []
     core_actions = 0
     style_actions = 0
+    alpha_actions = 0
     for x in results:
         try:
             action = _brain_action(x, timestamp)
@@ -421,6 +461,16 @@ def _print_action_candidates(results, timestamp):
         except Exception as exc:
             print(f'{x["symbol"]} | TRADERSPY-STYLE DATA-LIMITED | {exc}')
 
+        try:
+            alpha = alpha_hunter_plan(x["scalping_rows_15m"], x.get("scalping_rows_5m"))
+            if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
+                action = _alpha_action(x, alpha, timestamp)
+                candidates.append(action)
+                alpha_actions += 1
+                print(f'{x["symbol"]} | ALPHA HUNTER {action["direction"]} | confidence {action["confidence"]} | entry {action["entry"]} | SL {action["stop"]} | TP {action["target"]} | RR {action["reward_r"]}')
+        except Exception as exc:
+            print(f'{x["symbol"]} | ALPHA HUNTER DATA-LIMITED | {exc}')
+
     # Identity-only dedup: same symbol + side + closed 5m candle. A new candle
     # or opposite direction is not suppressed.
     fused = {}
@@ -433,6 +483,7 @@ def _print_action_candidates(results, timestamp):
     _write_actionable(actions)
     print(f"Reversal discovery actions: {core_actions}")
     print(f"TraderSpy-style discovery actions: {style_actions}")
+    print(f"Alpha Hunter opportunity actions: {alpha_actions}")
     print(f"Fused actionable signals: {len(actions)}")
     return actions
 

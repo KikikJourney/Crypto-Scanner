@@ -252,16 +252,15 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, m
                 candidates.append(level)
 
     if direction == "LONG":
-        # Prefer the highest meaningful opposing swing while respecting the
-        # configured reward ceiling. This avoids stale absolute highs while
-        # preserving the strongest nearby resistance structure.
+        # Prefer the nearest meaningful opposing swing while respecting the
+        # configured reward ceiling; this prevents an unnecessarily distant TP.
         valid = [level for level in candidates if level <= max_target]
-        return max(valid) if valid else None
+        return min(valid) if valid else None
 
-    # Mirror the LONG rule for SHORT: prefer the lowest meaningful opposing
-    # swing while respecting the configured reward ceiling.
+    # Mirror the LONG rule for SHORT: prefer the nearest valid swing while
+    # respecting the configured reward ceiling.
     valid = [level for level in candidates if level >= max_target]
-    return min(valid) if valid else None
+    return max(valid) if valid else None
 
 def _timestamp(row):
     try:
@@ -407,6 +406,19 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if direction == "SHORT" and entry <= price:
         return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
 
+    # The 40-candle anchor is an execution location, not permission to publish
+    # an unreachable order. If price has already expanded too far from the
+    # anchor, the setup belongs in ALPHA/WATCH rather than ACTION.
+    entry_distance_atr = abs(price - entry) / micro_atr if micro_atr > 0 else 999.0
+    max_entry_distance_atr = 1.50
+    if entry_distance_atr > max_entry_distance_atr:
+        return {
+            "status": "WAIT",
+            "reason": "40-candle entry is too far from current price",
+            "entry_distance_atr": round(entry_distance_atr, 3),
+            "max_entry_distance_atr": max_entry_distance_atr,
+        }
+
     structure_rows_5, structure_rows_15 = rows_5m[-7:-1], rows_15m[-5:-1]
     if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
         return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
@@ -416,21 +428,12 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     recent_15m_low = min(_low(x) for x in structure_rows_15)
     recent_15m_high = max(_high(x) for x in structure_rows_15)
 
-    # Keep the established SL geometry/risk gate unchanged. Only the entry
-    # location is anchored to the 40-candle 5m extreme.
-    if direction == "LONG":
-        structural_stop = recent_5m_low
-        if structural_stop >= entry:
-            structural_stop = recent_15m_low
-        stop = structural_stop - 0.20 * micro_atr
-    else:
-        structural_stop = recent_5m_high
-        if structural_stop <= entry:
-            structural_stop = recent_15m_high
-        stop = structural_stop + 0.20 * micro_atr
-
+    # HARD 40-CANDLE EXECUTION MODEL:
+    # Entry and SL must share the same 40-candle extreme anchor. Do not
+    # replace this with a newer 5m/15m structural stop after entry calibration;
+    # doing so disconnects Entry -> SL and distorts every R-based target.
+    stop = location_40["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
-    target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
 
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
@@ -450,7 +453,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
                 "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
                 "max_stop_distance_pct": max_stop_distance_pct}
 
-    # Keep the established TP selection and 2R-6R reward constraints unchanged.
+    # Choose the nearest valid opposing structure inside the 2R-6R envelope;\n    # never jump to the farthest available swing.
     structural_target = _opposing_structure_target(rows_15m, direction, entry, risk)
     if structural_target is None:
         return {

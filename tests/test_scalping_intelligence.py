@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from extreme_runner import _normalize_bitget_mtf_candles, _signal_id
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
-    _location_score, _reversal_score, _opposing_structure_target,
+    _location_score, _reversal_score, _opposing_structure_target, _entry_location_40,
     _countertrend_early_reversal_allowed,
 )
 
@@ -136,28 +136,29 @@ class ScalpingIntelligenceTests(unittest.TestCase):
             self.assertGreaterEqual(plan["reward_r"], 2.0)
             self.assertGreaterEqual(plan["target"], plan["target_structure"])
 
-    def test_max_stop_distance_returns_wait(self):
-        # Isolate the stop-distance gate while respecting the 40-candle entry
-        # rule: the 5m extreme remains above the fallback 15m structural stop.
-        prices15 = [100.0] * 194
-        prices15[-32:] = [100.0 + i * 0.005 for i in range(30)] + [130.0, 99.0]
-        execution_rows = prices_to_rows([103.5] * 194, 180)
-        execution_rows[-7:-1] = [
-            [execution_rows[-7][0], "103.0", "104.0", "102.0", "103.2", "180"],
-            [execution_rows[-6][0], "103.2", "104.2", "102.0", "103.4", "180"],
-            [execution_rows[-5][0], "103.4", "104.2", "102.2", "103.3", "180"],
-            [execution_rows[-4][0], "103.3", "104.3", "102.0", "103.5", "180"],
-            [execution_rows[-3][0], "103.5", "104.0", "102.1", "103.2", "180"],
-            [execution_rows[-2][0], "103.2", "104.2", "102.0", "103.4", "180"],
-        ]
-        execution_rows[-1] = [execution_rows[-1][0], "103.5", "105.5", "101.5", "105.0", "180"]
-        plan = build_plan("LONG", prices_to_rows(prices15, 120),
-                          execution_rows, 88,
-                          {"extreme_low_24": 50, "extreme_high_24": 110, "atr": 1.0})
-        self.assertEqual(plan["status"], "WAIT")
-        self.assertGreater(plan["risk_pct"], 2.0)
-        self.assertEqual(plan["max_stop_distance_pct"], 2.0)
-        self.assertEqual(plan["reason"], "execution stop distance exceeds scalping limit")
+    def test_40_candle_anchor_controls_entry_and_stop_geometry(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
+        plan = _entry_location_40(candles, "LONG", 1.0)
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["anchor"], 95.0)
+        self.assertGreater(plan["entry"], plan["anchor"])
+        self.assertLess(plan["entry"], 101.0)
+        self.assertLess(plan["stop"], plan["anchor"])
+        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.2, places=8)
+
+    def test_40_candle_entry_distance_is_not_unbounded(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
+        plan = _entry_location_40(candles, "LONG", 1.0)
+        self.assertAlmostEqual(abs(101.0 - plan["entry"]) / 1.0, 5.9, places=6)
+
+    def test_40_candle_short_anchor_controls_entry_and_stop_geometry(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 105, 98, 104)])
+        plan = _entry_location_40(candles, "SHORT", 1.0)
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan["anchor"], 105.0)
+        self.assertGreater(plan["stop"], plan["anchor"])
+        self.assertLess(plan["entry"], plan["anchor"])
+        self.assertGreater(plan["entry"], 104.0)
 
     def test_countertrend_early_reversal_requires_stronger_confirmation(self):
         self.assertFalse(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.875, 0.0))
