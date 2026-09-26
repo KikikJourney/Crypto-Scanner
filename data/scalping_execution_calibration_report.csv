@@ -1,3 +1,3 @@
 model,sample,eligible,resolved,wins,losses,ambiguous,unresolved,skipped,win_rate_pct,net_r,expectancy_r,max_drawdown_r,max_risk_pct,min_sample_for_review
-CURRENT_BASELINE,109,109,87,14,73,0,22,0,16.092,-45.0,-0.517241,-50.0,current,30
-CONFIRM_5M_CALIBRATED,109,44,35,12,23,0,9,65,34.2857,1.0,0.028571,-9.0,2.0,30
+CURRENT_BASELINE,110,110,87,14,73,0,23,0,16.092,-45.0,-0.517241,-50.0,current,30
+CONFIRM_5M_CALIBRATED,110,44,35,12,23,0,9,66,34.2857,1.0,0.028571,-9.0,2.0,30
