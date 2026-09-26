@@ -348,9 +348,20 @@ def evaluate(actions=None, market_rows=None):
                     filled = True
                     row['fill_timestamp'] = _candle_close_timestamp(candle).isoformat()
                     row['fill_price'] = f'{entry:.12g}'
-                    outcome = _first_touch(
-                        action['direction'], candle, action.get('stop'), action.get('target')
-                    )
+                    # Intrabar order is unknowable when the fill candle
+                    # also reaches the adverse stop. Treat that case as
+                    # AMBIGUOUS instead of manufacturing a loss from a candle
+                    # that may have traded through the stop before the entry.
+                    stop = _f(action.get('stop'))
+                    target = _f(action.get('target'))
+                    if action['direction'] == 'LONG' and stop is not None and low <= stop:
+                        outcome = 'AMBIGUOUS'
+                    elif action['direction'] == 'SHORT' and stop is not None and high >= stop:
+                        outcome = 'AMBIGUOUS'
+                    else:
+                        outcome = _first_touch(
+                            action['direction'], candle, action.get('stop'), action.get('target')
+                        )
                     if outcome:
                         row[key] = outcome
                         if first_touch is None:
