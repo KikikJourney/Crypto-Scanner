@@ -86,8 +86,10 @@ def macd(values):
 
 
 def adx(rows, period=14):
-    if len(rows) < period * 2 + 1:
+    if len(rows) < 6:
         return None
+    if len(rows) < period * 2 + 1:
+        period = max(3, (len(rows) - 1) // 2)
     trs, plus_dm, minus_dm = [], [], []
     previous_close = _close(rows[-period*2-1])
     previous_high = _high(rows[-period*2-1])
