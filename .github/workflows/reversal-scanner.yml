@@ -52,7 +52,8 @@ on:
       - '.github/workflows/reversal-scanner.yml'
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
+    # Re-evaluate every closed 5m candle; stable signal IDs prevent duplicate alerts.
+    - cron: '*/5 * * * *'
 permissions:
   contents: write
 concurrency:
