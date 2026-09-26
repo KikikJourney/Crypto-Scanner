@@ -252,14 +252,13 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, m
                 candidates.append(level)
 
     if direction == "LONG":
-        # Prefer the highest meaningful opposing swing while respecting the
-        # configured reward ceiling. This avoids stale absolute highs while
-        # preserving the strongest nearby resistance structure.
+        # Prefer the nearest meaningful opposing swing while respecting the
+        # configured reward ceiling; this prevents an unnecessarily distant TP.
         valid = [level for level in candidates if level <= max_target]
         return min(valid) if valid else None
 
-    # Mirror the LONG rule for SHORT: prefer the lowest meaningful opposing
-    # swing while respecting the configured reward ceiling.
+    # Mirror the LONG rule for SHORT: prefer the nearest valid swing while
+    # respecting the configured reward ceiling.
     valid = [level for level in candidates if level >= max_target]
     return max(valid) if valid else None
 
