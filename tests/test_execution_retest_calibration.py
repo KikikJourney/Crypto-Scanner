@@ -9,7 +9,7 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
             "id": "a1", "timestamp": "2026-09-22T00:00:00+00:00",
             "symbol": "TESTUSDT", "provider": "Bitget",
             "direction": direction, "strategy_version": rc.STRATEGY_VERSION,
-            "entry": "100", "stop": "99", "target": "104",
+            "entry": "100", "stop": "99", "target": "102",
         }
 
     def candle(self, ts, close, high, low):
