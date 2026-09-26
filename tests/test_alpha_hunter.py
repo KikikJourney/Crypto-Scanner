@@ -29,8 +29,8 @@ class AlphaHunterTests(unittest.TestCase):
         plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertIn(plan["direction"], {"LONG", "SHORT"})
-        self.assertGreaterEqual(plan["reward_r"], 2.0)
-        self.assertLessEqual(plan["reward_r"], 6.0)
+        self.assertGreaterEqual(plan["reward_r"], 1.40)
+        self.assertLessEqual(plan["reward_r"], 3.50)
         self.assertLessEqual(plan["entry_distance_atr"], 1.5)
 
     def test_dead_market_is_rejected(self):
