@@ -24,8 +24,11 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
 
     def test_requires_confirmation_then_retest(self):
         detail = rc.calibrate([self.action()], [
-            self.candle("2026-09-22T00:05:00+00:00", 101, 102, 100),
-            self.candle("2026-09-22T00:10:00+00:00", 100, 101, 99.5),
+            # Confirmation preserves direction but touches neither original stop nor structural target.
+            self.candle("2026-09-22T00:05:00+00:00", 101, 101.5, 100.5),
+            # Later closed candle retests confirmation close and closes in direction.
+            self.candle("2026-09-22T00:10:00+00:00", 100, 101.2, 99.5),
+            # Structural target is reached only after the retest candle.
             self.candle("2026-09-22T00:15:00+00:00", 102, 103, 100.5),
         ])
         self.assertEqual(detail[0]["status"], "RESOLVED")
@@ -34,7 +37,7 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
 
     def test_no_retest_stays_unresolved(self):
         detail = rc.calibrate([self.action()], [
-            self.candle("2026-09-22T00:05:00+00:00", 101, 102, 100),
+            self.candle("2026-09-22T00:05:00+00:00", 101, 101.5, 100.5),
             self.candle("2026-09-22T00:10:00+00:00", 103, 104, 102),
         ])
         self.assertEqual(detail[0]["status"], "SKIPPED")
@@ -42,7 +45,7 @@ class ExecutionRetestCalibrationTests(unittest.TestCase):
 
     def test_retest_candle_cannot_resolve_trade(self):
         detail = rc.calibrate([self.action()], [
-            self.candle("2026-09-22T00:05:00+00:00", 101, 102, 100),
+            self.candle("2026-09-22T00:05:00+00:00", 101, 101.5, 100.5),
             self.candle("2026-09-22T00:10:00+00:00", 100, 105, 99),
         ])
         self.assertEqual(detail[0]["status"], "ELIGIBLE_UNRESOLVED")
