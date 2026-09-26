@@ -57,3 +57,17 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_requires_5m_execution_timing(self):
+        rows = _synthetic_rows(220)
+        plan = build_plan(rows, rows_5m=rows[:20])
+        self.assertEqual(plan["status"], "DATA-LIMITED")
+
+    def test_action_reward_is_bounded_to_2_8r(self):
+        rows15 = _synthetic_rows(220)
+        rows5 = _synthetic_rows(80)
+        plan = build_plan(rows15, rows5)
+        if plan["status"] in {"ACTION LONG", "ACTION SHORT"}:
+            self.assertTrue(2.0 <= float(plan["reward_r"]) <= 8.0)
+            self.assertIn("entry_anchor_40", plan)
