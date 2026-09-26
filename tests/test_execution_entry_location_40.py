@@ -30,7 +30,7 @@ class EntryLocation40Tests(unittest.TestCase):
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
             "stop": "98" if direction == "LONG" else "101.2",
-            "target": "104" if direction == "LONG" else "99.7",
+            "target": "99.55" if direction == "LONG" else "100.4",
         }
 
     def market(self, direction="LONG", fill=True):
@@ -77,7 +77,7 @@ class EntryLocation40Tests(unittest.TestCase):
         action = self.action()
         detail = m.calibrate([action], self.market(fill=True))
         row = detail[0]
-        self.assertAlmostEqual(float(row["planned_target"]), 104.0)
+        self.assertAlmostEqual(float(row["planned_target"]), 99.55)
         self.assertGreater(float(row["reward_r"]), 0.0)
         self.assertEqual(row["outcome"], "EXPANSION")
         self.assertGreater(float(row["outcome_r"]), 0.0)
