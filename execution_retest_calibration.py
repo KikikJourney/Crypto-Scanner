@@ -95,7 +95,7 @@ def calibrate(actions=None, market_rows=None):
             continue
 
         direction = action["direction"]
-        entry0, stop0, close0 = _f(action.get("entry")), _f(action.get("stop")), _f(candles[0].get("close"))
+        entry0, stop0, target0, close0 = _f(action.get("entry")), _f(action.get("stop")), _f(action.get("target")), _f(candles[0].get("close"))
         if None in (entry0, stop0, target0, close0):
             row["reason"] = "invalid numeric execution fields"
             detail.append(row)
