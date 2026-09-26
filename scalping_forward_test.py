@@ -379,7 +379,7 @@ def evaluate(actions=None, market_rows=None):
                             first_touch_ts = _candle_close_timestamp(candle).isoformat()
                             row['resolved_horizon'] = str(horizon)
                             row['outcome_r'] = (
-                                '2.0' if outcome == 'EXPANSION'
+                                f'{_reward_r(action):.6f}' if outcome == 'EXPANSION' and _reward_r(action) is not None
                                 else '-1.0' if outcome == 'FAIL'
                                 else ''
                             )
@@ -398,7 +398,7 @@ def evaluate(actions=None, market_rows=None):
                         first_touch_ts = _candle_close_timestamp(candle).isoformat()
                         row['resolved_horizon'] = str(horizon)
                         row['outcome_r'] = (
-                            '2.0' if outcome == 'EXPANSION'
+                            f'{_reward_r(action):.6f}' if outcome == 'EXPANSION' and _reward_r(action) is not None
                             else '-1.0' if outcome == 'FAIL'
                             else ''
                         )
