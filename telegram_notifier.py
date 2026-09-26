@@ -1,4 +1,4 @@
-"""Telegram notifier for confirmed multi-timeframe scalping actions."""
+"""Unified Telegram notifier for all scanner signal types."""
 import json
 import math
 import os
@@ -6,11 +6,10 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
-# Fixed per-signal margin requested for the Telegram execution plan.
+# Fixed per-signal margin for the Telegram execution plan.
 MARGIN_USDT = 5.0
 
-# Keep the stop-loss cash exposure small relative to the fixed margin.
-# This is a sizing rule for the notification only; it does NOT place orders.
+# Notification sizing rule only; it does NOT place orders.
 MAX_STOP_LOSS_USDT = 0.50
 MAX_LEVERAGE = 20
 
@@ -34,13 +33,7 @@ def _valid_now(row):
 
 
 def _execution_plan(row):
-    """Calculate a fixed-margin, stop-risk-based leverage plan.
-
-    The leverage is derived from the distance between the reference entry and
-    stop so that the estimated loss at SL is <= MAX_STOP_LOSS_USDT, subject to
-    exchange-compatible integer leverage and a hard cap. This is sizing math
-    for the Telegram message only; it never authorizes or places an order.
-    """
+    """Calculate fixed-margin leverage from the signal's actual SL distance."""
     entry_low = _float(row.get("entry_low") or row.get("entry") or row.get("trigger"))
     entry_high = _float(row.get("entry_high") or row.get("entry") or row.get("trigger"))
     stop = _float(row.get("stop"))
@@ -57,11 +50,24 @@ def _execution_plan(row):
     if stop_distance_pct <= 0:
         return None
 
-    # Integer leverage, rounded down, keeps estimated SL loss at or below
-    # the configured cash-risk ceiling.
     raw_leverage = MAX_STOP_LOSS_USDT / (MARGIN_USDT * stop_distance_pct)
-    leverage = max(1, min(MAX_LEVERAGE, math.floor(raw_leverage)))
 
+    # If even 1x exceeds the configured cash-risk ceiling, do not fabricate
+    # a safe leverage value. The signal is explicitly marked too risky.
+    if raw_leverage < 1:
+        return {
+            "entry": entry,
+            "stop_distance_pct": stop_distance_pct * 100.0,
+            "leverage": None,
+            "margin_usdt": MARGIN_USDT,
+            "notional_usdt": None,
+            "position_qty": None,
+            "estimated_sl_loss_usdt": None,
+            "rr": None,
+            "risk_too_high": True,
+        }
+
+    leverage = min(MAX_LEVERAGE, math.floor(raw_leverage))
     notional = MARGIN_USDT * leverage
     position_qty = notional / entry
     estimated_sl_loss = notional * stop_distance_pct
@@ -84,6 +90,7 @@ def _execution_plan(row):
         "position_qty": position_qty,
         "estimated_sl_loss_usdt": estimated_sl_loss,
         "rr": rr,
+        "risk_too_high": False,
     }
 
 
@@ -94,49 +101,52 @@ def format_action(row):
     plan = _execution_plan(row)
 
     lines = [
-        f"🚨 ZORATHVAEL SCALPING {direction}",
+        f"🚨 ZORATHVAEL SIGNAL {direction}",
         f"Symbol: {row.get('symbol', '')}",
         f"Confidence: {row.get('confidence', '')}/100",
-        f"Entry zone: {entry_low} - {entry_high}",
-        f"Stop: {row.get('stop', '')}",
-        f"Target: {row.get('target', '')}",
+        f"Entry: {entry_low} - {entry_high}",
+        f"SL: {row.get('stop', '')}",
+        f"TP: {row.get('target', '')}",
         f"RR: {row.get('reward_r', '')}",
         f"Risk: {row.get('risk_pct', '')}%",
+        "",
+        "💰 EXECUTION PLAN",
     ]
 
-    if plan:
+    if plan and not plan["risk_too_high"]:
         lines.extend([
-            "",
-            "💰 EXECUTION PLAN",
-            f"Margin: {plan['margin_usdt']:.2f} USDT",
+            f"Modal/Entry: {plan['margin_usdt']:.2f} USDT",
             f"Leverage: {plan['leverage']}x",
-            f"Reference entry: {plan['entry']:.12g}",
-            f"Position notional: {plan['notional_usdt']:.2f} USDT",
-            f"Position size: {plan['position_qty']:.8g} {row.get('symbol', '').replace('USDT', '')}",
-            f"Estimated SL loss: {plan['estimated_sl_loss_usdt']:.2f} USDT",
-            f"Entry→SL distance: {plan['stop_distance_pct']:.3f}%",
+            f"Reference Entry: {plan['entry']:.12g}",
+            f"Notional: {plan['notional_usdt']:.2f} USDT",
+            f"Position Size: {plan['position_qty']:.8g} {row.get('symbol', '').replace('USDT', '')}",
+            f"Estimasi Loss @ SL: {plan['estimated_sl_loss_usdt']:.2f} USDT",
+            f"Jarak Entry→SL: {plan['stop_distance_pct']:.3f}%",
             f"Calculated RR: {plan['rr']:.2f}R" if plan["rr"] is not None else "Calculated RR: N/A",
         ])
-    else:
+    elif plan and plan["risk_too_high"]:
         lines.extend([
-            "",
-            "💰 EXECUTION PLAN: UNAVAILABLE — invalid entry/SL/TP data",
+            f"Modal/Entry: {plan['margin_usdt']:.2f} USDT",
+            "Leverage: TIDAK AMAN @ 5 USDT",
+            f"Jarak Entry→SL: {plan['stop_distance_pct']:.3f}%",
+            "Status: SKIP — 1x leverage saja melebihi batas loss 0.50 USDT.",
         ])
+    else:
+        lines.append("Status: UNAVAILABLE — invalid Entry/SL/TP data")
 
     lines.extend([
         "",
+        f"Strategy: {row.get('strategy', row.get('signal_type', ''))}",
         f"MTF: {row.get('timeframes', '4H/1H/30m/15m/5m')}",
         f"5m RSI: {row.get('rsi_5m', '')}",
         f"Liquidity sweep: {row.get('liquidity_sweep_5m', '')}",
         f"5m volume score: {row.get('volume_5m', '')}",
         f"Valid until: {row.get('valid_until', '')}",
-        f"V2.2 score: {row.get('score', '')}",
+        f"Score: {row.get('score', '')}",
         "",
-        "Sizing note: fixed 5 USDT margin; leverage is derived from SL distance "
-        "to target <= 0.50 USDT estimated loss at SL. Fees, funding, slippage, "
-        "and liquidation mechanics are not included.",
-        "Execution rule: only enter while the live price remains inside the entry zone "
-        "and before the validity window expires.",
+        "Sizing: fixed 5 USDT margin; leverage is derived from actual Entry→SL distance, capped at 20x and targeted to <= 0.50 USDT estimated SL loss.",
+        "Fees, funding, slippage, and liquidation mechanics are not included. Notification sizing only; no order is placed by this module.",
+        "Execution rule: only enter while live price remains inside the Entry zone and before the validity window expires.",
     ])
     return "\n".join(lines)
 
