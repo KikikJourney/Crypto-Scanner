@@ -117,16 +117,16 @@ def build_plan(rows_15m, rows_5m):
         if distance_atr > 1.50 or risk_pct < 0.10 or risk_pct > 2.0:
             continue
 
-        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 2.0, 6.0)
+        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.40, 3.50)
         if structural is not None:
             target = structural
         else:
             # Discovery lane can still produce a mechanically testable plan when
             # no opposing swing exists; use the middle of the allowed R envelope.
-            target = entry + 4.0 * risk if direction == "LONG" else entry - 4.0 * risk
+            target = structural
 
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-        if reward < 2.0 or reward > 6.0:
+        if reward < 1.40 or reward > 3.50:
             continue
 
         score = 45.0 + 20.0 * location + 15.0 * participation
