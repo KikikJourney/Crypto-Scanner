@@ -73,7 +73,8 @@ def evaluate(row, rows):
             adverse=min(pct(entry,l,direction) for l in lows) if direction=="LONG" else min(pct(entry,h,direction) for h in highs)
             available[w]=(favorable,adverse,pct(entry,close,direction))
 
-    out={f"window_{w}":(f"{available[w][2]:.4f}" if w in available else "") for w in WINDOWS}
+    labels={1:"window_15m",2:"window_30m",4:"window_1h",8:"window_2h"}
+    out={labels[w]:(f"{available[w][2]:.4f}" if w in available else "") for w in WINDOWS}
     if 8 in available:
         mfe,mae,_=available[8]
         # Directional follow-through: positive close return at 2h.
