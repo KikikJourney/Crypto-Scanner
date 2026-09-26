@@ -8,8 +8,8 @@ class ActionableForwardTest(unittest.TestCase):
         return [{
             'timestamp':timestamp,'symbol':'TESTUSDT','provider':provider,
             'direction':direction,'score':'75','event_id':'TEST_EVENT','event_role':'PRIMARY',
-            'trigger':'105','action_stop':'100','action_target':'115','action_risk_pct':'4.76',
-            'action_reward_r':'2.0','atr_pct':'2.0'
+            'trigger':'105','action_stop':'100','action_target':'114','action_risk_pct':'4.76',
+            'action_reward_r':'1.8','atr_pct':'2.0'
         }]
 
     def snaps(self, prices, provider='Bitget', symbol='TESTUSDT'):
