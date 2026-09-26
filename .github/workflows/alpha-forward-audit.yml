@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '8,23,38,53 * * * *'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'alpha_forward_audit.py'
+      - '.github/workflows/alpha-forward-audit.yml'
+      - 'requirements.txt'
 
 permissions:
   actions: read
