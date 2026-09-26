@@ -225,10 +225,16 @@ jobs:
               assert all(r['outcome_r'] in {'', '-1.0', '2.0'} for r in scalping)
               assert all((not r['first_touch']) == (not r['outcome_r']) for r in scalping)
           funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
-          core_actions=[r for r in actions if r.get('strategy_version') != 'traderspy-style-v1']
-          action_pairs={(r['symbol'],r['direction']) for r in core_actions}
-          assert action_pairs <= funnel_action_pairs
-          assert len(action_pairs) == min(len(funnel_action_pairs), len(core_actions), 20)
+          # Discovery lanes are intentionally separate from the legacy Signal Funnel:
+          # TraderSpy-style and Alpha Hunter actions can be actionable without being
+          # classified as legacy funnel ACTIONs. Validate the legacy lane only here.
+          legacy_core_actions=[
+              r for r in actions
+              if r.get('strategy_version') not in {'traderspy-style-v1', 'alpha-hunter-v1'}
+          ]
+          legacy_action_pairs={(r['symbol'],r['direction']) for r in legacy_core_actions}
+          assert legacy_action_pairs <= funnel_action_pairs
+          assert len(legacy_action_pairs) == min(len(funnel_action_pairs), len(legacy_core_actions), 20)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
       - name: Persist scanner and forward-test data
