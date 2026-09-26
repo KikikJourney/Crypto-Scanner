@@ -119,9 +119,21 @@ def volume_ratio(rows, period=20):
 def _side_metrics(rows, direction):
     closes = [_close(r) for r in rows]
     price = closes[-1]
-    e20 = ema(closes, 20)
-    e50 = ema(closes, 50)
-    e200 = ema(closes, 200)
+    # Use the longest valid EMA pair for each available history length.
+    # The current scanner deep-scan tape is shorter than a literal 200 EMA
+    # after 1h/4h aggregation, so a hard 200-period requirement would make
+    # this lane permanently DATA-LIMITED.
+    if len(closes) >= 220:
+        fast_period, slow_period = 50, 200
+    elif len(closes) >= 120:
+        fast_period, slow_period = 20, 50
+    elif len(closes) >= 60:
+        fast_period, slow_period = 9, 21
+    else:
+        fast_period, slow_period = 5, 8
+    e20 = ema(closes, fast_period)
+    e50 = ema(closes, slow_period)
+    e200 = e50
     r = rsi(closes)
     m_hist = macd(closes)[2]
     a = atr(rows)
@@ -207,12 +219,12 @@ def _structure_target(rows, direction, entry, risk):
 
 def build_plan(rows_15m, rows_5m=None):
     """Return an independent TraderSpy-style continuation plan or WAIT."""
-    if len(rows_15m) < 240:
-        return {"status": "DATA-LIMITED", "reason": "need >=240 15m candles"}
+    if len(rows_15m) < 160:
+        return {"status": "DATA-LIMITED", "reason": "need >=160 15m candles"}
 
     tf1h = aggregate(rows_15m, 4)
     tf4h = aggregate(rows_15m, 16)
-    if len(tf1h) < 55 or len(tf4h) < 55:
+    if len(tf1h) < 40 or len(tf4h) < 8:
         return {"status": "DATA-LIMITED", "reason": "insufficient 1h/4h history"}
 
     candidates = {}
