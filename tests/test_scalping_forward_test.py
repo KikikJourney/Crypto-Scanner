@@ -123,12 +123,13 @@ class ScalpingForwardTest(unittest.TestCase):
 
     def test_summary_uses_realized_reward_geometry(self):
         act = action()
+        act["target"] = "103"
         rows = ft.evaluate([act], [
             candle("2026-09-20T10:05:00+00:00", 101, 99.5),
             candle("2026-09-20T10:10:00+00:00", 103.1, 100),
         ])
         summary = ft.summarize(rows)
-        self.assertAlmostEqual(summary["net_r"], 2.0, places=6)
+        self.assertAlmostEqual(summary["net_r"], 3.0, places=6)
 
     def test_close_timestamp_controls_horizon_boundary(self):
         result = ft.evaluate([action()], [
