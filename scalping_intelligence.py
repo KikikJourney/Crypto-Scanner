@@ -256,15 +256,14 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=1.40, 
                 candidates.append(level)
 
     if direction == "LONG":
-        # Prefer the nearest meaningful opposing swing while respecting the
-        # configured reward ceiling; this prevents an unnecessarily distant TP.
-        valid = [level for level in candidates if level <= max_target]
-        return min(valid) if valid else None
+        # Use the strongest valid opposing swing inside the reward envelope.
+        # This keeps TP structure-driven while avoiding stale/outlier extremes.
+        valid = [level for level in candidates if min_target <= level <= max_target]
+        return max(valid) if valid else None
 
-    # Mirror the LONG rule for SHORT: prefer the nearest valid swing while
-    # respecting the configured reward ceiling.
-    valid = [level for level in candidates if level >= max_target]
-    return max(valid) if valid else None
+    # Mirror LONG for SHORT: strongest valid opposing swing inside the envelope.
+    valid = [level for level in candidates if max_target <= level <= min_target]
+    return min(valid) if valid else None
 
 def _timestamp(row):
     try:
