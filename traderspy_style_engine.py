@@ -210,13 +210,14 @@ def _entry_location_40(rows_5m, direction, micro_atr):
         return None
     anchor = min(lows) if direction == "LONG" else max(highs)
     price = _close(rows_5m[-1])
-    buffer = max(micro_atr * 0.10, price * 0.0002)
-    entry = anchor + buffer if direction == "LONG" else anchor - buffer
-    stop = anchor - buffer if direction == "LONG" else anchor + buffer
-    return {"anchor": anchor, "entry": entry, "stop": stop, "price": price}
+    entry_buffer = max(micro_atr * 0.10, price * 0.0002)
+    stop_buffer = max(micro_atr * 0.35, price * 0.0008)
+    entry = anchor + entry_buffer if direction == "LONG" else anchor - entry_buffer
+    stop = anchor - stop_buffer if direction == "LONG" else anchor + stop_buffer
+    return {"anchor": anchor, "entry": entry, "stop": stop, "price": price, "buffer": entry_buffer, "stop_buffer": stop_buffer}
 
 
-def _structure_target(rows, direction, entry, risk):
+def _structure_target(rows, direction, entry, risk, min_rr=1.40, max_rr=3.50):
     if risk <= 0:
         return None
     highs = [_high(r) for r in rows[-48:]]
@@ -225,7 +226,7 @@ def _structure_target(rows, direction, entry, risk):
         levels = sorted({x for x in highs if x > entry})
         for level in levels:
             rr = (level - entry) / risk
-            if 2.0 <= rr <= 6.0:
+            if min_rr <= rr <= max_rr:
                 return level
     else:
         levels = sorted({x for x in lows if x < entry}, reverse=True)
@@ -307,19 +308,20 @@ def build_plan(rows_15m, rows_5m=None):
                 "reason": "volatility-adjusted stop outside risk bounds",
                 "risk_pct": round(risk_pct, 4)}
 
-    target = _structure_target(rows_15m, direction, entry, risk)
+    # Target comes from market structure. RR is a diagnostic of the setup,
+    # not a number used to manufacture an arbitrary TP.
+    target = _structure_target(rows_15m, direction, entry, risk, 1.40, 3.50)
     if target is None:
-        target = entry + 2.0 * risk if direction == "LONG" else entry - 2.0 * risk
+        return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
+                "reason": "no reachable structural target with realistic RR"}
 
     reward_r = (
         (target - entry) / risk if direction == "LONG"
         else (entry - target) / risk
     )
-    if reward_r < 2.0:
-        return {"status": "WAIT", "reason": "target below 2R"}
-    if reward_r > 6.0:
-        target = entry + 6.0 * risk if direction == "LONG" else entry - 6.0 * risk
-        reward_r = 6.0
+    if not 1.40 <= reward_r <= 3.50:
+        return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
+                "reason": "structural RR outside scalping envelope"}
 
     latest5 = _timestamp(rows_5m[-1])
     return {
