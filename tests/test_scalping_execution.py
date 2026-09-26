@@ -29,8 +29,8 @@ class ScalpingExecutionTests(unittest.TestCase):
 
     def test_long_action_requires_closed_30m_confirmation(self):
         f = self.features(); f['price'] = 103
-        # Prior 30m high = 101; latest closed 30m close = 103.
-        plan = build_plan(f, rows([99, 101, 102, 103]), 'LONG')
+        # Row highs are p+1, so prior 30m high = 101; latest closed 30m close = 103.
+        plan = build_plan(f, rows([99, 100, 102, 103]), 'LONG')
         self.assertEqual(plan['status'], 'ACTION LONG')
         self.assertTrue(plan['confirmed'])
         self.assertEqual(plan['trigger_timeframe'], '15m')
@@ -39,8 +39,8 @@ class ScalpingExecutionTests(unittest.TestCase):
 
     def test_short_action_requires_closed_30m_confirmation(self):
         f = self.features(); f['price'] = 97; f['extreme_low_24'] = 95.0; f['extreme_high_24'] = 101.0
-        # Prior 30m low = 99; latest closed 30m close = 97.
-        plan = build_plan(f, rows([101, 99, 98, 97]), 'SHORT')
+        # Row lows are p-1, so prior 30m low = 99; latest closed 30m close = 97.
+        plan = build_plan(f, rows([101, 100, 98, 97]), 'SHORT')
         self.assertEqual(plan['status'], 'ACTION SHORT')
         self.assertTrue(plan['confirmed'])
 
