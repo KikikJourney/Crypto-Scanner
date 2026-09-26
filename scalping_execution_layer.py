@@ -9,7 +9,8 @@ from datetime import datetime, timedelta, timezone
 MAX_CONFIRMATION_MINUTES = 30
 MAX_TRIGGER_GAP_ATR = 1.25
 STOP_ATR_BUFFER = 0.25
-REWARD_R = 2.0
+MIN_REWARD_R = 1.40
+MAX_REWARD_R = 3.50
 MIN_RISK_PCT = 0.20
 MAX_RISK_PCT = 8.0
 
@@ -91,7 +92,7 @@ def build_plan(features, rows_15m, direction):
         return {
             'status': 'WAIT', 'direction': direction, 'trigger': round(trigger, 12),
             'stop': round(stop, 12), 'risk_pct': round(risk_pct, 4),
-            'reward_r': REWARD_R, 'reason': 'trigger risk outside configured execution band'
+            'reward_r': '', 'reason': 'trigger risk outside configured execution band'
         }
 
     # Confirmation is based only on the latest closed 30m candle. The trigger
@@ -104,7 +105,16 @@ def build_plan(features, rows_15m, direction):
     gap_atr = ((trigger - price) if direction == 'LONG' else (price - trigger)) / atr
     stale = not confirmed and gap_atr > MAX_TRIGGER_GAP_ATR
 
-    target = trigger + REWARD_R * risk if direction == 'LONG' else trigger - REWARD_R * risk
+    target = high if direction == 'LONG' else low
+    if (direction == 'LONG' and target <= trigger) or (direction == 'SHORT' and target >= trigger):
+        return {'status': 'WAIT', 'direction': direction, 'trigger': round(trigger, 12),
+                'stop': round(stop, 12), 'risk_pct': round(risk_pct, 4), 'reward_r': '',
+                'reason': 'no valid opposing structural target beyond trigger'}
+    reward_r = abs((target - trigger) / risk)
+    if reward_r < MIN_REWARD_R or reward_r > MAX_REWARD_R:
+        return {'status': 'WAIT', 'direction': direction, 'trigger': round(trigger, 12),
+                'stop': round(stop, 12), 'target': round(target, 12), 'risk_pct': round(risk_pct, 4),
+                'reward_r': round(reward_r, 6), 'reason': 'structural target outside execution RR feasibility band'}
     timestamp = _timestamp(rows_15m[-1][0])
     expiry = timestamp + timedelta(minutes=MAX_CONFIRMATION_MINUTES) if timestamp else None
 
@@ -121,7 +131,7 @@ def build_plan(features, rows_15m, direction):
     return {
         'status': status, 'direction': direction, 'trigger': round(trigger, 12),
         'stop': round(stop, 12), 'target': round(target, 12),
-        'risk_pct': round(risk_pct, 4), 'reward_r': REWARD_R,
+        'risk_pct': round(risk_pct, 4), 'reward_r': round(reward_r, 6),
         'confirmation_close': round(confirmation_close, 12),
         'confirmed': confirmed, 'trigger_gap_atr': round(gap_atr, 4),
         'max_trigger_gap_atr': MAX_TRIGGER_GAP_ATR,
