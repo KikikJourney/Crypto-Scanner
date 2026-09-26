@@ -378,7 +378,8 @@ def evaluate(actions=None, market_rows=None):
                     continue
 
                 outcome = _first_touch(
-                    action['direction'], candle, action.get('stop'), action.get('target')
+                    action['direction'], candle.get('high'), candle.get('low'),
+                    action.get('stop'), action.get('target')
                 )
                 if outcome:
                     row[key] = outcome
