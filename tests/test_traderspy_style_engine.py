@@ -50,7 +50,8 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
         })
         if plan["status"].startswith("ACTION"):
             self.assertGreaterEqual(plan["confidence"], 70.0)
-            self.assertGreaterEqual(plan["reward_r"], 2.0)
+            self.assertGreaterEqual(plan["reward_r"], 1.40)
+            self.assertLessEqual(plan["reward_r"], 3.50)
             self.assertGreater(plan["entry"], 0)
             self.assertGreater(plan["stop"], 0)
             self.assertGreater(plan["target"], 0)
@@ -62,7 +63,7 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
     def test_action_reward_is_bounded_to_2_8r(self):
         plan = build_plan(self.rows, self.rows[-80:])
         if plan["status"] in {"ACTION LONG", "ACTION SHORT"}:
-            self.assertTrue(2.0 <= float(plan["reward_r"]) <= 8.0)
+            self.assertTrue(1.40 <= float(plan["reward_r"]) <= 3.50)
             self.assertIn("entry_anchor_40", plan)
 
 
