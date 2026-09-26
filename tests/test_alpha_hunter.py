@@ -19,12 +19,12 @@ class AlphaHunterTests(unittest.TestCase):
         rows5 = []
         for i in range(75):
             p = 98.0 + max(0, i - 68) * 0.18
-            rows5.append(candle(i * 300000, p, 100.0, 0.08))
-        rows5[-5] = candle(70 * 300000, 98.0, 100.0, 0.25)
-        rows5[-4] = candle(71 * 300000, 98.2, 100.0, 0.22)
-        rows5[-3] = candle(72 * 300000, 98.4, 100.0, 0.20)
-        rows5[-2] = candle(73 * 300000, 98.6, 100.0, 0.20)
-        rows5[-1] = candle(74 * 300000, 99.0, 220.0, 0.35)
+            rows5.append(candle(i * 300000, p, 100.0, 0.40))
+        rows5[-5] = candle(70 * 300000, 98.0, 100.0, 0.45)
+        rows5[-4] = candle(71 * 300000, 98.2, 100.0, 0.45)
+        rows5[-3] = candle(72 * 300000, 98.4, 100.0, 0.45)
+        rows5[-2] = candle(73 * 300000, 98.6, 100.0, 0.45)
+        rows5[-1] = candle(74 * 300000, 99.0, 220.0, 0.50)
 
         plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
