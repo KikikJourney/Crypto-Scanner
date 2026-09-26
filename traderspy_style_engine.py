@@ -10,7 +10,7 @@ same class of inputs locally from the scanner's exchange candles.
 
 from math import sqrt
 
-from scalping_intelligence import aggregate
+from scalping_intelligence import aggregate, _timestamp
 
 
 def _f(v, default=0.0):
@@ -199,6 +199,23 @@ def _side_metrics(rows, direction):
     }
 
 
+def _entry_location_40(rows_5m, direction, micro_atr):
+    """Anchor execution just inside the latest 40-candle 5m extreme."""
+    if len(rows_5m) < 40 or micro_atr is None or micro_atr <= 0:
+        return None
+    window = rows_5m[-40:]
+    lows = [_low(r) for r in window]
+    highs = [_high(r) for r in window]
+    if any(v <= 0 for v in lows + highs):
+        return None
+    anchor = min(lows) if direction == "LONG" else max(highs)
+    price = _close(rows_5m[-1])
+    buffer = max(micro_atr * 0.10, price * 0.0002)
+    entry = anchor + buffer if direction == "LONG" else anchor - buffer
+    stop = anchor - buffer if direction == "LONG" else anchor + buffer
+    return {"anchor": anchor, "entry": entry, "stop": stop, "price": price}
+
+
 def _structure_target(rows, direction, entry, risk):
     if risk <= 0:
         return None
@@ -208,13 +225,13 @@ def _structure_target(rows, direction, entry, risk):
         levels = sorted({x for x in highs if x > entry})
         for level in levels:
             rr = (level - entry) / risk
-            if 2.0 <= rr <= 4.0:
+            if 2.0 <= rr <= 8.0:
                 return level
     else:
         levels = sorted({x for x in lows if x < entry}, reverse=True)
         for level in levels:
             rr = (entry - level) / risk
-            if 2.0 <= rr <= 4.0:
+            if 2.0 <= rr <= 8.0:
                 return level
     return None
 
@@ -264,17 +281,25 @@ def build_plan(rows_15m, rows_5m=None):
                 "confidence": round(score, 1),
                 "reason": "validation score below 70"}
 
-    entry = m15["price"]
-    a = m15["atr"]
-    recent_low = min(_low(r) for r in rows_15m[-8:])
-    recent_high = max(_high(r) for r in rows_15m[-8:])
-    if direction == "LONG":
-        stop = min(recent_low - 0.15 * a, entry - 1.5 * a)
-        risk = entry - stop
-    else:
-        stop = max(recent_high + 0.15 * a, entry + 1.5 * a)
-        risk = stop - entry
-
+    rows_5m = rows_5m or []
+    if len(rows_5m) < 40:
+        return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
+                "reason": "need >=40 closed 5m candles for execution timing"}
+    micro_atr = atr(rows_5m, 14) or m15["atr"] / 3.0
+    location_40 = _entry_location_40(rows_5m, direction, micro_atr)
+    if location_40 is None:
+        return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
+                "reason": "40-candle execution anchor unavailable"}
+    entry = location_40["entry"]
+    current_price = location_40["price"]
+    if direction == "LONG" and entry >= current_price:
+        return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
+                "reason": "40-candle long entry is not below current price"}
+    if direction == "SHORT" and entry <= current_price:
+        return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
+                "reason": "40-candle short entry is not above current price"}
+    stop = location_40["stop"]
+    risk = entry - stop if direction == "LONG" else stop - entry
     risk_pct = risk / entry * 100.0 if entry else 999.0
     if risk <= 0 or risk_pct > 2.0 or risk_pct < 0.10:
         return {"status": "WAIT", "direction": direction,
@@ -292,7 +317,11 @@ def build_plan(rows_15m, rows_5m=None):
     )
     if reward_r < 2.0:
         return {"status": "WAIT", "reason": "target below 2R"}
+    if reward_r > 8.0:
+        target = entry + 8.0 * risk if direction == "LONG" else entry - 8.0 * risk
+        reward_r = 8.0
 
+    latest5 = _timestamp(rows_5m[-1])
     return {
         "status": "ACTION LONG" if direction == "LONG" else "ACTION SHORT",
         "direction": direction,
@@ -300,6 +329,8 @@ def build_plan(rows_15m, rows_5m=None):
         "entry": round(entry, 12),
         "entry_low": round(entry, 12),
         "entry_high": round(entry, 12),
+        "entry_anchor_40": round(location_40["anchor"], 12),
+        "latest_closed_5m_timestamp": latest5.isoformat() if latest5 else "",
         "stop": round(stop, 12),
         "target": round(target, 12),
         "risk_pct": round(risk_pct, 4),

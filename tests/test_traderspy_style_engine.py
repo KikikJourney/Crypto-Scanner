@@ -7,6 +7,7 @@ from traderspy_style_engine import (
     rsi,
     volume_ratio,
     build_plan,
+    _entry_location_40,
 )
 
 
@@ -53,6 +54,16 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
             self.assertGreater(plan["entry"], 0)
             self.assertGreater(plan["stop"], 0)
             self.assertGreater(plan["target"], 0)
+
+
+    def test_requires_5m_execution_timing(self):
+        self.assertIsNone(_entry_location_40(self.rows[:20], "LONG", 0.01))
+
+    def test_action_reward_is_bounded_to_2_8r(self):
+        plan = build_plan(self.rows, self.rows[-80:])
+        if plan["status"] in {"ACTION LONG", "ACTION SHORT"}:
+            self.assertTrue(2.0 <= float(plan["reward_r"]) <= 8.0)
+            self.assertIn("entry_anchor_40", plan)
 
 
 if __name__ == "__main__":
