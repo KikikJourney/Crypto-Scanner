@@ -225,13 +225,13 @@ def _structure_target(rows, direction, entry, risk):
         levels = sorted({x for x in highs if x > entry})
         for level in levels:
             rr = (level - entry) / risk
-            if 2.0 <= rr <= 8.0:
+            if 2.0 <= rr <= 6.0:
                 return level
     else:
         levels = sorted({x for x in lows if x < entry}, reverse=True)
         for level in levels:
             rr = (entry - level) / risk
-            if 2.0 <= rr <= 8.0:
+            if 2.0 <= rr <= 6.0:
                 return level
     return None
 
@@ -317,9 +317,9 @@ def build_plan(rows_15m, rows_5m=None):
     )
     if reward_r < 2.0:
         return {"status": "WAIT", "reason": "target below 2R"}
-    if reward_r > 8.0:
-        target = entry + 8.0 * risk if direction == "LONG" else entry - 8.0 * risk
-        reward_r = 8.0
+    if reward_r > 6.0:
+        target = entry + 6.0 * risk if direction == "LONG" else entry - 6.0 * risk
+        reward_r = 6.0
 
     latest5 = _timestamp(rows_5m[-1])
     return {
