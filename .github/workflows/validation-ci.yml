@@ -28,7 +28,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Compile scanner modules
         run: |
-          python -m py_compile             scanner_v2.py universe_runner.py diagnostic_v21.py             early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py             extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py             actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py             early_reversal_engine.py scalping_forward_test.py telegram_notifier.py             send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py             validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_entry_location_40.py             extreme_archive_integrity.py
+          python -m py_compile             scanner_v2.py universe_runner.py diagnostic_v21.py             early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py             extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py             actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py             early_reversal_engine.py scalping_forward_test.py telegram_notifier.py             send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py             validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_entry_location_40.py alpha_forward_audit.py             extreme_archive_integrity.py
       - name: Run full unit-test suite
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Validate statistical evidence module
