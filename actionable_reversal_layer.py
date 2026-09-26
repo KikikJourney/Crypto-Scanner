@@ -11,7 +11,8 @@ MIN_RISK_PCT=0.20
 MAX_RISK_PCT=8.0
 TRIGGER_LOOKBACK_HOURS=4
 STOP_ATR_BUFFER=0.25
-REWARD_R=2.0
+MIN_REWARD_R=1.40
+MAX_REWARD_R=3.50
 ADVERSE_R=1.0
 MAX_TRIGGER_GAP_ATR=1.25
 
@@ -38,22 +39,30 @@ def build_action_plan(features,direction):
     if None in (price,atr,low,high,trigger) or atr<=0 or price<=0:
         return {'status':'DATA-LIMITED','direction':direction,'reason':'action features unavailable'}
     if direction=='LONG':
-        stop=low-STOP_ATR_BUFFER*atr; risk=trigger-stop; confirmed=price>=trigger; target=trigger+REWARD_R*risk
+        stop=low-STOP_ATR_BUFFER*atr; risk=trigger-stop; confirmed=price>=trigger; target=high
     else:
-        stop=high+STOP_ATR_BUFFER*atr; risk=stop-trigger; confirmed=price<=trigger; target=trigger-REWARD_R*risk
+        stop=high+STOP_ATR_BUFFER*atr; risk=stop-trigger; confirmed=price<=trigger; target=low
     if risk<=0:return {'status':'INVALID','direction':direction,'reason':'non-positive trigger risk'}
     risk_pct=risk/trigger*100
+    if (direction=='LONG' and target<=trigger) or (direction=='SHORT' and target>=trigger):
+        return {'status':'WAIT','direction':direction,'trigger':round(trigger,12),'stop':round(stop,12),'target':round(target,12),
+                'risk_pct':round(risk_pct,4),'reward_r':'','reason':'no valid opposing structural target beyond trigger'}
+    reward_r=abs((target-trigger)/risk)
     gap_atr=_trigger_gap_atr(price,trigger,atr,direction)
     if not confirmed and gap_atr is not None and gap_atr>MAX_TRIGGER_GAP_ATR:
         return {'status':'STALE','direction':direction,'trigger':round(trigger,12),'stop':round(stop,12),'target':round(target,12),
                 'risk_pct':round(risk_pct,4),'trigger_gap_atr':round(gap_atr,4),'max_trigger_gap_atr':MAX_TRIGGER_GAP_ATR,
                 'reason':'trigger became stale: price moved too far from the unconfirmed structure'}
+    if reward_r<MIN_REWARD_R or reward_r>MAX_REWARD_R:
+        return {'status':'WAIT','direction':direction,'trigger':round(trigger,12),'stop':round(stop,12),'target':round(target,12),
+                'risk_pct':round(risk_pct,4),'trigger_gap_atr':round(gap_atr,4),'reward_r':round(reward_r,6),
+                'reason':'structural target outside execution RR feasibility band'}
     if risk_pct<MIN_RISK_PCT or risk_pct>MAX_RISK_PCT:
         return {'status':'WAIT','direction':direction,'trigger':trigger,'stop':stop,'target':target,'risk_pct':risk_pct,
                 'trigger_gap_atr':gap_atr,'reason':'trigger risk outside configured execution band'}
     return {'status':'ACTION LONG' if direction=='LONG' and confirmed else 'ACTION SHORT' if direction=='SHORT' and confirmed else 'WAIT FOR LONG TRIGGER' if direction=='LONG' else 'WAIT FOR SHORT TRIGGER',
             'direction':direction,'trigger':round(trigger,12),'stop':round(stop,12),'target':round(target,12),'risk_pct':round(risk_pct,4),
-            'trigger_gap_atr':round(gap_atr,4) if gap_atr is not None else None,'reward_r':REWARD_R,'adverse_r':ADVERSE_R,
+            'trigger_gap_atr':round(gap_atr,4) if gap_atr is not None else None,'reward_r':round(reward_r,6),'adverse_r':ADVERSE_R,
             'reason':'4H structure reclaim confirmed' if confirmed else 'extreme valid; 4H structure reclaim not yet confirmed'}
 
 def _action_outcome(direction,entry,future,stop,target):
