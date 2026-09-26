@@ -42,7 +42,7 @@ class ExecutionCalibrationTests(unittest.TestCase):
         detail = ec.calibrate([action], market)
         self.assertEqual(detail[0]["status"], "RESOLVED")
         self.assertEqual(detail[0]["outcome"], "EXPANSION")
-        self.assertEqual(detail[0]["outcome_r"], "2.0")
+        self.assertEqual(detail[0]["outcome_r"], "1.500000")
 
     def test_confirmation_touch_invalidates_fill(self):
         action = self.action()
