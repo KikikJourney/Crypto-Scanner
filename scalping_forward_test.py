@@ -21,7 +21,7 @@ FIELDS = [
     'location_15m','reversal_5m','exhaustion_15m','base_15m','structure_shift_5m',
     'reversal_trigger_5m','early_reversal_score','entry','stop','target','risk_pct',
     'reward_r','h15','h30','h60','h120',
-    'first_touch','first_touch_timestamp','resolved_horizon','outcome_r','mfe_pct','mae_pct',
+    'first_touch','first_touch_timestamp','fill_timestamp','fill_price','resolved_horizon','outcome_r','mfe_pct','mae_pct',
 ]
 ACTION_HISTORY_FIELDS = [
     'id','timestamp','symbol','provider','direction','score','v2_score','confidence','strategy_version',
@@ -330,10 +330,44 @@ def evaluate(actions=None, market_rows=None):
             candles = _market_slice(action, market_rows, horizon)
             if row[key]:
                 continue
+            filled = False
             for candle in candles:
+                high = _f(candle.get('high'))
+                low = _f(candle.get('low'))
+                entry = _f(action.get('entry'))
+                if None in (high, low, entry):
+                    continue
+
+                # A signal is not a trade until price actually reaches the
+                # published entry. Evaluating SL/TP from signal time creates
+                # false losses/wins for unfilled limit entries.
+                entry_touched = low <= entry <= high
+                if not filled:
+                    if not entry_touched:
+                        continue
+                    filled = True
+                    row['fill_timestamp'] = _candle_close_timestamp(candle).isoformat()
+                    row['fill_price'] = f'{entry:.12g}'
+                    outcome = _first_touch(
+                        action['direction'], candle, action.get('stop'), action.get('target')
+                    )
+                    if outcome:
+                        row[key] = outcome
+                        if first_touch is None:
+                            first_touch = outcome
+                            first_touch_ts = _candle_close_timestamp(candle).isoformat()
+                            row['resolved_horizon'] = str(horizon)
+                            row['outcome_r'] = (
+                                '2.0' if outcome == 'EXPANSION'
+                                else '-1.0' if outcome == 'FAIL'
+                                else ''
+                            )
+                            resolved_candles = candles[:candles.index(candle) + 1]
+                        break
+                    continue
+
                 outcome = _first_touch(
-                    action['direction'], candle.get('high'), candle.get('low'),
-                    action.get('stop'), action.get('target')
+                    action['direction'], candle, action.get('stop'), action.get('target')
                 )
                 if outcome:
                     row[key] = outcome
