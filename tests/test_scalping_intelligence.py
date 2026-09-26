@@ -146,6 +146,11 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertLess(plan["stop"], plan["anchor"])
         self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.2, places=8)
 
+    def test_40_candle_entry_distance_is_not_unbounded(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
+        plan = _entry_location_40(candles, "LONG", 1.0)
+        self.assertAlmostEqual(abs(101.0 - plan["entry"]) / 1.0, 5.8, places=6)
+
     def test_40_candle_short_anchor_controls_entry_and_stop_geometry(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 105, 98, 104)])
         plan = _entry_location_40(candles, "SHORT", 1.0)
