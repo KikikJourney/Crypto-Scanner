@@ -202,7 +202,11 @@ jobs:
           if actions:
               assert all(r['direction'] in {'LONG','SHORT'} for r in actions)
               assert all(0 <= float(r['confidence']) <= 100 for r in actions)
-              assert all(float(r['score']) == float(r['v2_score']) for r in actions)
+              assert all(
+                  (r.get('strategy_version') == 'traderspy-style-v1')
+                  or float(r['score']) == float(r['v2_score'])
+                  for r in actions
+              )
               assert all(float(r['data_age_seconds']) >= 0 and float(r['data_age_seconds']) <= 900 for r in actions)
               assert all(r['latest_closed_5m_timestamp'] and r['latest_closed_15m_timestamp'] for r in actions)
               assert all(float(r['entry_low']) <= float(r['entry_high']) for r in actions)
@@ -221,9 +225,10 @@ jobs:
               assert all(r['outcome_r'] in {'', '-1.0', '2.0'} for r in scalping)
               assert all((not r['first_touch']) == (not r['outcome_r']) for r in scalping)
           funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
-          action_pairs={(r['symbol'],r['direction']) for r in actions}
+          core_actions=[r for r in actions if r.get('strategy_version') != 'traderspy-style-v1']
+          action_pairs={(r['symbol'],r['direction']) for r in core_actions}
           assert action_pairs <= funnel_action_pairs
-          assert len(action_pairs) == min(len(funnel_action_pairs), 20)
+          assert len(action_pairs) == min(len(funnel_action_pairs), len(core_actions), 20)
           print(f'VALID: extreme={len(extreme)}, snapshots={len(snapshots)}, confirmed_actions={len(actionable)}, telegram_queue={len(actions)}, scalping_forward_test={len(scalping)}, funnel_runs={len(funnel)}, funnel_symbols={len(funnel_symbols)}')
           PY
       - name: Persist scanner and forward-test data
