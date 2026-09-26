@@ -11,7 +11,7 @@ Model:
 - SHORT anchor = highest high, planned entry slightly below that anchor;
 - derive the small offset from pre-signal 5m ATR (with a tiny price floor);
 - derive the stop from the same anchor/buffer geometry;
-- evaluate every TP level from 2R through 8R from the same filled entry and risk;
+- evaluate only the baseline structural target; realized R is measured from the recalibrated entry/stop geometry;
 - fill only when a future candle reaches the planned entry;
 - if the fill candle also touches stop/target for a given TP level, that level is
   ambiguous rather than guessing intrabar order.
@@ -33,8 +33,8 @@ ATR_PERIOD = 14
 ENTRY_BUFFER_ATR = 0.10
 ENTRY_BUFFER_FLOOR_PCT = 0.02
 MAX_RISK_PCT = 2.0
-MIN_REWARD_R = 2.0
-MAX_REWARD_R = 8.0
+MIN_REWARD_R = 1.40
+MAX_REWARD_R = 3.50
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
@@ -145,25 +145,6 @@ def _entry_touched(direction, candle, entry):
     if None in (high, low, entry):
         return False
     return low <= entry if direction == "LONG" else high >= entry
-
-
-def _level_summary(detail, level):
-    outcome_key = f"outcome_{level}r"
-    resolved = [r for r in detail if r.get(outcome_key) in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
-    values = [
-        float(level) if r[outcome_key] == "EXPANSION"
-        else -1.0 if r[outcome_key] == "FAIL"
-        else 0.0
-        for r in resolved
-    ]
-    return {
-        f"{level}r_wins": sum(r[outcome_key] == "EXPANSION" for r in resolved),
-        f"{level}r_losses": sum(r[outcome_key] == "FAIL" for r in resolved),
-        f"{level}r_ambiguous": sum(r[outcome_key] == "AMBIGUOUS" for r in resolved),
-        f"{level}r_resolved": len(resolved),
-        f"{level}r_net_r": round(sum(values), 4),
-        f"{level}r_expectancy_r": round(sum(values) / len(resolved), 6) if resolved else 0.0,
-    }
 
 
 def _summary(detail):
@@ -310,11 +291,24 @@ def calibrate(actions=None, market_rows=None):
             continue
 
         structural_target = baseline_target
+        reward_r = abs((structural_target - planned_entry) / risk)
+        if (direction == "LONG" and structural_target <= planned_entry) or (direction == "SHORT" and structural_target >= planned_entry):
+            row["status"] = "REJECTED_GEOMETRY"
+            row["reason"] = "baseline structural target is on the wrong side of planned entry"
+            row["reward_r"] = f"{reward_r:.6f}"
+            detail.append(row)
+            continue
+        if reward_r < MIN_REWARD_R or reward_r > MAX_REWARD_R:
+            row["status"] = "REJECTED_GEOMETRY"
+            row["reason"] = "structural target outside 1.40R-3.50R feasibility band"
+            row["reward_r"] = f"{reward_r:.6f}"
+            detail.append(row)
+            continue
         row.update({
             "planned_stop": f"{planned_stop:.12g}",
             "planned_target": f"{structural_target:.12g}",
             "risk_pct": f"{risk_pct:.6f}",
-            "reward_r": f"{abs((structural_target - planned_entry) / risk):.6f}",
+            "reward_r": f"{reward_r:.6f}",
         })
 
         row["status"] = "UNFILLED"
