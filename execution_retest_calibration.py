@@ -7,8 +7,9 @@ Model:
    close and close back in the signal direction;
 3) enter at that retest close;
 4) derive stop from the retest candle and original stop, capped at 2% risk;
-5) target = 2R from the actual retest entry;
-6) resolve only on candles strictly after the retest candle.
+5) use the action's structural target;
+6) measure realized R from the actual retest entry/stop/structural target and
+   resolve only on candles strictly after the retest candle.
 """
 import csv
 from datetime import datetime, timedelta, timezone
@@ -53,13 +54,7 @@ def _close_ts(row):
 def _future(action, market):
     start = _ts(action["timestamp"])
     end = start + timedelta(minutes=HORIZON_MINUTES)
-    return [
-        r for r in market
-        if r.get("provider") == action.get("provider")
-        and r.get("symbol") == action.get("symbol")
-        and start < _ts(r["timestamp"])
-        and _close_ts(r) <= end
-    ]
+    return [r for r in market if r.get("provider") == action.get("provider") and r.get("symbol") == action.get("symbol") and start < _ts(r["timestamp"]) and _close_ts(r) <= end]
 
 
 def _touch(direction, candle, stop, target):
@@ -109,14 +104,11 @@ def calibrate(actions=None, market_rows=None):
 
         confirmation = candles[0]
         confirmation_close = close0
-        if _touch(direction, confirmation, _f(action.get("stop")), _f(action.get("target"))):
-            row.update({
-                "confirmation_timestamp": _close_ts(confirmation).isoformat(),
-                "confirmation_close": f"{confirmation_close:.12g}",
-                "reason": "confirmation candle already touched original stop/target",
-            })
+        if _touch(direction, confirmation, stop0, target0):
+            row.update({"confirmation_timestamp": _close_ts(confirmation).isoformat(), "confirmation_close": f"{confirmation_close:.12g}", "reason": "confirmation candle already touched original stop/target"})
             detail.append(row)
             continue
+
         retest = None
         for candle in candles[1:]:
             high, low, close = _f(candle.get("high")), _f(candle.get("low")), _f(candle.get("close"))
@@ -147,6 +139,7 @@ def calibrate(actions=None, market_rows=None):
             row["reason"] = "non-positive retest risk"
             detail.append(row)
             continue
+
         risk_pct = risk / entry * 100
         row.update({
             "confirmation_timestamp": _close_ts(confirmation).isoformat(),
@@ -162,16 +155,15 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
 
-        target = target0
-        row.update({"calibrated_target": f"{target:.12g}", "status": "ELIGIBLE_UNRESOLVED", "reason": "confirmed then retested"})
+        row.update({"calibrated_target": f"{target0:.12g}", "status": "ELIGIBLE_UNRESOLVED", "reason": "confirmed then retested"})
         retest_index = candles.index(retest)
         for candle in candles[retest_index + 1:]:
-            outcome = _touch(direction, candle, stop, target)
+            outcome = _touch(direction, candle, stop, target0)
             if outcome:
                 row.update({
                     "status": "RESOLVED",
                     "outcome": outcome,
-                    "outcome_r": f"{abs((target-entry)/risk):.6f}" if outcome == "EXPANSION" else "-1.0" if outcome == "FAIL" else "",
+                    "outcome_r": f"{abs((target0-entry)/risk):.6f}" if outcome == "EXPANSION" else "-1.0" if outcome == "FAIL" else "",
                     "outcome_timestamp": _close_ts(candle).isoformat(),
                 })
                 break
