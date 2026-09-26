@@ -389,12 +389,16 @@ def _print_action_candidates(results, timestamp):
                         "valid_until": _issue_valid_until(timestamp),
                         "latest_closed_5m_timestamp": latest5_s,
                         "latest_closed_15m_timestamp": latest15_s,
-                        "data_age_seconds": "", "timeframes": plan["timeframes"],
+                        "data_age_seconds": round(
+                            (datetime.fromisoformat(timestamp.replace("Z", "+00:00")) -
+                             datetime.fromisoformat(latest5_s.replace("Z", "+00:00"))).total_seconds(), 3
+                        ) if latest5_s else 0.0,
+                        "timeframes": plan["timeframes"],
                         "rsi_5m": plan["rsi_15m"], "trend_4h": plan["rsi_4h"], "trend_1h": plan["rsi_1h"],
                         "structure_30m": "", "structure_15m": plan["ema50_distance_atr"],
                         "liquidity_sweep_5m": "", "volume_5m": plan["volume_15m"],
-                        "exhaustion_15m": "", "base_15m": "", "structure_shift_5m": "",
-                        "reversal_trigger_5m": 1.0, "early_reversal_score": "",
+                        "exhaustion_15m": 0.0, "base_15m": 0.0, "structure_shift_5m": 0.0,
+                        "reversal_trigger_5m": 1.0, "early_reversal_score": 0.0,
                         "reason": plan["reason"],
                     }
                     style_actions += 1
