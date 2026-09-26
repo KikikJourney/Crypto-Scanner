@@ -209,19 +209,23 @@ def _entry_location_40(rows_5m, direction, micro_atr):
     if latest_price <= 0:
         return None
 
-    buffer = max(micro_atr * 0.10, latest_price * 0.0002)
-    entry = anchor + buffer if direction == "LONG" else anchor - buffer
-    stop = anchor - buffer if direction == "LONG" else anchor + buffer
+    # Keep the 40-candle timing anchor, but place the protective stop beyond
+    # normal retest noise. The previous 0.10 ATR symmetric stop was too tight.
+    entry_buffer = max(micro_atr * 0.10, latest_price * 0.0002)
+    stop_buffer = max(micro_atr * 0.35, latest_price * 0.0008)
+    entry = anchor + entry_buffer if direction == "LONG" else anchor - entry_buffer
+    stop = anchor - stop_buffer if direction == "LONG" else anchor + stop_buffer
 
     return {
         "anchor": anchor,
-        "buffer": buffer,
+        "buffer": entry_buffer,
+        "stop_buffer": stop_buffer,
         "entry": entry,
         "stop": stop,
     }
 
 
-def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=2.0, max_reward_r=6.0):
+def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=1.40, max_reward_r=3.50):
     """Return the strongest opposing closing-price swing within a sane R range."""
     if len(rows) < 7 or entry <= 0 or risk <= 0:
         return None
@@ -453,15 +457,19 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
                 "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
                 "max_stop_distance_pct": max_stop_distance_pct}
 
-    # Choose the nearest valid opposing structure inside the 2R-6R envelope;\n    # never jump to the farthest available swing.
-    structural_target = _opposing_structure_target(rows_15m, direction, entry, risk)
+    # Structural TP first: RR is measured from the actual Entry -> SL geometry.
+    # We no longer manufacture 2R/4R/6R targets. A setup survives only when
+    # the nearest opposing 15m structure offers a realistic 1.4R-3.5R payoff.
+    structural_target = _opposing_structure_target(
+        rows_15m, direction, entry, risk, min_reward_r=1.40, max_reward_r=3.50
+    )
     if structural_target is None:
         return {
             "status": "WAIT", "direction": direction,
             "confidence": round(confidence, 1),
             "location_15m": location_15, "reversal_5m": reversal_5,
             "risk_pct": round(risk / price * 100.0, 4),
-            "reason": "no reachable opposing 15m swing supports 2R-6R",
+            "reason": "no reachable opposing 15m structure with realistic RR",
         }
     target = structural_target
 
