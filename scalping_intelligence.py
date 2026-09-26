@@ -406,6 +406,19 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if direction == "SHORT" and entry <= price:
         return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
 
+    # The 40-candle anchor is an execution location, not permission to publish
+    # an unreachable order. If price has already expanded too far from the
+    # anchor, the setup belongs in ALPHA/WATCH rather than ACTION.
+    entry_distance_atr = abs(price - entry) / micro_atr if micro_atr > 0 else 999.0
+    max_entry_distance_atr = 1.50
+    if entry_distance_atr > max_entry_distance_atr:
+        return {
+            "status": "WAIT",
+            "reason": "40-candle entry is too far from current price",
+            "entry_distance_atr": round(entry_distance_atr, 3),
+            "max_entry_distance_atr": max_entry_distance_atr,
+        }
+
     structure_rows_5, structure_rows_15 = rows_5m[-7:-1], rows_15m[-5:-1]
     if len(structure_rows_5) < 3 or len(structure_rows_15) < 2:
         return {"status": "DATA-LIMITED", "reason": "execution structure unavailable"}
