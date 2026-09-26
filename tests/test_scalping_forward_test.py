@@ -117,7 +117,7 @@ class ScalpingForwardTest(unittest.TestCase):
         self.assertEqual(result[0]["first_touch"], "EXPANSION")
         self.assertEqual(result[0]["first_touch_timestamp"], "2026-09-20T10:15:00+00:00")
         self.assertEqual(result[0]["resolved_horizon"], "15")
-        self.assertEqual(result[0]["outcome_r"], "2.0")
+        self.assertAlmostEqual(float(result[0]["outcome_r"]), 2.0, places=6)
         self.assertEqual(result[0]["mfe_pct"], 2.1)
         self.assertEqual(result[0]["mae_pct"], 0.5)
 
