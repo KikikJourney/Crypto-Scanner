@@ -73,19 +73,14 @@ class EntryLocation40Tests(unittest.TestCase):
         self.assertEqual(detail[0]["status"], "AMBIGUOUS_FILL")
         self.assertEqual(detail[0]["outcome"], "AMBIGUOUS")
 
-    def test_tp_is_independent_2_to_5r_ladder(self):
+    def test_tp_uses_baseline_structural_target_and_measures_actual_rr(self):
         action = self.action()
         detail = m.calibrate([action], self.market(fill=True))
         row = detail[0]
-        risk = float(row["planned_entry"]) - float(row["planned_stop"])
-        self.assertAlmostEqual(float(row["target_2r"]), float(row["planned_entry"]) + 2 * risk)
-        self.assertAlmostEqual(float(row["target_3r"]), float(row["planned_entry"]) + 3 * risk)
-        self.assertAlmostEqual(float(row["target_4r"]), float(row["planned_entry"]) + 4 * risk)
-        self.assertAlmostEqual(float(row["target_5r"]), float(row["planned_entry"]) + 5 * risk)
-        self.assertAlmostEqual(float(row["target_6r"]), float(row["planned_entry"]) + 6 * risk)
-        self.assertAlmostEqual(float(row["target_7r"]), float(row["planned_entry"]) + 7 * risk)
-        self.assertAlmostEqual(float(row["target_8r"]), float(row["planned_entry"]) + 8 * risk)
-        self.assertEqual(row["outcome_2r"], "EXPANSION")
+        self.assertAlmostEqual(float(row["planned_target"]), 104.0)
+        self.assertGreater(float(row["reward_r"]), 0.0)
+        self.assertEqual(row["outcome"], "EXPANSION")
+        self.assertGreater(float(row["outcome_r"]), 0.0)
 
     def test_short_anchor_is_highest_high(self):
         action = self.action("SHORT")
