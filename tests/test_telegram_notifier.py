@@ -28,9 +28,8 @@ class TelegramNotifierTests(unittest.TestCase):
         self.assertIn("ZORATHVAEL SIGNAL LONG", text)
         self.assertIn("Entry: 157.50 - 158.46", text)
         self.assertIn("SL: 155.51", text)
-        self.assertIn("TP: 162.90", text)
+        self.assertIn("Signal TP: 162.90", text)
         self.assertIn("RR: 2.0", text)
-        self.assertIn("Risk: 1.55%", text)
         self.assertIn("Confidence: 86.5/100", text)
         self.assertIn("TP 2R:", text)
         self.assertIn("TP 4R:", text)
@@ -39,6 +38,7 @@ class TelegramNotifierTests(unittest.TestCase):
         self.assertNotIn("Modal/Entry:", text)
         self.assertNotIn("Leverage:", text)
         self.assertNotIn("Estimasi Loss @ SL:", text)
+        self.assertNotIn("EXECUTION PLAN", text)
 
     def test_live_window_accepts_long_inside_entry_zone_before_target(self):
         row = {
