@@ -156,7 +156,7 @@ def build_confirmed_actions(extreme_rows, snapshots):
             'stop': stop,
             'target': target,
             'risk_pct': extreme.get('action_risk_pct', ''),
-            'reward_r': extreme.get('action_reward_r', '2.0'),
+            'reward_r': extreme.get('action_reward_r', ''),
             'source_extreme_score': extreme.get('score', ''),
             'event_id': '',
             'event_role': '',
