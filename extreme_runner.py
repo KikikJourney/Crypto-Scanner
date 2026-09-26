@@ -319,7 +319,7 @@ def _brain_action(x, timestamp):
     except (TypeError, ValueError):
         pass
     return {
-        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
+        "id": _signal_id(x["provider"], x["symbol"], plan["direction"], latest5),
         "timestamp": timestamp,
         "scan_timestamp": timestamp,
         "symbol": x["symbol"],
