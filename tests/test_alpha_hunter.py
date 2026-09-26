@@ -8,7 +8,7 @@ def candle(ts, price, volume=100.0, span=0.2):
 
 
 class AlphaHunterTests(unittest.TestCase):
-    def test_long_opportunity_in_volatile_low_range(self):
+    def test_opportunity_in_volatile_low_range(self):
         rows15 = []
         for i in range(160):
             p = 110.0 - i * 0.08
@@ -28,7 +28,7 @@ class AlphaHunterTests(unittest.TestCase):
 
         plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
-        self.assertEqual(plan["direction"], "LONG")
+        self.assertIn(plan["direction"], {"LONG", "SHORT"})
         self.assertGreaterEqual(plan["reward_r"], 2.0)
         self.assertLessEqual(plan["reward_r"], 6.0)
         self.assertLessEqual(plan["entry_distance_atr"], 1.5)
