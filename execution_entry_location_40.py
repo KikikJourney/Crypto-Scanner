@@ -13,8 +13,7 @@ Model:
 - derive the stop from the same anchor/buffer geometry;
 - evaluate only the baseline structural target; realized R is measured from the recalibrated entry/stop geometry;
 - fill only when a future candle reaches the planned entry;
-- if the fill candle also touches stop/target for a given TP level, that level is
-  ambiguous rather than guessing intrabar order.
+- if the fill candle also touches stop/target, the fill is ambiguous rather than guessing intrabar order.
 
 No future candle is used to construct the 40-candle anchor.
 """
