@@ -280,6 +280,16 @@ def _market_slice(action, market_rows, horizon):
     ]
 
 
+def _reward_r(action):
+    entry, stop, target = _f(action.get('entry')), _f(action.get('stop')), _f(action.get('target'))
+    if None in (entry, stop, target) or entry <= 0:
+        return None
+    risk = entry - stop if action.get('direction') == 'LONG' else stop - entry
+    reward = target - entry if action.get('direction') == 'LONG' else entry - target
+    if risk <= 0:
+        return None
+    return reward / risk
+
 def _metrics(direction, entry, candles):
     entry = _f(entry)
     if entry is None or not candles:
