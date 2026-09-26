@@ -3,7 +3,7 @@
 Research-only: this module does not alter live signal generation or execution.
 The direction and baseline execution fields remain the scanner reference outputs.
 The 40-candle model is evaluated independently for entry/stop geometry.
-TP is evaluated separately as an independent 2R-8R ladder.
+TP is evaluated from the baseline structural target; realized R is measured from the recalibrated entry/stop geometry.
 
 Model:
 - use the 40 fully closed 5m candles immediately before the signal;
@@ -37,7 +37,6 @@ MIN_REWARD_R = 2.0
 MAX_REWARD_R = 8.0
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
-REWARD_LEVELS = tuple(range(int(MIN_REWARD_R), int(MAX_REWARD_R) + 1))
 
 REPORT_FIELDS = [
     "model", "sample", "anchored", "eligible", "filled", "resolved", "wins", "losses",
@@ -45,11 +44,6 @@ REPORT_FIELDS = [
     "net_r", "expectancy_r", "max_drawdown_r", "avg_entry_improvement_pct",
     "max_risk_pct", "min_reward_r", "max_reward_r", "min_sample_for_review",
 ]
-for level in REWARD_LEVELS:
-    REPORT_FIELDS.extend([
-        f"{level}r_wins", f"{level}r_losses", f"{level}r_ambiguous",
-        f"{level}r_resolved", f"{level}r_net_r", f"{level}r_expectancy_r",
-    ])
 
 DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry",
@@ -58,8 +52,6 @@ DETAIL_FIELDS = [
     "risk_pct", "reward_r", "status", "fill_timestamp", "outcome",
     "outcome_r", "outcome_timestamp", "reason",
 ]
-for level in REWARD_LEVELS:
-    DETAIL_FIELDS.extend([f"target_{level}r", f"outcome_{level}r"])
 
 
 def _f(value):
@@ -181,7 +173,7 @@ def _summary(detail):
     eligible = [r for r in anchored if r["status"] in {"UNFILLED", *filled_statuses}]
     resolved = [r for r in detail if r.get("outcome") in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
     values = [
-        2.0 if r["outcome"] == "EXPANSION"
+        _f(r.get("outcome_r")) if r["outcome"] == "EXPANSION"
         else -1.0 if r["outcome"] == "FAIL"
         else 0.0
         for r in resolved
@@ -221,8 +213,6 @@ def _summary(detail):
         "max_reward_r": MAX_REWARD_R,
         "min_sample_for_review": MIN_SAMPLE_FOR_REVIEW,
     }
-    for level in REWARD_LEVELS:
-        summary.update(_level_summary(detail, level))
     return summary
 
 
@@ -319,22 +309,13 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
 
-        targets = {
-            level: (
-                planned_entry + level * risk
-                if direction == "LONG"
-                else planned_entry - level * risk
-            )
-            for level in REWARD_LEVELS
-        }
+        structural_target = baseline_target
         row.update({
             "planned_stop": f"{planned_stop:.12g}",
-            "planned_target": f"{targets[int(MIN_REWARD_R)]:.12g}",
+            "planned_target": f"{structural_target:.12g}",
             "risk_pct": f"{risk_pct:.6f}",
-            "reward_r": f"{MIN_REWARD_R:.6f}",
+            "reward_r": f"{abs((structural_target - planned_entry) / risk):.6f}",
         })
-        for level, target in targets.items():
-            row[f"target_{level}r"] = f"{target:.12g}"
 
         row["status"] = "UNFILLED"
         future = _future_market(action, market)
@@ -357,17 +338,10 @@ def calibrate(actions=None, market_rows=None):
                 if direction == "LONG"
                 else (_f(fill_candle.get("high")) is not None and _f(fill_candle.get("high")) >= planned_stop)
             )
-            fill_touches_target = any(
-                (
-                    _f(fill_candle.get("high")) is not None
-                    and _f(fill_candle.get("high")) >= target
-                )
+            fill_touches_target = (
+                (_f(fill_candle.get("high")) is not None and _f(fill_candle.get("high")) >= structural_target)
                 if direction == "LONG"
-                else (
-                    _f(fill_candle.get("low")) is not None
-                    and _f(fill_candle.get("low")) <= target
-                )
-                for target in targets.values()
+                else (_f(fill_candle.get("low")) is not None and _f(fill_candle.get("low")) <= structural_target)
             )
             fill_ambiguous = fill_touches_stop or fill_touches_target
             row["status"] = "AMBIGUOUS_FILL" if fill_ambiguous else "RESOLVED"
@@ -376,28 +350,23 @@ def calibrate(actions=None, market_rows=None):
                 row["outcome_timestamp"] = _close_ts(fill_candle).isoformat()
                 row["reason"] = "fill candle also touched stop or target; intrabar order is unknowable"
 
-            # Each TP level is an independent measurement using the same entry/SL.
-            # This avoids coupling a 2R result to the 3R-8R ladder.
-            unresolved = set(REWARD_LEVELS)
+            resolved_structure = False
             for candle in future[fill_index + 1:]:
-                if not unresolved:
+                outcome = _touch(direction, candle, planned_stop, structural_target)
+                if outcome:
+                    resolved_structure = True
+                    if not fill_ambiguous:
+                        row["outcome"] = outcome
+                        row["outcome_r"] = (
+                            f"{abs((structural_target - planned_entry) / risk):.6f}" if outcome == "EXPANSION"
+                            else "-1.0" if outcome == "FAIL"
+                            else ""
+                        )
+                        row["outcome_timestamp"] = _close_ts(candle).isoformat()
                     break
-                for level in tuple(unresolved):
-                    outcome = _touch(direction, candle, planned_stop, targets[level])
-                    if outcome:
-                        row[f"outcome_{level}r"] = outcome
-                        unresolved.remove(level)
-                        if level == int(MIN_REWARD_R) and not fill_ambiguous:
-                            row["outcome"] = outcome
-                            row["outcome_r"] = (
-                                str(float(level)) if outcome == "EXPANSION"
-                                else "-1.0" if outcome == "FAIL"
-                                else ""
-                            )
-                            row["outcome_timestamp"] = _close_ts(candle).isoformat()
 
-            if unresolved and not fill_ambiguous:
-                row["reason"] = "horizon ended before all TP levels resolved"
+            if not resolved_structure and not fill_ambiguous:
+                row["reason"] = "horizon ended before structural target or stop resolved"
             if not fill_ambiguous:
                 row["status"] = "RESOLVED"
 
