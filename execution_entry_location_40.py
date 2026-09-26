@@ -1,21 +1,15 @@
-"""Shadow calibration for a 40-candle 5m entry-location model.
+"""40-candle 5m execution shadow model.
 
-Research-only: this module does not alter live signal generation or execution.
-The direction and baseline execution fields remain the scanner reference outputs.
-The 40-candle model is evaluated independently for entry/stop geometry.
-TP is evaluated from the baseline structural target; realized R is measured from the recalibrated entry/stop geometry.
+Research-only. The 40-candle anchor is an entry-location/timing model:
+- LONG anchor = lowest low of the 40 fully closed pre-signal candles.
+- SHORT anchor = highest high of the 40 fully closed pre-signal candles.
+- Entry uses a small ATR-aware buffer inside the extreme.
+- Stop uses a larger ATR-aware noise buffer beyond the same extreme.
+- TP is ALWAYS the action's structural target. No synthetic R ladder is used.
+- Realized R is measured from the recalibrated entry -> stop -> structural target.
+- OHLC ambiguity is never resolved by guessing intrabar order.
 
-Model:
-- use the 40 fully closed 5m candles immediately before the signal;
-- LONG anchor = lowest low, planned entry slightly above that anchor;
-- SHORT anchor = highest high, planned entry slightly below that anchor;
-- derive the small offset from pre-signal 5m ATR (with a tiny price floor);
-- derive the stop from the same anchor/buffer geometry;
-- evaluate only the baseline structural target; realized R is measured from the recalibrated entry/stop geometry;
-- fill only when a future candle reaches the planned entry;
-- if the fill candle also touches stop/target, the fill is ambiguous rather than guessing intrabar order.
-
-No future candle is used to construct the 40-candle anchor.
+This module is deliberately independent from live signal generation.
 """
 import csv
 from datetime import datetime, timedelta, timezone
@@ -31,6 +25,8 @@ LOOKBACK_CANDLES = 40
 ATR_PERIOD = 14
 ENTRY_BUFFER_ATR = 0.10
 ENTRY_BUFFER_FLOOR_PCT = 0.02
+STOP_BUFFER_ATR = 0.35
+STOP_BUFFER_FLOOR_PCT = 0.08
 MAX_RISK_PCT = 2.0
 MIN_REWARD_R = 1.40
 MAX_REWARD_R = 3.50
@@ -45,11 +41,10 @@ REPORT_FIELDS = [
 ]
 
 DETAIL_FIELDS = [
-    "id", "timestamp", "symbol", "direction", "baseline_entry",
-    "baseline_stop", "baseline_target", "anchor_40", "buffer",
-    "planned_entry", "entry_improvement_pct", "planned_stop", "planned_target",
-    "risk_pct", "reward_r", "status", "fill_timestamp", "outcome",
-    "outcome_r", "outcome_timestamp", "reason",
+    "id", "timestamp", "symbol", "direction", "baseline_entry", "baseline_stop",
+    "baseline_target", "anchor_40", "entry_buffer", "stop_buffer", "planned_entry",
+    "entry_improvement_pct", "planned_stop", "planned_target", "risk_pct", "reward_r",
+    "status", "fill_timestamp", "outcome", "outcome_r", "outcome_timestamp", "reason",
 ]
 
 
@@ -73,11 +68,9 @@ def _load(path):
 
 
 def _close_ts(row):
-    return (
-        _ts(row["close_timestamp"])
-        if row.get("close_timestamp")
-        else _ts(row["timestamp"]) + timedelta(minutes=5)
-    )
+    if row.get("close_timestamp"):
+        return _ts(row["close_timestamp"])
+    return _ts(row["timestamp"]) + timedelta(minutes=5)
 
 
 def _atr(rows, period=ATR_PERIOD):
@@ -98,10 +91,7 @@ def _atr(rows, period=ATR_PERIOD):
 
 
 def _same_market(row, action):
-    return (
-        row.get("provider") == action.get("provider")
-        and row.get("symbol") == action.get("symbol")
-    )
+    return row.get("provider") == action.get("provider") and row.get("symbol") == action.get("symbol")
 
 
 def _pre_signal_market(action, market):
@@ -146,6 +136,16 @@ def _entry_touched(direction, candle, entry):
     return low <= entry if direction == "LONG" else high >= entry
 
 
+def _geometry(direction, anchor, current_price, atr_value):
+    entry_buffer = max(ENTRY_BUFFER_ATR * atr_value, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
+    stop_buffer = max(STOP_BUFFER_ATR * atr_value, current_price * STOP_BUFFER_FLOOR_PCT / 100.0)
+    if direction == "LONG":
+        entry, stop = anchor + entry_buffer, anchor - stop_buffer
+    else:
+        entry, stop = anchor - entry_buffer, anchor + stop_buffer
+    return entry, stop, entry_buffer, stop_buffer
+
+
 def _summary(detail):
     anchored = [r for r in detail if r.get("anchor_40")]
     filled_statuses = {"AMBIGUOUS_FILL", "FILLED_UNRESOLVED", "RESOLVED"}
@@ -164,36 +164,25 @@ def _summary(detail):
         equity += value
         peak = max(peak, equity)
         drawdown = min(drawdown, equity - peak)
-    improvements = [
-        _f(r["entry_improvement_pct"]) for r in filled
-        if _f(r["entry_improvement_pct"]) is not None
-    ]
-    summary = {
-        "sample": len(detail),
-        "anchored": len(anchored),
-        "eligible": len(eligible),
-        "filled": len(filled),
-        "resolved": len(resolved),
+    improvements = [_f(r["entry_improvement_pct"]) for r in filled if _f(r["entry_improvement_pct"]) is not None]
+    return {
+        "sample": len(detail), "anchored": len(anchored), "eligible": len(eligible),
+        "filled": len(filled), "resolved": len(resolved),
         "wins": sum(r["outcome"] == "EXPANSION" for r in resolved),
         "losses": sum(r["outcome"] == "FAIL" for r in resolved),
         "ambiguous": sum(r["outcome"] == "AMBIGUOUS" for r in resolved),
         "unfilled": sum(r["status"] == "UNFILLED" for r in detail),
         "rejected_geometry": sum(r["status"] == "REJECTED_GEOMETRY" for r in detail),
         "skipped": sum(not r.get("anchor_40") for r in detail),
-        "win_rate_pct": round(
-            100.0 * sum(r["outcome"] == "EXPANSION" for r in resolved) / len(resolved), 4
-        ) if resolved else 0.0,
+        "win_rate_pct": round(100.0 * sum(r["outcome"] == "EXPANSION" for r in resolved) / len(resolved), 4) if resolved else 0.0,
         "fill_rate_pct": round(100.0 * len(filled) / len(eligible), 4) if eligible else 0.0,
         "net_r": round(sum(values), 4),
         "expectancy_r": round(sum(values) / len(resolved), 6) if resolved else 0.0,
         "max_drawdown_r": round(drawdown, 4),
         "avg_entry_improvement_pct": round(sum(improvements) / len(improvements), 6) if improvements else 0.0,
-        "max_risk_pct": MAX_RISK_PCT,
-        "min_reward_r": MIN_REWARD_R,
-        "max_reward_r": MAX_REWARD_R,
-        "min_sample_for_review": MIN_SAMPLE_FOR_REVIEW,
+        "max_risk_pct": MAX_RISK_PCT, "min_reward_r": MIN_REWARD_R,
+        "max_reward_r": MAX_REWARD_R, "min_sample_for_review": MIN_SAMPLE_FOR_REVIEW,
     }
-    return summary
 
 
 def calibrate(actions=None, market_rows=None):
@@ -213,14 +202,10 @@ def calibrate(actions=None, market_rows=None):
         baseline_target = _f(action.get("target"))
         row = {field: "" for field in DETAIL_FIELDS}
         row.update({
-            "id": action.get("id", ""),
-            "timestamp": action.get("timestamp", ""),
-            "symbol": action.get("symbol", ""),
-            "direction": direction,
-            "baseline_entry": action.get("entry", ""),
-            "baseline_stop": action.get("stop", ""),
-            "baseline_target": action.get("target", ""),
-            "status": "SKIPPED",
+            "id": action.get("id", ""), "timestamp": action.get("timestamp", ""),
+            "symbol": action.get("symbol", ""), "direction": direction,
+            "baseline_entry": action.get("entry", ""), "baseline_stop": action.get("stop", ""),
+            "baseline_target": action.get("target", ""), "status": "SKIPPED",
         })
 
         if None in (baseline_entry, baseline_stop, baseline_target) or baseline_entry <= 0:
@@ -246,123 +231,80 @@ def calibrate(actions=None, market_rows=None):
 
         current_price = closes[-1]
         anchor = min(lows) if direction == "LONG" else max(highs)
-        buffer = max(
-            ENTRY_BUFFER_ATR * atr_value,
-            current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0,
+        planned_entry, planned_stop, entry_buffer, stop_buffer = _geometry(
+            direction, anchor, current_price, atr_value
         )
-        planned_entry = anchor + buffer if direction == "LONG" else anchor - buffer
-
         row.update({
-            "anchor_40": f"{anchor:.12g}",
-            "buffer": f"{buffer:.12g}",
-            "planned_entry": f"{planned_entry:.12g}",
-            "entry_improvement_pct": f"{(
-                (baseline_entry - planned_entry) / baseline_entry * 100.0
-                if direction == "LONG"
-                else (planned_entry - baseline_entry) / baseline_entry * 100.0
-            ): .6f}".strip(),
+            "anchor_40": f"{anchor:.12g}", "entry_buffer": f"{entry_buffer:.12g}",
+            "stop_buffer": f"{stop_buffer:.12g}", "planned_entry": f"{planned_entry:.12g}",
+            "entry_improvement_pct": f"{((baseline_entry - planned_entry) / baseline_entry * 100.0 if direction == 'LONG' else (planned_entry - baseline_entry) / baseline_entry * 100.0):.6f}",
         })
 
         if direction == "LONG" and planned_entry >= current_price:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "40-candle long entry is not below current price"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle long entry is not below current price"
             detail.append(row)
             continue
         if direction == "SHORT" and planned_entry <= current_price:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "40-candle short entry is not above current price"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle short entry is not above current price"
             detail.append(row)
             continue
 
-        planned_stop = anchor - buffer if direction == "LONG" else anchor + buffer
         risk = planned_entry - planned_stop if direction == "LONG" else planned_stop - planned_entry
         risk_pct = risk / planned_entry * 100.0 if planned_entry else None
-
-        if risk <= 0:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "non-positive 40-candle execution risk"
+        if risk <= 0 or risk_pct is None:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "non-positive execution risk"
             detail.append(row)
             continue
-        if risk_pct is None or risk_pct > MAX_RISK_PCT:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "40-candle stop exceeds 2% price-distance cap"
+        if risk_pct > MAX_RISK_PCT:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle stop exceeds 2% price-distance cap"
             detail.append(row)
             continue
 
-        structural_target = baseline_target
-        reward_r = abs((structural_target - planned_entry) / risk)
-        if (direction == "LONG" and structural_target <= planned_entry) or (direction == "SHORT" and structural_target >= planned_entry):
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "baseline structural target is on the wrong side of planned entry"
+        target = baseline_target
+        reward_r = abs((target - planned_entry) / risk)
+        direction_valid = (direction == "LONG" and target > planned_entry) or (direction == "SHORT" and target < planned_entry)
+        if not direction_valid:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target is on the wrong side of planned entry"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
-        if reward_r < MIN_REWARD_R or reward_r > MAX_REWARD_R:
-            row["status"] = "REJECTED_GEOMETRY"
-            row["reason"] = "structural target outside 1.40R-3.50R feasibility band"
+        if not MIN_REWARD_R <= reward_r <= MAX_REWARD_R:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 1.40R-3.50R feasibility band"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
+
         row.update({
-            "planned_stop": f"{planned_stop:.12g}",
-            "planned_target": f"{structural_target:.12g}",
-            "risk_pct": f"{risk_pct:.6f}",
-            "reward_r": f"{reward_r:.6f}",
+            "planned_stop": f"{planned_stop:.12g}", "planned_target": f"{target:.12g}",
+            "risk_pct": f"{risk_pct:.6f}", "reward_r": f"{reward_r:.6f}", "status": "UNFILLED",
         })
 
-        row["status"] = "UNFILLED"
         future = _future_market(action, market)
-        fill_index = None
+        fill_index = next((i for i, candle in enumerate(future) if _entry_touched(direction, candle, planned_entry)), None)
+        if fill_index is None:
+            detail.append(row)
+            continue
 
-        for index, candle in enumerate(future):
-            if _entry_touched(direction, candle, planned_entry):
-                row["fill_timestamp"] = _close_ts(candle).isoformat()
-                fill_index = index
-                row["status"] = "FILLED_UNRESOLVED"
+        fill_candle = future[fill_index]
+        row["fill_timestamp"] = _close_ts(fill_candle).isoformat()
+        fill_touch = _touch(direction, fill_candle, planned_stop, target)
+        if fill_touch:
+            row["status"], row["outcome"] = "AMBIGUOUS_FILL", "AMBIGUOUS"
+            row["outcome_timestamp"] = _close_ts(fill_candle).isoformat()
+            row["reason"] = "fill candle also touched stop or target; intrabar order is unknowable"
+            detail.append(row)
+            continue
+
+        row["status"] = "FILLED_UNRESOLVED"
+        for candle in future[fill_index + 1:]:
+            outcome = _touch(direction, candle, planned_stop, target)
+            if outcome:
+                row["status"], row["outcome"] = "RESOLVED", outcome
+                row["outcome_r"] = f"{reward_r:.6f}" if outcome == "EXPANSION" else "-1.0" if outcome == "FAIL" else ""
+                row["outcome_timestamp"] = _close_ts(candle).isoformat()
                 break
-
-        if fill_index is not None:
-            # The fill candle is not orderable from OHLC alone. If it also
-            # reaches the stop or any TP level, mark the fill itself ambiguous
-            # instead of inventing an intrabar sequence.
-            fill_candle = future[fill_index]
-            fill_touches_stop = (
-                (_f(fill_candle.get("low")) is not None and _f(fill_candle.get("low")) <= planned_stop)
-                if direction == "LONG"
-                else (_f(fill_candle.get("high")) is not None and _f(fill_candle.get("high")) >= planned_stop)
-            )
-            fill_touches_target = (
-                (_f(fill_candle.get("high")) is not None and _f(fill_candle.get("high")) >= structural_target)
-                if direction == "LONG"
-                else (_f(fill_candle.get("low")) is not None and _f(fill_candle.get("low")) <= structural_target)
-            )
-            fill_ambiguous = fill_touches_stop or fill_touches_target
-            row["status"] = "AMBIGUOUS_FILL" if fill_ambiguous else "RESOLVED"
-            if fill_ambiguous:
-                row["outcome"] = "AMBIGUOUS"
-                row["outcome_timestamp"] = _close_ts(fill_candle).isoformat()
-                row["reason"] = "fill candle also touched stop or target; intrabar order is unknowable"
-
-            resolved_structure = False
-            for candle in future[fill_index + 1:]:
-                outcome = _touch(direction, candle, planned_stop, structural_target)
-                if outcome:
-                    resolved_structure = True
-                    if not fill_ambiguous:
-                        row["outcome"] = outcome
-                        row["outcome_r"] = (
-                            f"{abs((structural_target - planned_entry) / risk):.6f}" if outcome == "EXPANSION"
-                            else "-1.0" if outcome == "FAIL"
-                            else ""
-                        )
-                        row["outcome_timestamp"] = _close_ts(candle).isoformat()
-                    break
-
-            if not resolved_structure and not fill_ambiguous:
-                row["reason"] = "horizon ended before structural target or stop resolved"
-            if not fill_ambiguous:
-                row["status"] = "RESOLVED"
-
+        if row["status"] == "FILLED_UNRESOLVED":
+            row["reason"] = "horizon ended before structural target or stop resolved"
         detail.append(row)
 
     return detail
@@ -370,13 +312,12 @@ def calibrate(actions=None, market_rows=None):
 
 def write(detail=None):
     detail = calibrate() if detail is None else detail
-    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
     summary = _summary(detail)
-    report = {"model": "ENTRY_40C_5M_GEOMETRY_SHADOW", **summary}
+    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
     with REPORT_FILE.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
         writer.writeheader()
-        writer.writerow(report)
+        writer.writerow({"model": "ENTRY_40C_5M_GEOMETRY_SHADOW", **summary})
     with DETAIL_FILE.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=DETAIL_FIELDS)
         writer.writeheader()
@@ -387,9 +328,9 @@ def write(detail=None):
 if __name__ == "__main__":
     result = write()
     print(
-        "40-candle entry shadow: "
-        f"anchored={result['anchored']} eligible={result['eligible']} filled={result['filled']} "
-        f"resolved={result['resolved']} wins={result['wins']} "
-        f"losses={result['losses']} net_r={result['net_r']:.2f} "
+        "40-candle structural shadow: "
+        f"sample={result['sample']} anchored={result['anchored']} eligible={result['eligible']} "
+        f"filled={result['filled']} resolved={result['resolved']} wins={result['wins']} "
+        f"losses={result['losses']} ambiguous={result['ambiguous']} net_r={result['net_r']:.2f} "
         f"expectancy_r={result['expectancy_r']:.4f}"
     )

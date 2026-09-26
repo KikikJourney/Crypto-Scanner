@@ -30,6 +30,7 @@ on:
       - 'execution_retest_calibration.py'
       - 'execution_adverse_timing.py'
       - 'execution_entry_location_40.py'
+      - 'execution_thesis.py'
       - 'tests/test_execution_adverse_timing.py'
       - 'tests/test_execution_entry_location_40.py'
       - 'extreme_archive_integrity.py'
@@ -186,6 +187,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_adverse_timing.py' -v
       - name: Validate 40-candle entry location shadow
         run: python -m unittest discover -s tests -p 'test_execution_entry_location_40.py' -v
+      - name: Audit historical execution thesis
+        run: python execution_thesis.py
       - name: Validate Signal Funnel Diagnostic
         run: python -m unittest discover -s tests -p 'test_signal_funnel_diagnostic.py' -v
       - name: Validate TraderSpy-style confluence

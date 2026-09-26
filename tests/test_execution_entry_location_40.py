@@ -7,8 +7,8 @@ import execution_entry_location_40 as m
 class EntryLocation40Tests(unittest.TestCase):
     def candle(self, minutes, close, high=None, low=None):
         opened = datetime(2026, 9, 22, 0, 0, tzinfo=timezone.utc) + timedelta(minutes=minutes)
-        high = close + 1 if high is None else high
-        low = close - 1 if low is None else low
+        high = close + 0.05 if high is None else high
+        low = close - 0.05 if low is None else low
         return {
             "timestamp": opened.isoformat(),
             "close_timestamp": (opened + timedelta(minutes=5)).isoformat(),
@@ -29,64 +29,66 @@ class EntryLocation40Tests(unittest.TestCase):
             "direction": direction,
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
-            "stop": "98" if direction == "LONG" else "101.2",
-            "target": "99.55" if direction == "LONG" else "100.4",
+            "stop": "98",
+            "target": "99.12" if direction == "LONG" else "100.88",
         }
 
     def market(self, direction="LONG", fill=True):
         rows = []
         for i in range(40):
-            rows.append(self.candle(i * 5, 100 + (i % 3) * 0.1))
+            rows.append(self.candle(i * 5, 100.0))
         if direction == "LONG":
-            rows[-1]["low"] = "99"
+            rows[-1]["low"] = "99.00"
             if fill:
-                rows.append(self.candle(245, 99.2, high=99.3, low=99.05))
-                rows.append(self.candle(250, 100.1, high=100.2, low=99.8))
+                rows.append(self.candle(245, 99.02, high=99.06, low=99.00))
+                rows.append(self.candle(250, 99.12, high=99.14, low=99.05))
             else:
-                rows.append(self.candle(245, 101, high=102, low=100.5))
+                rows.append(self.candle(245, 100.0, high=100.08, low=99.98))
         else:
-            rows[-1]["high"] = "101"
+            rows[-1]["high"] = "101.00"
             if fill:
-                rows.append(self.candle(245, 100.8, high=100.95, low=100.7))
-                rows.append(self.candle(250, 100.4, high=100.6, low=100.3))
+                rows.append(self.candle(245, 100.98, high=101.00, low=100.94))
+                rows.append(self.candle(250, 100.88, high=100.95, low=100.84))
+            else:
+                rows.append(self.candle(245, 100.0, high=100.02, low=99.92))
         return rows
 
     def test_uses_only_pre_signal_candles(self):
-        action = self.action()
-        detail = m.calibrate([action], self.market(fill=True))
-        self.assertEqual(detail[0]["status"], "RESOLVED")
-        self.assertEqual(detail[0]["direction"], "LONG")
-        self.assertGreater(float(detail[0]["anchor_40"]), 0)
+        row = m.calibrate([self.action()], self.market(fill=True))[0]
+        self.assertEqual(row["status"], "RESOLVED")
+        self.assertEqual(row["direction"], "LONG")
+        self.assertAlmostEqual(float(row["anchor_40"]), 99.0)
 
     def test_unfilled_limit_is_not_a_loss(self):
-        action = self.action()
-        detail = m.calibrate([action], self.market(fill=False))
-        self.assertEqual(detail[0]["status"], "UNFILLED")
-        self.assertEqual(detail[0]["outcome"], "")
+        row = m.calibrate([self.action()], self.market(fill=False))[0]
+        self.assertEqual(row["status"], "UNFILLED")
+        self.assertEqual(row["outcome"], "")
 
     def test_fill_candle_with_stop_or_target_is_ambiguous(self):
-        action = self.action()
         rows = self.market(fill=True)
-        rows[-2]["high"] = "100.2"
-        rows[-2]["low"] = "98.8"
-        detail = m.calibrate([action], rows)
-        self.assertEqual(detail[0]["status"], "AMBIGUOUS_FILL")
-        self.assertEqual(detail[0]["outcome"], "AMBIGUOUS")
+        rows[-2]["low"] = "98.90"
+        row = m.calibrate([self.action()], rows)[0]
+        self.assertEqual(row["status"], "AMBIGUOUS_FILL")
+        self.assertEqual(row["outcome"], "AMBIGUOUS")
 
-    def test_tp_uses_baseline_structural_target_and_measures_actual_rr(self):
-        action = self.action()
-        detail = m.calibrate([action], self.market(fill=True))
-        row = detail[0]
-        self.assertAlmostEqual(float(row["planned_target"]), 99.55)
-        self.assertGreater(float(row["reward_r"]), 0.0)
+    def test_structural_target_is_used_and_rr_is_measured(self):
+        row = m.calibrate([self.action()], self.market(fill=True))[0]
+        self.assertAlmostEqual(float(row["planned_target"]), 99.12)
+        self.assertGreater(float(row["reward_r"]), 1.40)
+        self.assertLess(float(row["reward_r"]), 3.50)
         self.assertEqual(row["outcome"], "EXPANSION")
-        self.assertGreater(float(row["outcome_r"]), 0.0)
+        self.assertAlmostEqual(float(row["outcome_r"]), float(row["reward_r"]), places=6)
 
     def test_short_anchor_is_highest_high(self):
-        action = self.action("SHORT")
-        detail = m.calibrate([action], self.market("SHORT", fill=True))
-        self.assertEqual(detail[0]["direction"], "SHORT")
-        self.assertGreater(float(detail[0]["anchor_40"]), float(detail[0]["planned_entry"]))
+        row = m.calibrate([self.action("SHORT")], self.market("SHORT", fill=True))[0]
+        self.assertEqual(row["direction"], "SHORT")
+        self.assertAlmostEqual(float(row["anchor_40"]), 101.0)
+
+    def test_fixed_r_ladder_is_not_present(self):
+        self.assertFalse(hasattr(m, "REWARD_LEVELS"))
+        self.assertFalse(hasattr(m, "target_2r"))
+        self.assertNotIn("target_2r", m.DETAIL_FIELDS)
+        self.assertNotIn("target_8r", m.DETAIL_FIELDS)
 
 
 if __name__ == "__main__":
