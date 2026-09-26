@@ -421,6 +421,14 @@ def evaluate(actions=None, market_rows=None):
 def summarize(rows=None):
     rows = _load(OUTPUT_FILE) if rows is None else rows
     first_touch = [r.get('first_touch') for r in rows if r.get('first_touch')]
+    reward_values = []
+    for row in rows:
+        if row.get('first_touch') == 'EXPANSION':
+            reward = _reward_r(row)
+            if reward is not None:
+                reward_values.append(reward)
+        elif row.get('first_touch') == 'FAIL':
+            reward_values.append(-1.0)
     return {
         'actions': len(rows),
         'resolved': len(first_touch),
@@ -428,10 +436,7 @@ def summarize(rows=None):
         'expansion': first_touch.count('EXPANSION'),
         'fail': first_touch.count('FAIL'),
         'ambiguous': first_touch.count('AMBIGUOUS'),
-        'net_r': sum(
-            2.0 if x == 'EXPANSION' else -1.0 if x == 'FAIL' else 0.0
-            for x in first_touch
-        ),
+        'net_r': sum(reward_values),
     }
 
 
