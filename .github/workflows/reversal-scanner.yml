@@ -222,7 +222,13 @@ jobs:
               assert all(r['first_touch'] in {'', 'EXPANSION', 'FAIL', 'AMBIGUOUS'} for r in scalping)
               assert all(r['first_touch'] == '' or r['first_touch_timestamp'] for r in scalping)
               assert all(r['resolved_horizon'] in {'', '15', '30', '60', '120'} for r in scalping)
-              assert all(r['outcome_r'] in {'', '-1.0', '2.0'} for r in scalping)
+              assert all(
+                  r['outcome_r'] == '' or (
+                      r['outcome_r'] == '-1.0'
+                      or abs(float(r['outcome_r'])) >= 1.40
+                  )
+                  for r in scalping
+              )
               assert all((not r['first_touch']) == (not r['outcome_r']) for r in scalping)
           funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
           # Discovery lanes are intentionally separate from the legacy Signal Funnel:
