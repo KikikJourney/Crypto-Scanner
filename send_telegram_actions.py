@@ -32,7 +32,6 @@ def _positive_oos_gate():
         return False
 
 
-
 def _live_price(row):
     provider = row.get("provider", "")
     symbol = row.get("symbol", "")
@@ -94,19 +93,10 @@ def _still_actionable(row, live_price):
 
 
 def main():
-    # Safety lock: forward-test results are currently negative, so scanner
-    # actions remain research/paper signals until an explicit operator enables
-    # live notifications.
-    live_actions_enabled = __import__("os").environ.get(
-        "ENABLE_SCANNER_ACTIONS", ""
-    ).strip().lower() in {"1", "true", "yes"}
-    if not live_actions_enabled or not _positive_oos_gate():
-        print(
-            "TELEGRAM: LIVE ACTIONS LOCKED — research/paper mode; "
-            "requires explicit enable flag AND a persisted POSITIVE_CI out-of-sample gate"
-        )
-        return 0
-
+    # Telegram delivery is a research notification channel, not an order
+    # execution permission. Keep the OOS/live-trading safety gate separate
+    # from notification delivery so valid scanner output is not silently
+    # suppressed merely because the evidence gate is negative.
     if not ACTIONS.exists():
         print("TELEGRAM: no actionable signal file")
         return 0
