@@ -121,6 +121,15 @@ class ScalpingForwardTest(unittest.TestCase):
         self.assertEqual(result[0]["mfe_pct"], 2.1)
         self.assertEqual(result[0]["mae_pct"], 0.5)
 
+    def test_summary_uses_realized_reward_geometry(self):
+        act = action()
+        rows = ft.evaluate([act], [
+            candle("2026-09-20T10:05:00+00:00", 101, 99.5),
+            candle("2026-09-20T10:10:00+00:00", 103.1, 100),
+        ])
+        summary = ft.summarize(rows)
+        self.assertAlmostEqual(summary["net_r"], 2.0, places=6)
+
     def test_close_timestamp_controls_horizon_boundary(self):
         result = ft.evaluate([action()], [
             candle("2026-09-20T09:55:00+00:00", 102.5, 100),
