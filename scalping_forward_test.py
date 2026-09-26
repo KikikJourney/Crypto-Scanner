@@ -360,7 +360,7 @@ def evaluate(actions=None, market_rows=None):
                         outcome = 'AMBIGUOUS'
                     else:
                         outcome = _first_touch(
-                            action['direction'], candle, action.get('stop'), action.get('target')
+                            action['direction'], high, low, action.get('stop'), action.get('target')
                         )
                     if outcome:
                         row[key] = outcome
