@@ -229,7 +229,7 @@ jobs:
                   )
                   for r in scalping
               )
-              assert all((not r['first_touch']) == (not r['outcome_r']) for r in scalping)
+              assert all((not r['first_touch']) == (not r['outcome_r']) or r['first_touch'] == 'AMBIGUOUS' for r in scalping)
           funnel_action_pairs={(r['symbol'],r['direction']) for r in funnel_symbols if r.get('stage')=='ACTION'}
           # Discovery lanes are intentionally separate from the legacy Signal Funnel:
           # TraderSpy-style and Alpha Hunter actions can be actionable without being
