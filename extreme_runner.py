@@ -21,6 +21,11 @@ from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write a
 
 WORKERS = 8
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
+def _signal_id(provider, symbol, direction, latest_closed_5m_timestamp):
+    """Stable identity for one closed-5m setup; rescans must not duplicate it."""
+    return f"{provider}_{symbol}_{direction}_{latest_closed_5m_timestamp}"
+
+
 def _issue_valid_until(timestamp):
     """Give each newly issued action a fresh 15-minute delivery window."""
     try:
@@ -228,7 +233,7 @@ def _mtf_action(x, timestamp):
     except (TypeError, ValueError):
         pass
     return {
-        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
+        "id": _signal_id(x["provider"], x["symbol"], plan["direction"], latest5),
         "timestamp": timestamp,
         "scan_timestamp": timestamp,
         "symbol": x["symbol"],
@@ -314,7 +319,7 @@ def _brain_action(x, timestamp):
     except (TypeError, ValueError):
         pass
     return {
-        "id": f'{x["provider"]}_{timestamp}_{x["symbol"]}_{plan["direction"]}_{plan["entry"]}',
+        "id": _signal_id(x["provider"], x["symbol"], plan["direction"], latest5),
         "timestamp": timestamp,
         "scan_timestamp": timestamp,
         "symbol": x["symbol"],

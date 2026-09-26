@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone
-from extreme_runner import _normalize_bitget_mtf_candles
+from extreme_runner import _normalize_bitget_mtf_candles, _signal_id
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
     _location_score, _reversal_score, _opposing_structure_target,
@@ -38,6 +38,13 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertEqual(len(normalized), 194)
         self.assertEqual(int(normalized[0][0]), base_ms)
         self.assertEqual(int(normalized[-1][0]), current_start - interval_ms)
+
+    def test_signal_id_is_stable_across_rescans_of_same_closed_5m_candle(self):
+        first = _signal_id("Bitget", "DEEPUSDT", "LONG", "2026-09-26T05:35:00+00:00")
+        second = _signal_id("Bitget", "DEEPUSDT", "LONG", "2026-09-26T05:35:00+00:00")
+        next_candle = _signal_id("Bitget", "DEEPUSDT", "LONG", "2026-09-26T05:40:00+00:00")
+        self.assertEqual(first, second)
+        self.assertNotEqual(first, next_candle)
 
     def test_aggregate(self):
         out = aggregate(rows([100, 101, 102, 103]), 2)
