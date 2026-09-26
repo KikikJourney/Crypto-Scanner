@@ -6,6 +6,13 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
+
+def _float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
 def _risk_levels(row):
     """Return structural R levels without prescribing capital or leverage."""
     entry = _float(row.get("entry_low") or row.get("entry") or row.get("trigger"))
