@@ -21,7 +21,6 @@ DETAIL_FILE = Path("data/scalping_execution_retest.csv")
 STRATEGY_VERSION = "scalp-structure-v1"
 HORIZON_MINUTES = 120
 MAX_RISK_PCT = 2.0
-REWARD_R = 2.0
 MIN_SAMPLE_FOR_REVIEW = 30
 
 REPORT_FIELDS = ["model","sample","eligible","resolved","wins","losses","ambiguous","unresolved","skipped","win_rate_pct","net_r","expectancy_r","max_drawdown_r","max_risk_pct","min_sample_for_review"]
@@ -97,7 +96,7 @@ def calibrate(actions=None, market_rows=None):
 
         direction = action["direction"]
         entry0, stop0, close0 = _f(action.get("entry")), _f(action.get("stop")), _f(candles[0].get("close"))
-        if None in (entry0, stop0, close0):
+        if None in (entry0, stop0, target0, close0):
             row["reason"] = "invalid numeric execution fields"
             detail.append(row)
             continue
@@ -163,7 +162,7 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
 
-        target = entry + REWARD_R * risk if direction == "LONG" else entry - REWARD_R * risk
+        target = target0
         row.update({"calibrated_target": f"{target:.12g}", "status": "ELIGIBLE_UNRESOLVED", "reason": "confirmed then retested"})
         retest_index = candles.index(retest)
         for candle in candles[retest_index + 1:]:
@@ -172,7 +171,7 @@ def calibrate(actions=None, market_rows=None):
                 row.update({
                     "status": "RESOLVED",
                     "outcome": outcome,
-                    "outcome_r": "2.0" if outcome == "EXPANSION" else "-1.0" if outcome == "FAIL" else "",
+                    "outcome_r": f"{abs((target-entry)/risk):.6f}" if outcome == "EXPANSION" else "-1.0" if outcome == "FAIL" else "",
                     "outcome_timestamp": _close_ts(candle).isoformat(),
                 })
                 break
@@ -182,7 +181,7 @@ def calibrate(actions=None, market_rows=None):
 
 def _summary(detail):
     resolved = [r for r in detail if r["outcome"] in {"EXPANSION", "FAIL", "AMBIGUOUS"}]
-    vals = [2.0 if r["outcome"] == "EXPANSION" else -1.0 if r["outcome"] == "FAIL" else 0.0 for r in resolved]
+    vals = [_f(r.get("outcome_r")) or 0.0 if r["outcome"] == "EXPANSION" else -1.0 if r["outcome"] == "FAIL" else 0.0 for r in resolved]
     eq = peak = dd = 0.0
     for value in vals:
         eq += value
