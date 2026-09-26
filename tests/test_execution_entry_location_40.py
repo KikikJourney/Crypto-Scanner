@@ -30,7 +30,9 @@ class EntryLocation40Tests(unittest.TestCase):
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
             "stop": "98",
-            "target": "99.12" if direction == "LONG" else "100.88",
+            # Structural target deliberately sits inside the 1.40R-3.50R
+            # feasibility band after ATR-derived entry/stop recalibration.
+            "target": "99.15" if direction == "LONG" else "100.85",
         }
 
     def market(self, direction="LONG", fill=True):
@@ -41,14 +43,14 @@ class EntryLocation40Tests(unittest.TestCase):
             rows[-1]["low"] = "99.00"
             if fill:
                 rows.append(self.candle(245, 99.02, high=99.06, low=99.00))
-                rows.append(self.candle(250, 99.12, high=99.14, low=99.05))
+                rows.append(self.candle(250, 99.15, high=99.17, low=99.05))
             else:
                 rows.append(self.candle(245, 100.0, high=100.08, low=99.98))
         else:
             rows[-1]["high"] = "101.00"
             if fill:
                 rows.append(self.candle(245, 100.98, high=101.00, low=100.94))
-                rows.append(self.candle(250, 100.88, high=100.95, low=100.84))
+                rows.append(self.candle(250, 100.85, high=100.95, low=100.83))
             else:
                 rows.append(self.candle(245, 100.0, high=100.02, low=99.92))
         return rows
@@ -73,7 +75,7 @@ class EntryLocation40Tests(unittest.TestCase):
 
     def test_structural_target_is_used_and_rr_is_measured(self):
         row = m.calibrate([self.action()], self.market(fill=True))[0]
-        self.assertAlmostEqual(float(row["planned_target"]), 99.12)
+        self.assertAlmostEqual(float(row["planned_target"]), 99.15)
         self.assertGreater(float(row["reward_r"]), 1.40)
         self.assertLess(float(row["reward_r"]), 3.50)
         self.assertEqual(row["outcome"], "EXPANSION")
