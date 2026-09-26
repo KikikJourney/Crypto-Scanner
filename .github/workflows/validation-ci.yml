@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -27,7 +28,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Compile scanner modules
         run: |
-          python -m py_compile             scanner_v2.py universe_runner.py diagnostic_v21.py             early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py             extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py             actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py             early_reversal_engine.py scalping_forward_test.py telegram_notifier.py             send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py             validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_entry_location_40.py             extreme_archive_integrity.py
+          python -m py_compile             scanner_v2.py universe_runner.py diagnostic_v21.py             early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py             extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py             actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py             early_reversal_engine.py scalping_forward_test.py telegram_notifier.py             send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py             validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_entry_location_40.py alpha_forward_audit.py             extreme_archive_integrity.py
       - name: Run full unit-test suite
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Validate statistical evidence module
@@ -36,3 +37,56 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_retest_calibration.py' -v
       - name: Validate extreme archive integrity module
         run: python -m unittest discover -s tests -p 'test_extreme_archive_integrity.py' -v
+
+      - name: Audit Alpha opportunity history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/alpha_artifacts data/alpha_history
+          mkdir -p /tmp/alpha_artifacts data/alpha_history
+          python - <<'PY'
+          import json, os, urllib.request, zipfile
+          from pathlib import Path
+          token=os.environ["GH_TOKEN"]; repo=os.environ["GITHUB_REPOSITORY"]
+          headers={"Accept":"application/vnd.github+json","Authorization":f"Bearer {token}","X-GitHub-Api-Version":"2026-03-10","User-Agent":"Crypto-Scanner-Alpha-Audit"}
+          req=urllib.request.Request(f"https://api.github.com/repos/{repo}/actions/artifacts?per_page=100",headers=headers)
+          with urllib.request.urlopen(req,timeout=30) as resp: payload=json.load(resp)
+          items=[a for a in payload.get("artifacts",[]) if a.get("name","").startswith("alpha-opportunity-") and not a.get("expired",False)]
+          items=sorted(items,key=lambda a:a.get("created_at",""),reverse=True)[:24]
+          for a in items:
+              import requests
+              response=requests.get(f"https://api.github.com/repos/{repo}/actions/artifacts/{a['id']}/zip",headers=headers,timeout=60,allow_redirects=True)
+              response.raise_for_status()
+              archive=Path("/tmp/alpha_artifacts")/f"{a['id']}.zip"; archive.write_bytes(response.content)
+              with zipfile.ZipFile(archive) as z: z.extractall(Path("/tmp/alpha_artifacts")/str(a["id"]))
+              for p in (Path("/tmp/alpha_artifacts")/str(a["id"])).rglob("alpha_opportunity_watch.csv"):
+                  (Path("data/alpha_history")/f"{a['id']}.csv").write_bytes(p.read_bytes())
+          rows={}
+          import csv
+          for p in Path("data/alpha_history").glob("*.csv"):
+              with p.open(newline="",encoding="utf-8") as f:
+                  for row in csv.DictReader(f): rows[(row["timestamp"],row["symbol"],row["direction"])]=row
+          fields=["timestamp","symbol","price","direction","state","alpha_score","return_15m","return_1h","atr_pct","range_pos","volume_ratio","breakout","pullback","momentum","mean_reversion","reason"]
+          ordered=sorted(rows.values(),key=lambda r:r["timestamp"])
+          out=Path("data/alpha_opportunity_watch.csv"); out.parent.mkdir(exist_ok=True)
+          with out.open("w",newline="",encoding="utf-8") as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(ordered)
+          print("Alpha history rows:",len(ordered),"from artifacts:",len(items))
+          if not ordered: raise SystemExit("No Alpha opportunity artifacts available for audit.")
+          PY
+          python alpha_forward_audit.py
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          p=Path("data/alpha_forward_audit.csv")
+          with p.open(newline="",encoding="utf-8") as f: rows=list(csv.DictReader(f))
+          complete=[r for r in rows if r["status"]=="COMPLETE"]
+          follow=[r for r in complete if r["result_2h"]=="FOLLOW_THROUGH"]
+          print(f"Alpha audit: {len(rows)} signals | {len(complete)} complete | {len(follow)} follow-through")
+          for state in ("ALPHA_READY_SHADOW","DEVELOPING","WATCH"):
+              bucket=[r for r in complete if r["state"]==state]
+              if bucket:
+                  hits=sum(r["result_2h"]=="FOLLOW_THROUGH" for r in bucket)
+                  print(f"{state}: {hits}/{len(bucket)} = {hits/len(bucket):.1%}")
+          PY
