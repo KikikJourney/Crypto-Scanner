@@ -30,9 +30,8 @@ class EntryLocation40Tests(unittest.TestCase):
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
             "stop": "98",
-            # Structural target deliberately sits inside the 3R-8R
-            # feasibility band after ATR-derived entry/stop recalibration.
-            "target": "99.50" if direction == "LONG" else "100.50",
+            # Structural target is expressed through the new 40%-100% margin ROI band.
+            "target": "103.22" if direction == "LONG" else "96.72",
         }
 
     def market(self, direction="LONG", fill=True):
@@ -43,14 +42,14 @@ class EntryLocation40Tests(unittest.TestCase):
             rows[-1]["low"] = "99.00"
             if fill:
                 rows.append(self.candle(245, 99.02, high=99.06, low=99.00))
-                rows.append(self.candle(250, 99.50, high=99.60, low=99.40))
+                rows.append(self.candle(250, 103.22, high=103.30, low=103.10))
             else:
                 rows.append(self.candle(245, 100.0, high=100.08, low=99.98))
         else:
             rows[-1]["high"] = "101.00"
             if fill:
                 rows.append(self.candle(245, 100.98, high=101.00, low=100.94))
-                rows.append(self.candle(250, 100.50, high=100.60, low=100.40))
+                rows.append(self.candle(250, 96.72, high=96.82, low=96.62))
             else:
                 rows.append(self.candle(245, 100.0, high=100.02, low=99.92))
         return rows
@@ -68,16 +67,16 @@ class EntryLocation40Tests(unittest.TestCase):
 
     def test_fill_candle_with_stop_or_target_is_ambiguous(self):
         rows = self.market(fill=True)
-        rows[-2]["low"] = "98.90"
+        rows[-2]["low"] = "98.40"
         row = m.calibrate([self.action()], rows)[0]
         self.assertEqual(row["status"], "AMBIGUOUS_FILL")
         self.assertEqual(row["outcome"], "AMBIGUOUS")
 
     def test_structural_target_is_used_and_rr_is_measured(self):
         row = m.calibrate([self.action()], self.market(fill=True))[0]
-        self.assertAlmostEqual(float(row["planned_target"]), 99.50)
-        self.assertGreater(float(row["reward_r"]), 3.0)
-        self.assertLess(float(row["reward_r"]), 8.0)
+        self.assertAlmostEqual(float(row["planned_target"]), 103.22)
+        self.assertGreaterEqual(float(row["reward_r"]), 7.0)
+        self.assertLessEqual(float(row["reward_r"]), 9.0)
         self.assertEqual(row["outcome"], "EXPANSION")
         self.assertAlmostEqual(float(row["outcome_r"]), float(row["reward_r"]), places=6)
 
