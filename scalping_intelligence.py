@@ -389,6 +389,23 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             0.03 * volume_5 + 0.02 * momentum_5
         )
 
+    calibration_confidence_floor = (
+        CALIBRATION_CONFIDENCE_LONG if direction == "LONG"
+        else CALIBRATION_CONFIDENCE_SHORT
+    )
+
+    # Historical calibration evidence is direction-asymmetric. Keep the gate
+    # after entry calibration so it filters execution quality without changing
+    # the calibrated price or geometry responsibilities.
+    if confidence < calibration_confidence_floor:
+        return {
+            "status": "WAIT", "direction": direction,
+            "confidence": round(confidence, 1),
+            "location_15m": location_15, "reversal_5m": reversal_5,
+            "calibration_confidence_floor": calibration_confidence_floor,
+            "reason": "historical calibration confidence floor not met",
+        }
+
     if not early_reversal and not require_v2_direction:
         alignment = score_4h + score_1h + score_30 + score_15
         if alignment < 3.0:
