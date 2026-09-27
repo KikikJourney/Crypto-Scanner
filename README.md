@@ -161,6 +161,15 @@ The current production calibration uses:
 
 Calibration does **not** calculate the final SL/TP geometry.
 
+### Historical calibration gate
+
+The execution gate applies a direction-specific confidence floor derived from the latest resolved calibration evidence:
+
+- LONG: **85.0**
+- SHORT: **90.0**
+
+This gate does not alter the calibrated entry or SL/TP geometry. It only suppresses execution when the historical direction-specific calibration evidence is below its configured floor. The values remain explicit constants so they can be revalidated as the forward-test sample grows.
+
 ### Entry geometry
 
 **Entry geometry starts only after the calibrated entry is final.**
