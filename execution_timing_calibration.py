@@ -71,12 +71,12 @@ def calibrate(actions=None,market_rows=None):
                 row["reason"]="invalid candidate close"; details.append(row); continue
             direction=action["direction"]
             preserved=candidate>=entry0 if direction=="LONG" else candidate<=entry0
-            touched_before=any(_touch(direction,c,stop,target) for c in future[:offset+1])
+            candidate_touch=_touch(direction,candle,stop,target)
             row.update({"candidate_timestamp":_close_ts(candle).isoformat(),"candidate_entry":f"{candidate:.12g}","baseline_entry":f"{entry0:.12g}","baseline_stop":f"{stop:.12g}","baseline_target":f"{target:.12g}"})
             if not preserved:
                 row["reason"]="closed candle did not preserve signal direction"; details.append(row); continue
-            if touched_before:
-                row["reason"]="baseline stop/target touched before candidate timing"; details.append(row); continue
+            if candidate_touch:
+                row["reason"]="candidate candle also touched baseline stop/target; intrabar order ambiguous"; details.append(row); continue
             risk=entry0-stop if direction=="LONG" else stop-entry0
             if risk<=0:
                 row["reason"]="non-positive baseline risk"; details.append(row); continue
