@@ -44,6 +44,8 @@ def format_action(row):
         f"Confidence: {row.get('confidence', '')}/100",
         f"Entry: {entry_low} - {entry_high}",
         f"SL: {row.get('stop', '')}",
+        f"Margin: {row.get('margin_usdt', '')} USDT | Leverage: {row.get('leverage', '')}x",
+        f"Notional: {row.get('notional_usdt', '')} USDT",
     ]
 
     if levels:
@@ -54,6 +56,8 @@ def format_action(row):
             f"Signal TP: {row.get('target', '')}",
             f"RR: {row.get('reward_r', '')}",
             f"SL Distance: {levels['risk_distance']:.12g}",
+            f"SL Margin Risk: {row.get('stop_margin_pct', '')}% (-{row.get('max_loss_usdt', '')} USDT)",
+            f"TP Margin ROI: {row.get('tp_margin_pct', '')}% (+{row.get('target_pnl_usdt', '')} USDT)",
         ])
     else:
         lines.extend([
@@ -64,8 +68,8 @@ def format_action(row):
     lines.extend([
         "",
         "RISK MODEL",
-        "SL is structural and risk is defined by Entry → SL distance.",
-        "TP framework: 2R / 4R / 6R. No fixed margin, leverage, or nominal loss recommendation.",
+        "SL budget: maximum 5% of margin. TP target: 40%-100% of margin ROI.",
+        "Default scanner model: 10 USDT margin / 10x leverage; price levels are derived from these limits.",
         "",
         f"Strategy: {row.get('strategy', row.get('signal_type', ''))}",
         f"MTF: {row.get('timeframes', '4H/1H/30m/15m/5m')}",
@@ -76,7 +80,7 @@ def format_action(row):
         f"Score: {row.get('score', '')}",
         "",
         "Execution rule: only enter while live price remains inside the Entry zone and before the validity window expires.",
-        "Sizing, leverage, fees, funding, slippage, and liquidation are intentionally left to the trader.",
+        "Flow inputs may include liquidity sweep, volume, whale/order-flow and liquidation context; missing external flow data is treated conservatively.",
     ])
     return "\n".join(lines)
 
