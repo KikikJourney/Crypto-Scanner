@@ -117,7 +117,7 @@ def build_plan(rows_15m, rows_5m):
         if distance_atr > 1.50 or risk_pct < 0.10 or risk_pct > 2.0:
             continue
 
-        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 2.0, 8.0)
+        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 3.0, 8.0)
         if structural is not None:
             target = structural
         else:
@@ -127,11 +127,11 @@ def build_plan(rows_15m, rows_5m):
             if not macro_atr or macro_atr <= 0:
                 continue
             raw_distance = macro_atr
-            distance = max(2.0 * risk, min(8.0 * risk, raw_distance))
+            distance = max(3.0 * risk, min(8.0 * risk, raw_distance))
             target = entry + distance if direction == "LONG" else entry - distance
 
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-        if reward < 2.0 or reward > 8.0:
+        if reward < 3.0 or reward > 8.0:
             continue
 
         score = 45.0 + 20.0 * location + 15.0 * participation
