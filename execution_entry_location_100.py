@@ -276,7 +276,7 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
         if not MIN_TP_MARGIN_PCT <= tp_margin_pct <= MAX_TP_MARGIN_PCT:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 40%-100% margin-ROI band"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 30%-120% margin-ROI band"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
