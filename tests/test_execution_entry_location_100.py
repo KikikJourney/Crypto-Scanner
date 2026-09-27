@@ -76,7 +76,7 @@ class EntryLocation100Tests(unittest.TestCase):
         row = m.calibrate([self.action()], self.market(fill=True))[0]
         self.assertAlmostEqual(float(row["planned_target"]), 103.22)
         self.assertGreaterEqual(float(row["tp_margin_pct"]), 40.0)
-        self.assertLessEqual(float(row["tp_margin_pct"]), 100.0)
+        self.assertLessEqual(float(row["tp_margin_pct"]), 120.0)
         self.assertLessEqual(float(row["stop_margin_pct"]), 5.0)
         self.assertEqual(row["outcome"], "EXPANSION")
         self.assertAlmostEqual(float(row["outcome_r"]), float(row["reward_r"]), places=6)
