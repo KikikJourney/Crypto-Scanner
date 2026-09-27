@@ -6,7 +6,9 @@ a reachable 100-candle execution plan. It does not modify scanner_v2.py.
 """
 from math import isfinite
 
-from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_100, _opposing_structure_target, _tp_margin_target
+from scalping_intelligence import _close, _high, _low, _volume, atr, _opposing_structure_target, _select_tp_margin_pct
+from entry_calibration import calibrate_entry
+from entry_geometry import build_entry_geometry
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT
 
 
@@ -105,11 +107,13 @@ def build_plan(rows_15m, rows_5m):
 
     best = None
     for direction, location, impulse, volume, sweep, participation in candidates:
-        loc = _entry_location_100(rows_5m, direction, micro_atr)
-        if not loc:
+        calibration = calibrate_entry(rows_5m, direction, micro_atr)
+        if not calibration:
             continue
-        entry = loc["entry"]
-        stop = loc["stop"]
+        entry = calibration["entry"]
+        # Geometry is intentionally constructed only after entry calibration.
+        base_geometry = build_entry_geometry(direction, entry)
+        stop = base_geometry["stop"]
         risk = entry - stop if direction == "LONG" else stop - entry
         if risk <= 0:
             continue
@@ -124,10 +128,19 @@ def build_plan(rows_15m, rows_5m):
             "liquidity_sweep_score": sweep,
             "volume_score": min(1.0, max(0.0, volume / 1.5)),
         }
-        tp_plan = _tp_margin_target(direction, entry, structural, flow_features, 45.0 + 20.0 * location + 15.0 * participation)
-        if tp_plan is None:
+        tp_selection = _select_tp_margin_pct(
+            direction, entry, structural, flow_features,
+            45.0 + 20.0 * location + 15.0 * participation,
+        )
+        if tp_selection is None:
             continue
-        margin_plan, flow_conviction, structural_margin_pct = tp_plan
+        selected_tp_margin_pct, flow_conviction, structural_margin_pct = tp_selection
+        margin_plan = build_entry_geometry(
+            direction,
+            entry,
+            selected_tp_margin_pct=selected_tp_margin_pct,
+            structural_target=structural,
+        )
         if margin_plan["stop_margin_pct"] > MAX_MARGIN_LOSS_PCT:
             continue
         target = margin_plan["target"]
@@ -167,6 +180,9 @@ def build_plan(rows_15m, rows_5m):
             "reward_r": reward,
             "atr_pct": atr_pct,
             "entry_distance_atr": distance_atr,
+            "entry_calibration": "100-candle",
+            "entry_anchor_100": calibration["anchor"],
+            "entry_buffer": calibration["buffer"],
             "location_15m": location,
             "participation": participation,
             "volume_ratio_5m": volume,
