@@ -23,20 +23,33 @@ class TelegramNotifierTests(unittest.TestCase):
             "rsi_5m": "54.2",
             "liquidity_sweep_5m": "True",
             "volume_5m": "0.82",
+            "margin_usdt": "10",
+            "leverage": "10",
+            "notional_usdt": "100",
+            "stop_margin_pct": "5",
+            "tp_margin_pct": "40",
+            "max_loss_usdt": "0.5",
+            "target_pnl_usdt": "4",
+            "target_price_move_pct": "4",
+            "flow_conviction": "0.72",
             "valid_until": "2026-09-18T07:15:00+00:00",
         })
         self.assertIn("ZORATHVAEL SIGNAL LONG", text)
         self.assertIn("Entry: 157.50 - 158.46", text)
         self.assertIn("SL: 155.51", text)
-        self.assertIn("Signal TP: 162.90", text)
-        self.assertIn("RR: 2.0", text)
+        self.assertIn("TP: 162.90", text)
+        self.assertIn("RR Equivalent: 2.0", text)
+        self.assertIn("Margin: 10 USDT | Leverage: 10x", text)
+        self.assertIn("SL Margin Risk: 5% (-0.5 USDT)", text)
+        self.assertIn("TP Margin ROI: 40% (+4 USDT)", text)
         self.assertIn("Confidence: 86.5/100", text)
-        self.assertIn("TP 2R:", text)
-        self.assertIn("TP 4R:", text)
-        self.assertIn("TP 6R:", text)
+        self.assertIn("Default scanner model: 10 USDT margin / 10x leverage.", text)
+        self.assertNotIn("TP 2R:", text)
+        self.assertNotIn("TP 4R:", text)
+        self.assertNotIn("TP 6R:", text)
         self.assertIn("RISK MODEL", text)
         self.assertNotIn("Modal/Entry:", text)
-        self.assertNotIn("Leverage:", text)
+        self.assertIn("Leverage:", text)
         self.assertNotIn("Estimasi Loss @ SL:", text)
         self.assertNotIn("EXECUTION PLAN", text)
 
