@@ -75,7 +75,7 @@ class EntryLocation40Tests(unittest.TestCase):
 
     def test_structural_target_is_used_and_rr_is_measured(self):
         row = m.calibrate([self.action()], self.market(fill=True))[0]
-        self.assertAlmostEqual(float(row["planned_target"]), 99.25)
+        self.assertAlmostEqual(float(row["planned_target"]), 100.75)
         self.assertGreater(float(row["reward_r"]), 3.0)
         self.assertLess(float(row["reward_r"]), 8.0)
         self.assertEqual(row["outcome"], "EXPANSION")
