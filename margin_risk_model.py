@@ -48,7 +48,7 @@ def build_margin_plan(
 ):
     """Build a price-level SL/TP from margin-risk percentages.
 
-    SL is capped at 5% of margin by default. TP must be between 40% and 100%
+    SL is capped at 5% of margin by default. TP must be between 30% and 120%
     of margin. These percentages are PnL-on-margin percentages, not raw price
     percentages.
     """
