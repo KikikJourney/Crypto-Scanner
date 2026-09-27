@@ -121,10 +121,14 @@ def build_plan(rows_15m, rows_5m):
         if structural is not None:
             target = structural
         else:
-            # Keep the opportunity testable when no opposing swing falls inside
-            # the structural band. Use a deterministic 4R projection, bounded
-            # by the requested 2R-8R envelope.
-            target = entry + 4.0 * risk if direction == "LONG" else entry - 4.0 * risk
+            # If no opposing swing is reachable, derive the fallback from the
+            # current 15m volatility and clamp it to the requested 2R-8R band.
+            macro_atr = atr(rows_15m, 14)
+            if not macro_atr or macro_atr <= 0:
+                continue
+            raw_distance = macro_atr
+            distance = max(2.0 * risk, min(8.0 * risk, raw_distance))
+            target = entry + distance if direction == "LONG" else entry - distance
 
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
         if reward < 2.0 or reward > 8.0:
