@@ -369,7 +369,7 @@ jobs:
                        state / "universe_watchlist.csv",
                        state / "telegram_sent_actions.csv",
                        state / "alpha_watch_binance_research.csv",
-                       state / "alpha_watch_binance_research_report.csv":
+                       state / "alpha_watch_binance_research_report.csv"):
               if path.exists():
                   target = root / path.name
                   target.parent.mkdir(parents=True, exist_ok=True)
