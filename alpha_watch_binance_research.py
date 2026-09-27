@@ -245,6 +245,10 @@ def _evaluate_symbol(symbol, watch_rows, candles):
 def _write_status_report(status, reason, *, symbols=0, fetch_errors=0):
     """Persist a machine-readable non-fatal research status."""
     REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # Keep the detail artifact present even when Binance is unavailable so
+    # workflow persistence can distinguish "no evidence" from a missing file.
+    with DETAIL_FILE.open("w", newline="", encoding="utf-8") as f:
+        csv.DictWriter(f, fieldnames=DETAIL_FIELDS).writeheader()
     report = {
         "provider": "Binance", "status": status, "reason": reason,
         "sample_watch_events": 0, "entry_touches": 0, "unfilled": 0,
