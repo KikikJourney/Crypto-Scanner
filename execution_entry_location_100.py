@@ -277,31 +277,38 @@ def calibrate(actions=None, market_rows=None):
             row["status"], row["reason"] = "REJECTED_GEOMETRY", "non-positive execution risk"
             detail.append(row)
             continue
+        geometry_repairs = []
         if stop_margin_pct > MAX_MARGIN_LOSS_PCT:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "100-candle stop exceeds 5% margin-loss cap"
-            detail.append(row)
-            continue
+            repaired = build_entry_geometry(direction, planned_entry)
+            planned_stop = repaired["stop"]
+            risk = planned_entry - planned_stop if direction == "LONG" else planned_stop - planned_entry
+            risk_pct = risk / planned_entry * 100.0
+            stop_margin_pct = repaired["stop_margin_pct"]
+            geometry_repairs.append("stop_to_canonical_risk")
 
         target = baseline_target
-        reward_r = abs((target - planned_entry) / risk)
+        reward_r = abs((target - planned_entry) / risk) if risk > 0 else 0.0
         tp_margin_pct = target_margin_pct_from_price(planned_entry, target, direction, DEFAULT_LEVERAGE)
-        direction_valid = (direction == "LONG" and target > planned_entry) or (direction == "SHORT" and target < planned_entry)
-        if not direction_valid:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target is on the wrong side of planned entry"
-            row["reward_r"] = f"{reward_r:.6f}"
-            detail.append(row)
-            continue
-        if not MIN_TP_MARGIN_PCT <= tp_margin_pct <= MAX_TP_MARGIN_PCT:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 30%-120% margin-ROI band"
-            row["reward_r"] = f"{reward_r:.6f}"
-            detail.append(row)
-            continue
+        direction_valid = (
+            (direction == "LONG" and target > planned_entry)
+            or (direction == "SHORT" and target < planned_entry)
+        )
+        target_valid = direction_valid and MIN_TP_MARGIN_PCT <= tp_margin_pct <= MAX_TP_MARGIN_PCT
+        if not target_valid:
+            repaired = build_entry_geometry(
+                direction, planned_entry, selected_tp_margin_pct=MIN_TP_MARGIN_PCT
+            )
+            target = repaired["target"]
+            tp_margin_pct = repaired["tp_margin_pct"]
+            geometry_repairs.append("target_to_canonical_min_tp")
 
+        reward_r = abs((target - planned_entry) / risk) if risk > 0 else 0.0
         row.update({
             "planned_stop": f"{planned_stop:.12g}", "planned_target": f"{target:.12g}",
             "risk_pct": f"{risk_pct:.6f}", "reward_r": f"{reward_r:.6f}",
             "stop_margin_pct": f"{stop_margin_pct:.6f}", "tp_margin_pct": f"{tp_margin_pct:.6f}",
             "status": "UNFILLED",
+            "reason": ";".join(geometry_repairs),
         })
 
         future = _future_market(action, market)
