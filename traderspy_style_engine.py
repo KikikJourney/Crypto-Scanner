@@ -10,7 +10,9 @@ same class of inputs locally from the scanner's exchange candles.
 
 from math import sqrt
 
-from scalping_intelligence import aggregate, _timestamp, _tp_margin_target
+from scalping_intelligence import aggregate, _timestamp, _select_tp_margin_pct
+from entry_calibration import calibrate_entry
+from entry_geometry import build_entry_geometry
 from margin_risk_model import DEFAULT_LEVERAGE, MAX_MARGIN_LOSS_PCT, stop_margin_pct_from_price
 
 
@@ -201,22 +203,15 @@ def _side_metrics(rows, direction):
 
 
 def _entry_location_100(rows_5m, direction, micro_atr):
-    """Anchor execution just inside the latest 100-candle 5m extreme."""
-    if len(rows_5m) < 100 or micro_atr is None or micro_atr <= 0:
-        return None
-    window = rows_5m[-100:]
-    lows = [_low(r) for r in window]
-    highs = [_high(r) for r in window]
-    if any(v <= 0 for v in lows + highs):
-        return None
-    anchor = min(lows) if direction == "LONG" else max(highs)
-    price = _close(rows_5m[-1])
-    entry_buffer = max(micro_atr * 0.10, price * 0.0002)
-    stop_buffer = max(micro_atr * 0.35, price * 0.0008)
-    entry = anchor + entry_buffer if direction == "LONG" else anchor - entry_buffer
-    stop = anchor - stop_buffer if direction == "LONG" else anchor + stop_buffer
-    return {"anchor": anchor, "entry": entry, "stop": stop, "price": price, "buffer": entry_buffer, "stop_buffer": stop_buffer}
+    """Backward-compatible composite diagnostic helper.
 
+    Production build_plan uses calibration and geometry as separate stages.
+    """
+    calibrated = calibrate_entry(rows_5m, direction, micro_atr)
+    if calibrated is None:
+        return None
+    geometry = build_entry_geometry(direction, calibrated["entry"])
+    return {**calibrated, "stop": geometry["stop"], "stop_buffer": abs(calibrated["entry"] - geometry["stop"]), "price": calibrated["current_price"]}
 
 def _structure_target(rows, direction, entry, risk, min_rr=1.40, max_rr=3.50):
     if risk <= 0:
@@ -288,25 +283,26 @@ def build_plan(rows_15m, rows_5m=None):
         return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
                 "reason": "need >=40 closed 5m candles for execution timing"}
     micro_atr = atr(rows_5m, 14) or m15["atr"] / 3.0
-    location_40 = _entry_location_100(rows_5m, direction, micro_atr)
-    if location_40 is None:
+    entry_calibration = calibrate_entry(rows_5m, direction, micro_atr)
+    if entry_calibration is None:
         return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
-                "reason": "100-candle execution anchor unavailable"}
-    entry = location_40["entry"]
-    current_price = location_40["price"]
+                "reason": "100-candle entry calibration unavailable"}
+    entry = entry_calibration["entry"]
+    current_price = entry_calibration["current_price"]
     if direction == "LONG" and entry >= current_price:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
                 "reason": "100-candle long entry is not below current price"}
     if direction == "SHORT" and entry <= current_price:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
                 "reason": "100-candle short entry is not above current price"}
-    stop = location_40["stop"]
+    base_geometry = build_entry_geometry(direction, entry)
+    stop = base_geometry["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
     risk_pct = risk / entry * 100.0 if entry else 999.0
     stop_margin_pct = stop_margin_pct_from_price(entry, stop, direction, DEFAULT_LEVERAGE) if risk > 0 else 999.0
     if risk <= 0 or stop_margin_pct > MAX_MARGIN_LOSS_PCT:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "100-candle stop exceeds 5% margin-loss budget",
+                "reason": "entry geometry exceeds 5% margin-loss budget",
                 "risk_pct": round(risk_pct, 4), "stop_margin_pct": round(stop_margin_pct, 3)}
 
     structural = _structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
@@ -314,12 +310,17 @@ def build_plan(rows_15m, rows_5m=None):
         "volume_score": min(1.0, max(0.0, m15["volume_ratio"] / 1.5 - 0.5)),
         "liquidity_sweep_score": 0.0,
     }
-    tp_plan = _tp_margin_target(direction, entry, structural, flow_features, score)
-    if tp_plan is None:
+    tp_selection = _select_tp_margin_pct(direction, entry, structural, flow_features, score)
+    if tp_selection is None:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "structural target does not support 40%-100% margin ROI",
+                "reason": "structural target does not support configured TP geometry",
                 "risk_pct": round(risk_pct, 4), "stop_margin_pct": round(stop_margin_pct, 3)}
-    margin_plan, flow_conviction, structural_margin_pct = tp_plan
+    selected_tp_margin_pct, flow_conviction, structural_margin_pct = tp_selection
+    margin_plan = build_entry_geometry(
+        direction, entry,
+        selected_tp_margin_pct=selected_tp_margin_pct,
+        structural_target=structural,
+    )
     target = margin_plan["target"]
     reward_r = ((target - entry) / risk if direction == "LONG" else (entry - target) / risk)
     latest5 = _timestamp(rows_5m[-1])
@@ -330,7 +331,9 @@ def build_plan(rows_15m, rows_5m=None):
         "entry": round(entry, 12),
         "entry_low": round(entry, 12),
         "entry_high": round(entry, 12),
-        "entry_anchor_100": round(location_40["anchor"], 12),
+        "entry_anchor_100": round(entry_calibration["anchor"], 12),
+        "entry_calibration": "100-candle",
+        "entry_buffer": round(entry_calibration["buffer"], 12),
         "latest_closed_5m_timestamp": latest5.isoformat() if latest5 else "",
         "stop": round(stop, 12),
         "target": round(target, 12),
@@ -344,6 +347,9 @@ def build_plan(rows_15m, rows_5m=None):
         "max_loss_usdt": round(margin_plan["max_loss_usdt"], 6),
         "target_pnl_usdt": round(margin_plan["target_pnl_usdt"], 6),
         "target_price_move_pct": round(margin_plan["target_price_move_pct"], 4),
+        "tp1": round(margin_plan["tp1"], 12), "tp2": round(margin_plan["tp2"], 12), "tp3": round(margin_plan["tp3"], 12),
+        "tp1_margin_pct": margin_plan["tp1_margin_pct"], "tp2_margin_pct": margin_plan["tp2_margin_pct"], "tp3_margin_pct": margin_plan["tp3_margin_pct"],
+        "tp1_pnl_usdt": margin_plan["tp1_pnl_usdt"], "tp2_pnl_usdt": margin_plan["tp2_pnl_usdt"], "tp3_pnl_usdt": margin_plan["tp3_pnl_usdt"],
         "flow_conviction": round(flow_conviction, 3),
         "structural_target_margin_pct": round(structural_margin_pct, 3),
         "rsi_15m": round(m15["rsi"], 2),
