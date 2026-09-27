@@ -9,7 +9,7 @@ from math import isfinite
 from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_40, _opposing_structure_target
 
 
-ALPHA_HUNTER_VERSION = "alpha-hunter-v1"
+ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
 
 
 def _f(v, default=0.0):
@@ -117,16 +117,17 @@ def build_plan(rows_15m, rows_5m):
         if distance_atr > 1.50 or risk_pct < 0.10 or risk_pct > 2.0:
             continue
 
-        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.40, 3.50)
+        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 2.0, 8.0)
         if structural is not None:
             target = structural
         else:
-            # Discovery lane can still produce a mechanically testable plan when
-            # no opposing swing exists; use the middle of the allowed R envelope.
-            target = structural
+            # Keep the opportunity testable when no opposing swing falls inside
+            # the structural band. Use a deterministic 4R projection, bounded
+            # by the requested 2R-8R envelope.
+            target = entry + 4.0 * risk if direction == "LONG" else entry - 4.0 * risk
 
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-        if reward < 1.40 or reward > 3.50:
+        if reward < 2.0 or reward > 8.0:
             continue
 
         score = 45.0 + 20.0 * location + 15.0 * participation
@@ -143,8 +144,8 @@ def build_plan(rows_15m, rows_5m):
             "direction": direction,
             "confidence": round(score, 1),
             "entry": entry,
-            "entry_low": entry,
-            "entry_high": entry,
+            "entry_low": entry - micro_atr * 0.15 if direction == "SHORT" else entry,
+            "entry_high": entry + micro_atr * 0.15 if direction == "LONG" else entry,
             "stop": stop,
             "target": target,
             "risk_pct": risk_pct,
