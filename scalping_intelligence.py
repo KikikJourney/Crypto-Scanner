@@ -17,6 +17,12 @@ from entry_geometry import build_entry_geometry
 # version are legacy evidence and must not be mixed with the current rules.
 SCALPING_STRATEGY_VERSION = "scalp-structure-v1"
 
+# Direction-specific historical calibration floors. These values are
+# deliberately explicit so production logic, tests, and documentation share
+# one source of truth. Revalidate as the forward-test sample grows.
+CALIBRATION_CONFIDENCE_LONG = 85.0
+CALIBRATION_CONFIDENCE_SHORT = 90.0
+
 
 def _f(v, default=None):
     try:
