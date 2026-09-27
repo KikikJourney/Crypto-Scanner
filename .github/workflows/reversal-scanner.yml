@@ -220,7 +220,8 @@ jobs:
           ALPHA_RESEARCH_MAX_SYMBOLS: '124'
           ALPHA_RESEARCH_WORKERS: '8'
           ALPHA_RESEARCH_HORIZON_BARS: '24'
-        run: python alpha_watch_binance_research.py\n      - name: Send confirmed scalping actions to Telegram
+        run: python alpha_watch_binance_research.py
+      - name: Send confirmed scalping actions to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
