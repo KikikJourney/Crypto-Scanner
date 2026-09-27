@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 import alpha_hunter
-from alpha_hunter import build_plan
+from alpha_hunter import build_plan, build_discovery_plan
 
 
 def candle(ts, price, volume=100.0, span=0.2):
@@ -53,6 +53,31 @@ class AlphaHunterTests(unittest.TestCase):
 
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertIn("geometry_repaired_to_canonical_tp", plan["reason"])
+
+    def test_discovery_keeps_far_entry_as_watch(self):
+        rows15 = []
+        for i in range(160):
+            p = 110.0 - i * 0.08
+            rows15.append(candle(i * 900000, p, 1000.0, 0.18))
+        rows15[-1] = candle(159 * 900000, 97.5, 1800.0, 0.30)
+
+        rows5 = []
+        for i in range(75):
+            p = 98.0 + max(0, i - 68) * 0.18
+            rows5.append(candle(i * 300000, p, 100.0, 0.40))
+        rows5[-1] = candle(74 * 300000, 99.0, 110.0, 0.02)
+
+        far_calibration = {
+            "anchor": 90.0, "buffer": 0.25, "entry": 90.25,
+            "current_price": 99.0, "distance_atr": 10.0,
+        }
+        with patch.object(alpha_hunter, "calibrate_entry", return_value=far_calibration):
+            plan = build_discovery_plan(rows15, rows5)
+
+        self.assertIn(plan["status"], {"ALPHA WATCH LONG", "ALPHA WATCH SHORT"})
+        self.assertFalse(plan["execution_ready"])
+        self.assertGreater(plan["entry_distance_atr"], 0.9)
+        self.assertIn("execution zone", plan["watch_reason"])
 
     def test_dead_market_is_rejected(self):
         rows15 = [candle(i * 900000, 100.0, 1000.0, 0.02) for i in range(160)]
