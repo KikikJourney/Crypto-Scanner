@@ -9,10 +9,13 @@ from math import isfinite
 
 
 DEFAULT_MARGIN_USDT = 10.0
-DEFAULT_LEVERAGE = 10.0
+DEFAULT_LEVERAGE = 25.0
 MAX_MARGIN_LOSS_PCT = 5.0
-MIN_MARGIN_TP_PCT = 40.0
-MAX_MARGIN_TP_PCT = 100.0
+TP1_MARGIN_PCT = 30.0
+TP2_MARGIN_PCT = 60.0
+TP3_MARGIN_PCT = 120.0
+MIN_MARGIN_TP_PCT = TP1_MARGIN_PCT
+MAX_MARGIN_TP_PCT = TP3_MARGIN_PCT
 
 
 def _positive(value, name):
@@ -41,7 +44,7 @@ def build_margin_plan(
     margin_usdt=DEFAULT_MARGIN_USDT,
     leverage=DEFAULT_LEVERAGE,
     stop_margin_pct=MAX_MARGIN_LOSS_PCT,
-    tp_margin_pct=MIN_MARGIN_TP_PCT,
+    tp_margin_pct=TP1_MARGIN_PCT,
 ):
     """Build a price-level SL/TP from margin-risk percentages.
 
@@ -60,7 +63,7 @@ def build_margin_plan(
     if stop_margin_pct <= 0 or stop_margin_pct > MAX_MARGIN_LOSS_PCT:
         raise ValueError("stop_margin_pct must be > 0 and <= 5%")
     if not MIN_MARGIN_TP_PCT <= tp_margin_pct <= MAX_MARGIN_TP_PCT:
-        raise ValueError("tp_margin_pct must be between 40% and 100%")
+        raise ValueError("tp_margin_pct must be between 30% and 120%")
 
     stop_move_pct = price_move_pct_from_margin_pct(stop_margin_pct, leverage)
     tp_move_pct = price_move_pct_from_margin_pct(tp_margin_pct, leverage)
@@ -87,6 +90,18 @@ def build_margin_plan(
         "entry": entry,
         "stop": stop,
         "target": target,
+        "tp1_margin_pct": TP1_MARGIN_PCT,
+        "tp2_margin_pct": TP2_MARGIN_PCT,
+        "tp3_margin_pct": TP3_MARGIN_PCT,
+        "tp1_pnl_usdt": margin_pnl_usdt(margin_usdt, TP1_MARGIN_PCT),
+        "tp2_pnl_usdt": margin_pnl_usdt(margin_usdt, TP2_MARGIN_PCT),
+        "tp3_pnl_usdt": margin_pnl_usdt(margin_usdt, TP3_MARGIN_PCT),
+        "tp1_price_move_pct": price_move_pct_from_margin_pct(TP1_MARGIN_PCT, leverage),
+        "tp2_price_move_pct": price_move_pct_from_margin_pct(TP2_MARGIN_PCT, leverage),
+        "tp3_price_move_pct": price_move_pct_from_margin_pct(TP3_MARGIN_PCT, leverage),
+        "tp1": entry + entry * price_move_pct_from_margin_pct(TP1_MARGIN_PCT, leverage) / 100.0 if direction == "LONG" else entry - entry * price_move_pct_from_margin_pct(TP1_MARGIN_PCT, leverage) / 100.0,
+        "tp2": entry + entry * price_move_pct_from_margin_pct(TP2_MARGIN_PCT, leverage) / 100.0 if direction == "LONG" else entry - entry * price_move_pct_from_margin_pct(TP2_MARGIN_PCT, leverage) / 100.0,
+        "tp3": entry + entry * price_move_pct_from_margin_pct(TP3_MARGIN_PCT, leverage) / 100.0 if direction == "LONG" else entry - entry * price_move_pct_from_margin_pct(TP3_MARGIN_PCT, leverage) / 100.0,
         "reward_to_r": tp_margin_pct / stop_margin_pct,
     }
 
