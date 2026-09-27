@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 from math import isfinite
 
 from early_reversal_engine import evaluate_setup as evaluate_early_reversal
+from margin_risk_model import (DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, target_margin_pct_from_price, stop_margin_pct_from_price, build_margin_plan)
 
 
 # Version boundary for forward-test evidence. Historical rows without this
@@ -266,6 +267,26 @@ def _opposing_structure_target(rows, direction, entry, risk, min_reward_r=1.40, 
     valid = [level for level in candidates if max_target <= level <= min_target]
     return min(valid) if valid else None
 
+def _tp_margin_target(direction, entry, structural_target, features, confidence):
+    """Map market-flow conviction to a 40%-100% margin ROI target."""
+    features = features or {}
+    whale = max(0.0, min(1.0, _f(features.get("whale_score"), 0.0)))
+    order_flow = max(0.0, min(1.0, _f(features.get("order_flow_score"), 0.0)))
+    liquidation = max(0.0, min(1.0, _f(features.get("liquidation_score"), 0.0)))
+    sweep = max(0.0, min(1.0, _f(features.get("liquidity_sweep_score"), 0.0)))
+    volume = max(0.0, min(1.0, _f(features.get("volume_score"), 0.0)))
+    conviction = (0.20 * whale + 0.20 * order_flow + 0.15 * liquidation + 0.15 * sweep + 0.10 * volume + 0.20 * max(0.0, min(1.0, confidence / 100.0)))
+    desired_margin_pct = MIN_MARGIN_TP_PCT + conviction * (MAX_MARGIN_TP_PCT - MIN_MARGIN_TP_PCT)
+    if structural_target is None:
+        return None
+    structural_margin_pct = target_margin_pct_from_price(entry, structural_target, direction, DEFAULT_LEVERAGE)
+    if structural_margin_pct < MIN_MARGIN_TP_PCT:
+        return None
+    selected = min(structural_margin_pct, desired_margin_pct, MAX_MARGIN_TP_PCT)
+    if selected < MIN_MARGIN_TP_PCT:
+        return None
+    plan = build_margin_plan(direction, entry, DEFAULT_MARGIN_USDT, DEFAULT_LEVERAGE, MAX_MARGIN_LOSS_PCT, selected)
+    return plan, conviction, structural_margin_pct
 def _timestamp(row):
     try:
         value = float(row[0])
@@ -446,52 +467,38 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     recent_15m_low = min(_low(x) for x in structure_rows_15)
     recent_15m_high = max(_high(x) for x in structure_rows_15)
 
-    # HARD 40-CANDLE EXECUTION MODEL:
-    # Entry and SL must share the same 40-candle extreme anchor. Do not
-    # replace this with a newer 5m/15m structural stop after entry calibration;
-    # doing so disconnects Entry -> SL and distorts every R-based target.
+    # 40-candle timing remains the entry anchor. SL is governed by a
+    # margin-loss budget: <=5% of margin, converted through leverage.
     stop = location_40["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
-
     if risk <= 0:
         return {"status": "INVALID", "reason": "non-positive execution risk"}
 
-    # Apply the hard stop-distance gate before target selection. The stop limit
-    # is independent of whether a reachable opposing swing exists.
-    risk_pct = risk / price * 100.0
-    max_stop_distance_pct = 2.0
-    if risk_pct > max_stop_distance_pct:
-        return {"status": "WAIT", "reason": "execution stop distance exceeds scalping limit",
-                "confidence": round(confidence, 1), "location_15m": location_15,
-                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
-                "max_stop_distance_pct": max_stop_distance_pct}
-    if risk_pct < 0.10:
-        return {"status": "NO-TRADE", "reason": "execution risk below configured minimum",
-                "confidence": round(confidence, 1), "location_15m": location_15,
-                "reversal_5m": reversal_5, "risk_pct": round(risk_pct, 4),
-                "max_stop_distance_pct": max_stop_distance_pct}
+    stop_margin_pct = stop_margin_pct_from_price(entry, stop, direction, DEFAULT_LEVERAGE)
+    if stop_margin_pct > MAX_MARGIN_LOSS_PCT:
+        return {
+            "status": "WAIT", "direction": direction, "confidence": round(confidence, 1),
+            "location_15m": location_15, "reversal_5m": reversal_5,
+            "risk_pct": round(risk / price * 100.0, 4),
+            "stop_margin_pct": round(stop_margin_pct, 3),
+            "max_margin_loss_pct": MAX_MARGIN_LOSS_PCT,
+            "reason": "40-candle structural stop exceeds 5% margin-loss budget",
+        }
 
-    # Structural TP first: RR is measured from the actual Entry -> SL geometry.
-    # We no longer manufacture 2R/4R/6R targets. A setup survives only when
-    # the nearest opposing 15m structure offers a realistic 1.4R-3.5R payoff.
-    structural_target = _opposing_structure_target(
-        rows_15m, direction, entry, risk, min_reward_r=3.0, max_reward_r=8.0
-    )
-    if structural_target is None:
+    risk_pct = risk / price * 100.0
+    structural_target = _opposing_structure_target(rows_15m, direction, entry, risk, min_reward_r=1.0, max_reward_r=20.0)
+    tp_plan = _tp_margin_target(direction, entry, structural_target, v2_features, confidence)
+    if tp_plan is None:
         return {
             "status": "WAIT", "direction": direction,
             "confidence": round(confidence, 1),
             "location_15m": location_15, "reversal_5m": reversal_5,
-            "risk_pct": round(risk / price * 100.0, 4),
-            "reason": "no reachable opposing 15m structure with realistic RR",
+            "risk_pct": round(risk_pct, 4),
+            "reason": "15m structure does not support the 40%-100% margin-ROI target band",
         }
-    target = structural_target
-
-    reward_r = (
-        (target - entry) / risk
-        if direction == "LONG"
-        else (entry - target) / risk
-    )
+    margin_plan, flow_conviction, structural_margin_pct = tp_plan
+    target = margin_plan["target"]
+    reward_r = ((target - entry) / risk if direction == "LONG" else (entry - target) / risk)
     if confidence < 80.0:
         return {
             "status": "WAIT", "direction": direction,
@@ -516,6 +523,11 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
+        "margin_usdt": margin_plan["margin_usdt"], "leverage": margin_plan["leverage"],
+        "notional_usdt": margin_plan["notional_usdt"], "stop_margin_pct": round(margin_plan["stop_margin_pct"], 3),
+        "tp_margin_pct": round(margin_plan["tp_margin_pct"], 3), "max_loss_usdt": round(margin_plan["max_loss_usdt"], 6),
+        "target_pnl_usdt": round(margin_plan["target_pnl_usdt"], 6), "target_price_move_pct": round(margin_plan["target_price_move_pct"], 4),
+        "flow_conviction": round(flow_conviction, 3), "structural_target_margin_pct": round(structural_margin_pct, 3),
         "entry_rebound_atr": round(rebound_atr, 3),
         "target_structure": round(structural_target, 12),
         "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
