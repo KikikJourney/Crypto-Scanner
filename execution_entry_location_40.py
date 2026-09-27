@@ -1,8 +1,8 @@
-"""40-candle 5m execution shadow model.
+"""100-candle 5m execution shadow model.
 
-Research-only. The 40-candle anchor is an entry-location/timing model:
-- LONG anchor = lowest low of the 40 fully closed pre-signal candles.
-- SHORT anchor = highest high of the 40 fully closed pre-signal candles.
+Research-only. The 100-candle anchor is an entry-location/timing model:
+- LONG anchor = lowest low of the 100 fully closed pre-signal candles.
+- SHORT anchor = highest high of the 100 fully closed pre-signal candles.
 - Entry uses a small ATR-aware buffer inside the extreme.
 - Stop uses a larger ATR-aware noise buffer beyond the same extreme.
 - TP is ALWAYS the action's structural target. No synthetic R ladder is used.
@@ -18,11 +18,11 @@ from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_
 
 ACTION_HISTORY_FILE = Path("data/scalping_action_history.csv")
 MARKET_FILE = Path("data/scalping_market_5m.csv")
-REPORT_FILE = Path("data/scalping_entry_location_40_report.csv")
-DETAIL_FILE = Path("data/scalping_entry_location_40.csv")
+REPORT_FILE = Path("data/scalping_entry_location_100_report.csv")
+DETAIL_FILE = Path("data/scalping_entry_location_100.csv")
 
 CURRENT_STRATEGY_VERSION = "scalp-structure-v1"
-LOOKBACK_CANDLES = 40
+LOOKBACK_CANDLES = 100
 ATR_PERIOD = 14
 ENTRY_BUFFER_ATR = 0.25
 ENTRY_BUFFER_FLOOR_PCT = 0.02
@@ -47,7 +47,7 @@ REPORT_FIELDS = [
 
 DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry", "baseline_stop",
-    "baseline_target", "anchor_40", "entry_buffer", "stop_buffer", "planned_entry",
+    "baseline_target", "anchor_100", "entry_buffer", "stop_buffer", "planned_entry",
     "entry_improvement_pct", "planned_stop", "planned_target", "risk_pct", "reward_r",
     "status", "fill_timestamp", "outcome", "outcome_r", "outcome_timestamp", "reason",
 ]
@@ -152,7 +152,7 @@ def _geometry(direction, anchor, current_price, atr_value):
 
 
 def _summary(detail):
-    anchored = [r for r in detail if r.get("anchor_40")]
+    anchored = [r for r in detail if r.get("anchor_100")]
     filled_statuses = {"AMBIGUOUS_FILL", "FILLED_UNRESOLVED", "RESOLVED"}
     filled = [r for r in anchored if r["status"] in filled_statuses]
     eligible = [r for r in anchored if r["status"] in {"UNFILLED", *filled_statuses}]
@@ -178,7 +178,7 @@ def _summary(detail):
         "ambiguous": sum(r["outcome"] == "AMBIGUOUS" for r in resolved),
         "unfilled": sum(r["status"] == "UNFILLED" for r in detail),
         "rejected_geometry": sum(r["status"] == "REJECTED_GEOMETRY" for r in detail),
-        "skipped": sum(not r.get("anchor_40") for r in detail),
+        "skipped": sum(not r.get("anchor_100") for r in detail),
         "win_rate_pct": round(100.0 * sum(r["outcome"] == "EXPANSION" for r in resolved) / len(resolved), 4) if resolved else 0.0,
         "fill_rate_pct": round(100.0 * len(filled) / len(eligible), 4) if eligible else 0.0,
         "net_r": round(sum(values), 4),
@@ -220,7 +220,7 @@ def calibrate(actions=None, market_rows=None):
 
         pre = _pre_signal_market(action, market)
         if len(pre) < LOOKBACK_CANDLES:
-            row["reason"] = "fewer than 40 fully closed 5m candles before signal"
+            row["reason"] = "fewer than 100 fully closed 5m candles before signal"
             detail.append(row)
             continue
 
@@ -230,7 +230,7 @@ def calibrate(actions=None, market_rows=None):
         highs = [_f(r.get("high")) for r in window]
         closes = [_f(r.get("close")) for r in window]
         if atr_value is None or any(v is None for v in lows + highs + closes):
-            row["reason"] = "invalid 40-candle market window"
+            row["reason"] = "invalid 100-candle market window"
             detail.append(row)
             continue
 
@@ -240,17 +240,17 @@ def calibrate(actions=None, market_rows=None):
             direction, anchor, current_price, atr_value
         )
         row.update({
-            "anchor_40": f"{anchor:.12g}", "entry_buffer": f"{entry_buffer:.12g}",
+            "anchor_100": f"{anchor:.12g}", "entry_buffer": f"{entry_buffer:.12g}",
             "stop_buffer": f"{stop_buffer:.12g}", "planned_entry": f"{planned_entry:.12g}",
             "entry_improvement_pct": f"{((baseline_entry - planned_entry) / baseline_entry * 100.0 if direction == 'LONG' else (planned_entry - baseline_entry) / baseline_entry * 100.0):.6f}",
         })
 
         if direction == "LONG" and planned_entry >= current_price:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle long entry is not below current price"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "100-candle long entry is not below current price"
             detail.append(row)
             continue
         if direction == "SHORT" and planned_entry <= current_price:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle short entry is not above current price"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "100-candle short entry is not above current price"
             detail.append(row)
             continue
 
@@ -262,7 +262,7 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
         if stop_margin_pct > MAX_MARGIN_LOSS_PCT:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle stop exceeds 5% margin-loss cap"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "100-candle stop exceeds 5% margin-loss cap"
             detail.append(row)
             continue
 
@@ -324,7 +324,7 @@ def write(detail=None):
     with REPORT_FILE.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
         writer.writeheader()
-        writer.writerow({"model": "ENTRY_40C_5M_GEOMETRY_SHADOW", **summary})
+        writer.writerow({"model": "ENTRY_100C_5M_GEOMETRY_SHADOW", **summary})
     with DETAIL_FILE.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=DETAIL_FIELDS)
         writer.writeheader()
@@ -335,7 +335,7 @@ def write(detail=None):
 if __name__ == "__main__":
     result = write()
     print(
-        "40-candle structural shadow: "
+        "100-candle structural shadow: "
         f"sample={result['sample']} anchored={result['anchored']} eligible={result['eligible']} "
         f"filled={result['filled']} resolved={result['resolved']} wins={result['wins']} "
         f"losses={result['losses']} ambiguous={result['ambiguous']} net_r={result['net_r']:.2f} "
