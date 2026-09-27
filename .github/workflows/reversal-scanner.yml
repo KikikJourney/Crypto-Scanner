@@ -30,7 +30,7 @@ on:
       - 'execution_calibration.py'
       - 'execution_retest_calibration.py'
       - 'execution_adverse_timing.py'
-      - 'execution_entry_location_100.py'
+      - 'execution_entry_location_100.py entry_calibration.py entry_geometry.py'
       - 'execution_thesis.py'
       - 'tests/test_execution_adverse_timing.py'
       - 'tests/test_margin_risk_model.py'
@@ -92,6 +92,8 @@ jobs:
               'scalping_intelligence.py',
               'alpha_hunter.py',
               'traderspy_style_engine.py',
+              'entry_calibration.py',
+              'entry_geometry.py',
           ]
           forbidden = ('REWARD_R = 2.0', 'REWARD_R=2.0', '2R through 8R', 'target_2r', 'target_4r', 'target_6r', 'target_8r')
           hits = []
