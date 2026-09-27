@@ -15,6 +15,6 @@ class TimingCalibrationTests(unittest.TestCase):
           self.candle("2026-09-27T00:20:00+00:00",102.1,102.2,100.8)]
         rows=calibrate([action],market)
         by={int(r["offset_bars"]):r for r in rows}
-        self.assertIn("FAIL", by[0]["reason"] or by[0]["outcome"] or "FAIL")
+        self.assertEqual(by[0]["status"],"SKIPPED")
         self.assertEqual(by[1]["outcome"],"EXPANSION")
 if __name__=="__main__": unittest.main()
