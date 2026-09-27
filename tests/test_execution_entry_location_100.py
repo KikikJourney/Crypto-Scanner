@@ -41,15 +41,15 @@ class EntryLocation100Tests(unittest.TestCase):
         if direction == "LONG":
             rows[-1]["low"] = "99.00"
             if fill:
-                rows.append(self.candle(500, 99.02, high=99.06, low=99.00))
-                rows.append(self.candle(505, 103.22, high=103.30, low=103.10))
+                rows.append(self.candle(505, 99.02, high=99.06, low=99.00))
+                rows.append(self.candle(510, 103.22, high=103.30, low=103.10))
             else:
-                rows.append(self.candle(500, 100.0, high=100.08, low=99.98))
+                rows.append(self.candle(505, 100.0, high=100.08, low=99.98))
         else:
             rows[-1]["high"] = "101.00"
             if fill:
-                rows.append(self.candle(500, 100.98, high=101.00, low=100.94))
-                rows.append(self.candle(505, 96.72, high=96.82, low=96.62))
+                rows.append(self.candle(505, 100.98, high=101.00, low=100.94))
+                rows.append(self.candle(510, 96.72, high=96.82, low=96.62))
             else:
                 rows.append(self.candle(245, 100.0, high=100.02, low=99.92))
         return rows
