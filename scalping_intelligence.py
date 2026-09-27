@@ -209,10 +209,11 @@ def _entry_location_40(rows_5m, direction, micro_atr):
     if latest_price <= 0:
         return None
 
-    # Keep the 40-candle timing anchor, but place the protective stop beyond
-    # normal retest noise. The previous 0.10 ATR symmetric stop was too tight.
-    entry_buffer = max(micro_atr * 0.10, latest_price * 0.0002)
-    stop_buffer = max(micro_atr * 0.35, latest_price * 0.0008)
+    # Delayed 40-candle execution: do not enter immediately above the extreme.
+    # Historical execution showed the old 0.10 ATR entry was reached too early
+    # and then retraced close to the stop. Require a real rebound before entry.
+    entry_buffer = max(micro_atr * 0.25, latest_price * 0.0003)
+    stop_buffer = max(micro_atr * 0.45, latest_price * 0.0010)
     entry = anchor + entry_buffer if direction == "LONG" else anchor - entry_buffer
     stop = anchor - stop_buffer if direction == "LONG" else anchor + stop_buffer
 
@@ -409,11 +410,25 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if direction == "SHORT" and entry <= price:
         return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
 
+    # Do not publish the entry until price has actually rebounded from the
+    # 40-candle extreme. This removes the old near-extreme early trigger.
+    rebound_atr = ((price - location_40["anchor"]) / micro_atr
+                   if direction == "LONG"
+                   else (location_40["anchor"] - price) / micro_atr)
+    min_rebound_atr = 0.20
+    if rebound_atr < min_rebound_atr:
+        return {
+            "status": "WAIT",
+            "reason": "40-candle reversal has not rebounded enough for execution",
+            "rebound_atr": round(rebound_atr, 3),
+            "min_rebound_atr": min_rebound_atr,
+        }
+
     # The 40-candle anchor is an execution location, not permission to publish
     # an unreachable order. If price has already expanded too far from the
     # anchor, the setup belongs in ALPHA/WATCH rather than ACTION.
     entry_distance_atr = abs(price - entry) / micro_atr if micro_atr > 0 else 999.0
-    max_entry_distance_atr = 1.50
+    max_entry_distance_atr = 0.90
     if entry_distance_atr > max_entry_distance_atr:
         return {
             "status": "WAIT",
@@ -460,7 +475,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     # We no longer manufacture 2R/4R/6R targets. A setup survives only when
     # the nearest opposing 15m structure offers a realistic 1.4R-3.5R payoff.
     structural_target = _opposing_structure_target(
-        rows_15m, direction, entry, risk, min_reward_r=1.40, max_reward_r=3.50
+        rows_15m, direction, entry, risk, min_reward_r=3.0, max_reward_r=8.0
     )
     if structural_target is None:
         return {
@@ -501,6 +516,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "entry_low": round(entry_low, 12), "entry_high": round(entry_high, 12),
         "stop": round(stop, 12), "target": round(target, 12),
         "risk_pct": round(risk_pct, 4), "reward_r": round(reward_r, 2),
+        "entry_rebound_atr": round(rebound_atr, 3),
         "target_structure": round(structural_target, 12),
         "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
         "trend_4h": score_4h, "trend_1h": score_1h, "structure_30m": score_30,
