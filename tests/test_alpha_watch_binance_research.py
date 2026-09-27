@@ -1,8 +1,16 @@
 import unittest
 from unittest.mock import patch
-from alpha_watch_binance_research import _aggregate_15m, _outcome
+from alpha_watch_binance_research import _aggregate_15m, _outcome, _write_status_report, REPORT_FILE
 
 class AlphaWatchBinanceResearchTests(unittest.TestCase):
+    def test_status_report_is_non_fatal_and_machine_readable(self):
+        with patch("alpha_watch_binance_research.REPORT_FILE") as path:
+            path.open.return_value.__enter__.return_value = __import__("io").StringIO()
+            report = _write_status_report("DATA_UNAVAILABLE", "Binance blocked", symbols=12, fetch_errors=12)
+        self.assertEqual(report["status"], "DATA_UNAVAILABLE")
+        self.assertEqual(report["fetch_errors"], 12)
+        self.assertEqual(report["sample_watch_events"], 0)
+
     def test_aggregate_15m_uses_three_closed_5m_bars(self):
         rows = [
             [0, "", 10, 9, 9.5, 1],
