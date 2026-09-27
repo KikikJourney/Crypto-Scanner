@@ -16,5 +16,5 @@ class TimingCalibrationTests(unittest.TestCase):
         rows=calibrate([action],market)
         by={int(r["offset_bars"]):r for r in rows}
         self.assertEqual(by[0]["status"],"SKIPPED")
-        self.assertEqual(by[1]["outcome"],"EXPANSION")
+        self.assertEqual(by[1]["outcome"], "EXPANSION")
 if __name__=="__main__": unittest.main()
