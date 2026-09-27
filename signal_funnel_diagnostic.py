@@ -9,6 +9,7 @@ from pathlib import Path
 
 from scalping_intelligence import build_plan
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
+from alpha_hunter import build_plan as alpha_hunter_plan
 
 SUMMARY_FILE = Path("data/signal_funnel_summary.csv")
 SYMBOL_FILE = Path("data/signal_funnel_symbols.csv")
@@ -17,7 +18,8 @@ SUMMARY_FIELDS = [
     "timestamp", "provider", "universe", "deep_scan", "data_valid",
     "data_errors", "direction_long", "direction_short", "no_direction",
     "alignment_failed", "location_failed", "reversal_failed",
-    "confidence_failed", "risk_failed", "plan_data_failed", "invalid", "actions", "v2_extreme_reversals",
+    "confidence_failed", "risk_failed", "plan_data_failed", "invalid", "actions",
+    "alpha_long", "alpha_short", "v2_extreme_reversals",
 ]
 
 SYMBOL_FIELDS = [
@@ -40,14 +42,30 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
 
         if not direction:
             counts["no_direction"] += 1
-            rows.append({
-                "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
-                "stage": "NO_DIRECTION", "direction": "", "confidence": "",
-                "alignment": "", "risk_pct": "", "v2_score": extreme.get("score", ""),
-                "location_15m": "", "exhaustion_15m": "", "base_15m": "",
-                "structure_shift_5m": "", "reversal_trigger_5m": "", "early_reversal_score": "",
-                "reason": "early reversal direction returned None",
-            })
+            alpha = alpha_hunter_plan(x["scalping_rows_15m"], x["scalping_rows_5m"])
+            if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
+                alpha_direction = alpha["direction"]
+                counts[f"alpha_{alpha_direction.lower()}"] += 1
+                rows.append({
+                    "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
+                    "stage": "ALPHA_OPPORTUNITY", "direction": alpha_direction,
+                    "confidence": alpha.get("confidence", ""), "alignment": "",
+                    "risk_pct": alpha.get("risk_pct", ""), "v2_score": extreme.get("score", ""),
+                    "location_15m": alpha.get("location_15m", ""),
+                    "exhaustion_15m": "", "base_15m": alpha.get("participation", ""),
+                    "structure_shift_5m": alpha.get("impulse_5m", ""),
+                    "reversal_trigger_5m": alpha.get("liquidity_sweep_5m", ""),
+                    "early_reversal_score": "", "reason": alpha.get("reason", ""),
+                })
+            else:
+                rows.append({
+                    "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
+                    "stage": "NO_DIRECTION", "direction": "", "confidence": "",
+                    "alignment": "", "risk_pct": "", "v2_score": extreme.get("score", ""),
+                    "location_15m": "", "exhaustion_15m": "", "base_15m": "",
+                    "structure_shift_5m": "", "reversal_trigger_5m": "", "early_reversal_score": "",
+                    "reason": "early reversal direction returned None; no Alpha opportunity",
+                })
             continue
 
         counts[f"direction_{direction.lower()}"] += 1
@@ -124,6 +142,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         "risk_failed": counts["risk_failed"],
         "plan_data_failed": counts["plan_data_failed"],
         "invalid": counts["invalid"], "actions": counts["actions"],
+        "alpha_long": counts["alpha_long"], "alpha_short": counts["alpha_short"],
         "v2_extreme_reversals": counts["v2_extreme_reversals"],
     }
     return summary, rows
