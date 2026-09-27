@@ -30,7 +30,7 @@ on:
       - 'execution_calibration.py'
       - 'execution_retest_calibration.py'
       - 'execution_adverse_timing.py'
-      - 'execution_entry_location_100.py entry_calibration.py entry_geometry.py'
+      - 'execution_entry_location_100.py entry_calibration.py entry_geometry.py\n      - 'alpha_watch_binance_research.py'\n      - 'tests/test_alpha_watch_binance_research.py''
       - 'execution_thesis.py'
       - 'tests/test_execution_adverse_timing.py'
       - 'tests/test_margin_risk_model.py'
@@ -80,7 +80,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py margin_risk_model.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py traderspy_style_engine.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_100.py entry_calibration.py entry_geometry.py extreme_archive_integrity.py
+        run: python -m py_compile scanner_v2.py universe_runner.py margin_risk_model.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py traderspy_style_engine.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py alpha_watch_binance_research.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_100.py entry_calibration.py entry_geometry.py extreme_archive_integrity.py
       - name: Guard against fixed-R TP logic
         run: |
           python - <<'PY'
@@ -209,7 +209,7 @@ jobs:
         run: python extreme_runner.py
       - name: Validate extreme archive integrity
         run: python -m extreme_archive_integrity
-      - name: Send confirmed scalping actions to Telegram
+      - name: Research Alpha Watch against Binance history\n        if: github.event_name == 'push'\n        env:\n          ALPHA_RESEARCH_DAYS: '7'\n          ALPHA_RESEARCH_MAX_SYMBOLS: '124'\n          ALPHA_RESEARCH_WORKERS: '8'\n          ALPHA_RESEARCH_HORIZON_BARS: '24'\n        run: python alpha_watch_binance_research.py\n      - name: Send confirmed scalping actions to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -355,7 +355,7 @@ jobs:
                        state / "extreme_reversal_forward_test.csv",
                        state / "actionable_forward_test.csv",
                        state / "universe_watchlist.csv",
-                       state / "telegram_sent_actions.csv"):
+                       state / "telegram_sent_actions.csv",\n                       state / "alpha_watch_binance_research.csv",\n                       state / "alpha_watch_binance_research_report.csv"):
               if path.exists():
                   target = root / path.name
                   target.parent.mkdir(parents=True, exist_ok=True)
@@ -391,7 +391,7 @@ jobs:
           print(ft.format_summary(rows))
           PY
 
-          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/scalping_execution_retest_report.csv data/scalping_execution_retest.csv data/scalping_entry_location_100_report.csv data/scalping_entry_location_100.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
+          git add data/reversal_forward_test.csv data/scalping_action_history.csv data/scalping_market_5m.csv data/crypto_universe.csv data/early_reversal_forward_test.csv data/extreme_reversal_forward_test.csv data/extreme_market_snapshots.csv data/actionable_forward_test.csv data/scalping_forward_test.csv data/scalping_optimization_report.csv data/scalping_validation_report.csv data/scalping_evidence_audit.csv data/scalping_execution_calibration_report.csv data/scalping_execution_calibration.csv data/scalping_execution_retest_report.csv data/scalping_execution_retest.csv data/scalping_entry_location_100_report.csv data/scalping_entry_location_100.csv data/universe_watchlist.csv data/actionable_signals.csv data/telegram_sent_actions.csv data/alpha_watch_binance_research.csv data/alpha_watch_binance_research_report.csv data/signal_funnel_summary.csv data/signal_funnel_symbols.csv
           git diff --cached --quiet || git commit -m 'chore: persist scanner datasets'
           git push origin HEAD:main
 
