@@ -34,11 +34,11 @@ DETAIL_FIELDS = [
     "first_outcome","outcome_timestamp","outcome_r","reason",
 ]
 REPORT_FIELDS = [
-    "provider","sample_watch_events","entry_touches","unfilled",
+    "provider","status","reason","sample_watch_events","entry_touches","unfilled",
     "resolved_after_touch","wins","losses","ambiguous",
     "fill_rate_pct","win_rate_pct","avg_bars_to_entry",
     "avg_mfe_pct","avg_mae_pct","net_r","expectancy_r",
-    "horizon_bars","lookback_days","symbols",
+    "horizon_bars","lookback_days","symbols","fetch_errors",
 ]
 
 S = requests.Session()
@@ -242,10 +242,36 @@ def _evaluate_symbol(symbol, watch_rows, candles):
     return results
 
 
+def _write_status_report(status, reason, *, symbols=0, fetch_errors=0):
+    """Persist a machine-readable non-fatal research status."""
+    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    report = {
+        "provider": "Binance", "status": status, "reason": reason,
+        "sample_watch_events": 0, "entry_touches": 0, "unfilled": 0,
+        "resolved_after_touch": 0, "wins": 0, "losses": 0, "ambiguous": 0,
+        "fill_rate_pct": 0, "win_rate_pct": 0, "avg_bars_to_entry": 0,
+        "avg_mfe_pct": 0, "avg_mae_pct": 0, "net_r": 0, "expectancy_r": 0,
+        "horizon_bars": HORIZON_BARS, "lookback_days": LOOKBACK_DAYS,
+        "symbols": symbols, "fetch_errors": fetch_errors,
+    }
+    with REPORT_FILE.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
+        w.writeheader()
+        w.writerow(report)
+    print("Alpha Watch Binance research status:", report)
+    return report
+
+
 def run():
-    watches = _watch_symbols()
+    try:
+        watches = _watch_symbols()
+    except Exception as exc:
+        return _write_status_report("NO_COHORT", str(exc))
     if not watches:
-        raise RuntimeError("No Binance ALPHA_WATCH cohort found")
+        return _write_status_report(
+            "NO_COHORT",
+            "No current Binance ALPHA_WATCH cohort was emitted by the scanner.",
+        )
     grouped = {}
     for row in watches:
         grouped.setdefault(row["symbol"], []).append(row)
@@ -273,7 +299,15 @@ def run():
             details.extend(_evaluate_symbol(symbol, watch_rows, fetched[symbol]))
 
     if not details:
-        raise RuntimeError("Binance research produced no reconstructable watch events")
+        reason = (
+            "Binance historical data unavailable for the current cohort."
+            if errors
+            else "Binance research produced no reconstructable watch events."
+        )
+        return _write_status_report(
+            "DATA_UNAVAILABLE" if errors else "NO_RECONSTRUCTABLE_EVENTS",
+            reason, symbols=len(grouped), fetch_errors=len(errors),
+        )
 
     DETAIL_FILE.parent.mkdir(parents=True, exist_ok=True)
     with DETAIL_FILE.open("w", newline="", encoding="utf-8") as f:
@@ -291,7 +325,8 @@ def run():
     mae = [float(r["mae_pct_after_entry"]) for r in touched if str(r["mae_pct_after_entry"]).strip()]
     values = [float(r["outcome_r"]) for r in resolved if str(r["outcome_r"]).strip()]
     report = {
-        "provider":"Binance", "sample_watch_events":len(details),
+        "provider":"Binance", "status":"OK", "reason":"historical Binance reconstruction",
+        "sample_watch_events":len(details),
         "entry_touches":len(touched), "unfilled":sum(r["entry_touch"]=="UNFILLED" for r in details),
         "resolved_after_touch":len(resolved), "wins":len(wins), "losses":len(losses),
         "ambiguous":len(ambiguous),
@@ -302,7 +337,7 @@ def run():
         "avg_mae_pct":round(sum(mae)/len(mae),5) if mae else 0,
         "net_r":round(sum(values),5), "expectancy_r":round(sum(values)/len(values),6) if values else 0,
         "horizon_bars":HORIZON_BARS, "lookback_days":LOOKBACK_DAYS,
-        "symbols":len(grouped),
+        "symbols":len(grouped), "fetch_errors":len(errors),
     }
     with REPORT_FILE.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
