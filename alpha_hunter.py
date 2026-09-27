@@ -6,7 +6,8 @@ a reachable 40-candle execution plan. It does not modify scanner_v2.py.
 """
 from math import isfinite
 
-from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_40, _opposing_structure_target
+from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_40, _opposing_structure_target, _tp_margin_target
+from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT
 
 
 ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
@@ -114,26 +115,23 @@ def build_plan(rows_15m, rows_5m):
             continue
         distance_atr = abs(price - entry) / micro_atr
         risk_pct = risk / price * 100.0
-        if distance_atr > 1.50 or risk_pct < 0.10 or risk_pct > 2.0:
+        if distance_atr > 0.90 or risk_pct < 0.10:
             continue
 
-        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 3.0, 8.0)
-        if structural is not None:
-            target = structural
-        else:
-            # If no opposing swing is reachable, derive the fallback from the
-            # current 15m volatility and clamp it to the requested 2R-8R band.
-            macro_atr = atr(rows_15m, 14)
-            if not macro_atr or macro_atr <= 0:
-                continue
-            raw_distance = macro_atr
-            distance = max(3.0 * risk, min(8.0 * risk, raw_distance))
-            target = entry + distance if direction == "LONG" else entry - distance
-
+        structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
+        # Alpha Hunter uses the same margin model as the execution lane.
+        flow_features = {
+            "liquidity_sweep_score": sweep,
+            "volume_score": min(1.0, max(0.0, volume / 1.5)),
+        }
+        tp_plan = _tp_margin_target(direction, entry, structural, flow_features, 45.0 + 20.0 * location + 15.0 * participation)
+        if tp_plan is None:
+            continue
+        margin_plan, flow_conviction, structural_margin_pct = tp_plan
+        if margin_plan["stop_margin_pct"] > MAX_MARGIN_LOSS_PCT:
+            continue
+        target = margin_plan["target"]
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-        if reward < 3.0 or reward > 8.0:
-            continue
-
         score = 45.0 + 20.0 * location + 15.0 * participation
         if sweep:
             score += 10.0
@@ -152,6 +150,16 @@ def build_plan(rows_15m, rows_5m):
             "entry_high": entry + micro_atr * 0.15 if direction == "LONG" else entry,
             "stop": stop,
             "target": target,
+            "margin_usdt": margin_plan["margin_usdt"],
+            "leverage": margin_plan["leverage"],
+            "notional_usdt": margin_plan["notional_usdt"],
+            "stop_margin_pct": margin_plan["stop_margin_pct"],
+            "tp_margin_pct": margin_plan["tp_margin_pct"],
+            "max_loss_usdt": margin_plan["max_loss_usdt"],
+            "target_pnl_usdt": margin_plan["target_pnl_usdt"],
+            "target_price_move_pct": margin_plan["target_price_move_pct"],
+            "flow_conviction": flow_conviction,
+            "structural_target_margin_pct": structural_margin_pct,
             "risk_pct": risk_pct,
             "reward_r": reward,
             "atr_pct": atr_pct,
