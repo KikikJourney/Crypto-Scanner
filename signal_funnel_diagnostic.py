@@ -9,7 +9,7 @@ from pathlib import Path
 
 from scalping_intelligence import build_plan
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
-from alpha_hunter import build_plan as alpha_hunter_plan
+from alpha_hunter import build_plan as alpha_hunter_plan, build_discovery_plan as alpha_hunter_discovery_plan
 
 SUMMARY_FILE = Path("data/signal_funnel_summary.csv")
 SYMBOL_FILE = Path("data/signal_funnel_symbols.csv")
@@ -19,7 +19,7 @@ SUMMARY_FIELDS = [
     "data_errors", "direction_long", "direction_short", "no_direction",
     "alignment_failed", "location_failed", "reversal_failed",
     "confidence_failed", "risk_failed", "plan_data_failed", "invalid", "actions",
-    "alpha_long", "alpha_short", "v2_extreme_reversals",
+    "alpha_long", "alpha_short", "alpha_watch_long", "alpha_watch_short", "v2_extreme_reversals",
 ]
 
 SYMBOL_FIELDS = [
@@ -43,6 +43,9 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         if not direction:
             counts["no_direction"] += 1
             alpha = alpha_hunter_plan(x["scalping_rows_15m"], x["scalping_rows_5m"])
+            discovery = alpha_hunter_discovery_plan(
+                x["scalping_rows_15m"], x["scalping_rows_5m"]
+            )
             if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
                 alpha_direction = alpha["direction"]
                 counts[f"alpha_{alpha_direction.lower()}"] += 1
@@ -56,6 +59,20 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
                     "structure_shift_5m": alpha.get("impulse_5m", ""),
                     "reversal_trigger_5m": alpha.get("liquidity_sweep_5m", ""),
                     "early_reversal_score": "", "reason": alpha.get("reason", ""),
+                })
+            elif discovery.get("status") in {"ALPHA WATCH LONG", "ALPHA WATCH SHORT"}:
+                watch_direction = discovery["direction"]
+                counts[f"alpha_watch_{watch_direction.lower()}"] += 1
+                rows.append({
+                    "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
+                    "stage": "ALPHA_WATCH", "direction": watch_direction,
+                    "confidence": discovery.get("confidence", ""), "alignment": "",
+                    "risk_pct": discovery.get("risk_pct", ""), "v2_score": extreme.get("score", ""),
+                    "location_15m": discovery.get("location_15m", ""),
+                    "exhaustion_15m": "", "base_15m": discovery.get("participation", ""),
+                    "structure_shift_5m": discovery.get("impulse_5m", ""),
+                    "reversal_trigger_5m": discovery.get("liquidity_sweep_5m", ""),
+                    "early_reversal_score": "", "reason": discovery.get("watch_reason") or discovery.get("reason", ""),
                 })
             else:
                 rows.append({
@@ -143,6 +160,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         "plan_data_failed": counts["plan_data_failed"],
         "invalid": counts["invalid"], "actions": counts["actions"],
         "alpha_long": counts["alpha_long"], "alpha_short": counts["alpha_short"],
+        "alpha_watch_long": counts["alpha_watch_long"], "alpha_watch_short": counts["alpha_watch_short"],
         "v2_extreme_reversals": counts["v2_extreme_reversals"],
     }
     return summary, rows
