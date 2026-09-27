@@ -132,9 +132,16 @@ def build_plan(rows_15m, rows_5m):
             direction, entry, structural, flow_features,
             45.0 + 20.0 * location + 15.0 * participation,
         )
+        # Repair executable geometry instead of killing a valid opportunity
+        # when structural TP falls outside the margin-ROI envelope.
         if tp_selection is None:
-            continue
-        selected_tp_margin_pct, flow_conviction, structural_margin_pct = tp_selection
+            selected_tp_margin_pct = 30.0
+            flow_conviction = 0.0
+            structural_margin_pct = 0.0
+            geometry_reason = "geometry_repaired_to_canonical_tp"
+        else:
+            selected_tp_margin_pct, flow_conviction, structural_margin_pct = tp_selection
+            geometry_reason = "structural_tp_geometry"
         margin_plan = build_entry_geometry(
             direction,
             entry,
@@ -191,7 +198,8 @@ def build_plan(rows_15m, rows_5m):
             "timeframes": "15m/5m",
             "reason": (
                 f"alpha regime: location={location:.2f}, participation={participation:.2f}, "
-                f"vol={volume:.2f}x, impulse={impulse:.3%}, ATR={atr_pct:.3f}%"
+                f"vol={volume:.2f}x, impulse={impulse:.3%}, ATR={atr_pct:.3f}%; "
+                f"geometry={geometry_reason}"
             ),
         }
         if best is None or candidate["confidence"] > best["confidence"]:

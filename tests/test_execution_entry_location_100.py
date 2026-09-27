@@ -81,6 +81,15 @@ class EntryLocation100Tests(unittest.TestCase):
         self.assertEqual(row["outcome"], "EXPANSION")
         self.assertAlmostEqual(float(row["outcome_r"]), float(row["reward_r"]), places=6)
 
+    def test_out_of_band_structural_target_is_repaired_not_rejected(self):
+        action = self.action("LONG")
+        action["target"] = "150"
+        row = m.calibrate([action], self.market(fill=True))[0]
+        self.assertNotEqual(row["status"], "REJECTED_GEOMETRY")
+        self.assertIn("target_to_canonical_min_tp", row["reason"])
+        self.assertGreater(float(row["planned_target"]), float(row["planned_entry"]))
+        self.assertGreaterEqual(float(row["tp_margin_pct"]), 30.0)
+
     def test_short_anchor_is_highest_high(self):
         row = m.calibrate([self.action("SHORT")], self.market("SHORT", fill=True))[0]
         self.assertEqual(row["direction"], "SHORT")

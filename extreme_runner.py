@@ -294,6 +294,12 @@ def _brain_action(x, timestamp):
     # flipped; that would systematically make the scanner late.
     direction = infer_early_reversal_direction(x["scalping_rows_15m"], rows_5m)
     if not direction:
+        # Direction discovery is independent of early reversal. Alpha Hunter
+        # can form an opportunity thesis from location + participation and
+        # return its own calibrated executable plan.
+        alpha = alpha_hunter_plan(x["scalping_rows_15m"], rows_5m)
+        if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
+            return _alpha_action(x, alpha, timestamp)
         return None
     extreme = x["extreme"]
     v2_bonus_score = (
