@@ -10,7 +10,8 @@ same class of inputs locally from the scanner's exchange candles.
 
 from math import sqrt
 
-from scalping_intelligence import aggregate, _timestamp
+from scalping_intelligence import aggregate, _timestamp, _tp_margin_target
+from margin_risk_model import DEFAULT_LEVERAGE, MAX_MARGIN_LOSS_PCT, stop_margin_pct_from_price
 
 
 def _f(v, default=0.0):
@@ -302,27 +303,25 @@ def build_plan(rows_15m, rows_5m=None):
     stop = location_40["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
     risk_pct = risk / entry * 100.0 if entry else 999.0
-    if risk <= 0 or risk_pct > 2.0 or risk_pct < 0.10:
-        return {"status": "WAIT", "direction": direction,
-                "confidence": round(score, 1),
-                "reason": "volatility-adjusted stop outside risk bounds",
-                "risk_pct": round(risk_pct, 4)}
-
-    # Target comes from market structure. RR is a diagnostic of the setup,
-    # not a number used to manufacture an arbitrary TP.
-    target = _structure_target(rows_15m, direction, entry, risk, 1.40, 3.50)
-    if target is None:
+    stop_margin_pct = stop_margin_pct_from_price(entry, stop, direction, DEFAULT_LEVERAGE) if risk > 0 else 999.0
+    if risk <= 0 or stop_margin_pct > MAX_MARGIN_LOSS_PCT:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "no reachable structural target with realistic RR"}
+                "reason": "40-candle stop exceeds 5% margin-loss budget",
+                "risk_pct": round(risk_pct, 4), "stop_margin_pct": round(stop_margin_pct, 3)}
 
-    reward_r = (
-        (target - entry) / risk if direction == "LONG"
-        else (entry - target) / risk
-    )
-    if not 1.40 <= reward_r <= 3.50:
+    structural = _structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
+    flow_features = {
+        "volume_score": min(1.0, max(0.0, m15["volume_ratio"] / 1.5 - 0.5)),
+        "liquidity_sweep_score": 0.0,
+    }
+    tp_plan = _tp_margin_target(direction, entry, structural, flow_features, score)
+    if tp_plan is None:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "structural RR outside scalping envelope"}
-
+                "reason": "structural target does not support 40%-100% margin ROI",
+                "risk_pct": round(risk_pct, 4), "stop_margin_pct": round(stop_margin_pct, 3)}
+    margin_plan, flow_conviction, structural_margin_pct = tp_plan
+    target = margin_plan["target"]
+    reward_r = ((target - entry) / risk if direction == "LONG" else (entry - target) / risk)
     latest5 = _timestamp(rows_5m[-1])
     return {
         "status": "ACTION LONG" if direction == "LONG" else "ACTION SHORT",
@@ -337,6 +336,16 @@ def build_plan(rows_15m, rows_5m=None):
         "target": round(target, 12),
         "risk_pct": round(risk_pct, 4),
         "reward_r": round(reward_r, 2),
+        "margin_usdt": margin_plan["margin_usdt"],
+        "leverage": margin_plan["leverage"],
+        "notional_usdt": margin_plan["notional_usdt"],
+        "stop_margin_pct": round(margin_plan["stop_margin_pct"], 3),
+        "tp_margin_pct": round(margin_plan["tp_margin_pct"], 3),
+        "max_loss_usdt": round(margin_plan["max_loss_usdt"], 6),
+        "target_pnl_usdt": round(margin_plan["target_pnl_usdt"], 6),
+        "target_price_move_pct": round(margin_plan["target_price_move_pct"], 4),
+        "flow_conviction": round(flow_conviction, 3),
+        "structural_target_margin_pct": round(structural_margin_pct, 3),
         "rsi_15m": round(m15["rsi"], 2),
         "rsi_1h": round(m1h["rsi"], 2),
         "rsi_4h": round(m4h["rsi"], 2),
