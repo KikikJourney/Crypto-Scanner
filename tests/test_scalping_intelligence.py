@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from extreme_runner import _normalize_bitget_mtf_candles, _signal_id
 from scalping_intelligence import (
     aggregate, build_plan, infer_direction, _timestamp,
-    _location_score, _reversal_score, _opposing_structure_target, _entry_location_40,
+    _location_score, _reversal_score, _opposing_structure_target, _entry_location_100,
     _countertrend_early_reversal_allowed,
 )
 
@@ -137,9 +137,9 @@ class ScalpingIntelligenceTests(unittest.TestCase):
             self.assertLessEqual(plan["reward_r"], 8.0)
             self.assertEqual(plan["target"], plan["target_structure"])
 
-    def test_40_candle_anchor_controls_entry_and_stop_geometry(self):
-        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
-        plan = _entry_location_40(candles, "LONG", 1.0)
+    def test_100_candle_anchor_controls_entry_and_stop_geometry(self):
+        candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
+        plan = _entry_location_100(candles, "LONG", 1.0)
         self.assertIsNotNone(plan)
         self.assertEqual(plan["anchor"], 95.0)
         self.assertGreater(plan["entry"], plan["anchor"])
@@ -149,12 +149,12 @@ class ScalpingIntelligenceTests(unittest.TestCase):
 
     def test_40_candle_entry_distance_is_not_unbounded(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
-        plan = _entry_location_40(candles, "LONG", 1.0)
+        plan = _entry_location_100(candles, "LONG", 1.0)
         self.assertAlmostEqual(abs(101.0 - plan["entry"]) / 1.0, 5.75, places=6)
 
     def test_40_candle_short_anchor_controls_entry_and_stop_geometry(self):
-        candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 105, 98, 104)])
-        plan = _entry_location_40(candles, "SHORT", 1.0)
+        candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 105, 98, 104)])
+        plan = _entry_location_100(candles, "SHORT", 1.0)
         self.assertIsNotNone(plan)
         self.assertEqual(plan["anchor"], 105.0)
         self.assertGreater(plan["stop"], plan["anchor"])
