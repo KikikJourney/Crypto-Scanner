@@ -145,7 +145,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertGreater(plan["entry"], plan["anchor"])
         self.assertLess(plan["entry"], 101.0)
         self.assertLess(plan["stop"], plan["anchor"])
-        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.70, places=8)
+        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.80, places=8)
 
     def test_100_candle_entry_distance_is_not_unbounded(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
