@@ -2,11 +2,11 @@
 
 This lane is intentionally broader than the reversal/action engines. It detects
 15m opportunity regimes (volatility + location + 5m participation) and builds
-a reachable 40-candle execution plan. It does not modify scanner_v2.py.
+a reachable 100-candle execution plan. It does not modify scanner_v2.py.
 """
 from math import isfinite
 
-from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_40, _opposing_structure_target, _tp_margin_target
+from scalping_intelligence import _close, _high, _low, _volume, atr, _entry_location_100, _opposing_structure_target, _tp_margin_target
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT
 
 
@@ -105,7 +105,7 @@ def build_plan(rows_15m, rows_5m):
 
     best = None
     for direction, location, impulse, volume, sweep, participation in candidates:
-        loc = _entry_location_40(rows_5m, direction, micro_atr)
+        loc = _entry_location_100(rows_5m, direction, micro_atr)
         if not loc:
             continue
         entry = loc["entry"]
