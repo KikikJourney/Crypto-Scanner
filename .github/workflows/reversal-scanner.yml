@@ -264,7 +264,7 @@ jobs:
           # classified as legacy funnel ACTIONs. Validate the legacy lane only here.
           legacy_core_actions=[
               r for r in actions
-              if r.get('strategy_version') not in {'traderspy-style-v1', 'alpha-hunter-v1'}
+              if r.get('strategy_version') not in {'traderspy-style-v1', 'alpha-hunter-v1', 'alpha-hunter-v2'}
           ]
           legacy_action_pairs={(r['symbol'],r['direction']) for r in legacy_core_actions}
           assert legacy_action_pairs <= funnel_action_pairs
