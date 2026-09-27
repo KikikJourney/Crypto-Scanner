@@ -14,6 +14,7 @@ This module is deliberately independent from live signal generation.
 import csv
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, target_margin_pct_from_price, stop_margin_pct_from_price
 
 ACTION_HISTORY_FILE = Path("data/scalping_action_history.csv")
 MARKET_FILE = Path("data/scalping_market_5m.csv")
@@ -27,9 +28,10 @@ ENTRY_BUFFER_ATR = 0.25
 ENTRY_BUFFER_FLOOR_PCT = 0.02
 STOP_BUFFER_ATR = 0.45
 STOP_BUFFER_FLOOR_PCT = 0.08
-MAX_RISK_PCT = 2.0
-MIN_REWARD_R = 3.0
-MAX_REWARD_R = 8.0
+MAX_RISK_PCT = MAX_MARGIN_LOSS_PCT
+MIN_TP_MARGIN_PCT = MIN_MARGIN_TP_PCT
+MAX_TP_MARGIN_PCT = MAX_MARGIN_TP_PCT
+
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
@@ -251,25 +253,27 @@ def calibrate(actions=None, market_rows=None):
 
         risk = planned_entry - planned_stop if direction == "LONG" else planned_stop - planned_entry
         risk_pct = risk / planned_entry * 100.0 if planned_entry else None
+        stop_margin_pct = stop_margin_pct_from_price(planned_entry, planned_stop, direction, DEFAULT_LEVERAGE) if planned_entry else None
         if risk <= 0 or risk_pct is None:
             row["status"], row["reason"] = "REJECTED_GEOMETRY", "non-positive execution risk"
             detail.append(row)
             continue
-        if risk_pct > MAX_RISK_PCT:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle stop exceeds 2% price-distance cap"
+        if stop_margin_pct > MAX_MARGIN_LOSS_PCT:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "40-candle stop exceeds 5% margin-loss cap"
             detail.append(row)
             continue
 
         target = baseline_target
         reward_r = abs((target - planned_entry) / risk)
+        tp_margin_pct = target_margin_pct_from_price(planned_entry, target, direction, DEFAULT_LEVERAGE)
         direction_valid = (direction == "LONG" and target > planned_entry) or (direction == "SHORT" and target < planned_entry)
         if not direction_valid:
             row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target is on the wrong side of planned entry"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
-        if not MIN_REWARD_R <= reward_r <= MAX_REWARD_R:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 3R-8R feasibility band"
+        if not MIN_TP_MARGIN_PCT <= tp_margin_pct <= MAX_TP_MARGIN_PCT:
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 40%-100% margin-ROI band"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
