@@ -595,7 +595,30 @@ The scanner is allowed to produce zero actions when market conditions do not mee
 
 ---
 
-## 16. Current implementation status
+## 16. Entry timing calibration
+
+The repository now includes a research-only timing sweep in
+`execution_timing_calibration.py`.
+
+It evaluates execution timing independently from entry geometry and SL/TP
+construction by testing closed 5m offsets of **0, 5, 10, 15, and 20 minutes**
+after each persisted action. A candidate is excluded when the baseline stop or
+target was already touched before that timing point, or when the closed candle
+no longer preserves the original signal direction.
+
+Outputs:
+
+- `data/scalping_timing_calibration_report.csv`
+- `data/scalping_timing_calibration.csv`
+
+The report is evidence for timing calibration only. It does not automatically
+tighten score thresholds, change the 100-candle anchor, or redefine SL/TP
+geometry. A production timing rule is only changed after sufficient historical
+evidence and forward validation.
+
+---
+
+## 17. Current implementation status
 
 ### Implemented
 
@@ -635,7 +658,7 @@ These require continued forward testing with realistic execution assumptions.
 
 ---
 
-## 17. Project philosophy
+## 18. Project philosophy
 
 The scanner is built around a simple rule:
 
