@@ -200,11 +200,11 @@ def _side_metrics(rows, direction):
     }
 
 
-def _entry_location_40(rows_5m, direction, micro_atr):
-    """Anchor execution just inside the latest 40-candle 5m extreme."""
-    if len(rows_5m) < 40 or micro_atr is None or micro_atr <= 0:
+def _entry_location_100(rows_5m, direction, micro_atr):
+    """Anchor execution just inside the latest 100-candle 5m extreme."""
+    if len(rows_5m) < 100 or micro_atr is None or micro_atr <= 0:
         return None
-    window = rows_5m[-40:]
+    window = rows_5m[-100:]
     lows = [_low(r) for r in window]
     highs = [_high(r) for r in window]
     if any(v <= 0 for v in lows + highs):
@@ -284,29 +284,29 @@ def build_plan(rows_15m, rows_5m=None):
                 "reason": "validation score below 70"}
 
     rows_5m = rows_5m or []
-    if len(rows_5m) < 40:
+    if len(rows_5m) < 100:
         return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
                 "reason": "need >=40 closed 5m candles for execution timing"}
     micro_atr = atr(rows_5m, 14) or m15["atr"] / 3.0
-    location_40 = _entry_location_40(rows_5m, direction, micro_atr)
+    location_40 = _entry_location_100(rows_5m, direction, micro_atr)
     if location_40 is None:
         return {"status": "DATA-LIMITED", "direction": direction, "confidence": round(score, 1),
-                "reason": "40-candle execution anchor unavailable"}
+                "reason": "100-candle execution anchor unavailable"}
     entry = location_40["entry"]
     current_price = location_40["price"]
     if direction == "LONG" and entry >= current_price:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "40-candle long entry is not below current price"}
+                "reason": "100-candle long entry is not below current price"}
     if direction == "SHORT" and entry <= current_price:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "40-candle short entry is not above current price"}
+                "reason": "100-candle short entry is not above current price"}
     stop = location_40["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
     risk_pct = risk / entry * 100.0 if entry else 999.0
     stop_margin_pct = stop_margin_pct_from_price(entry, stop, direction, DEFAULT_LEVERAGE) if risk > 0 else 999.0
     if risk <= 0 or stop_margin_pct > MAX_MARGIN_LOSS_PCT:
         return {"status": "WAIT", "direction": direction, "confidence": round(score, 1),
-                "reason": "40-candle stop exceeds 5% margin-loss budget",
+                "reason": "100-candle stop exceeds 5% margin-loss budget",
                 "risk_pct": round(risk_pct, 4), "stop_margin_pct": round(stop_margin_pct, 3)}
 
     structural = _structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
@@ -330,7 +330,7 @@ def build_plan(rows_15m, rows_5m=None):
         "entry": round(entry, 12),
         "entry_low": round(entry, 12),
         "entry_high": round(entry, 12),
-        "entry_anchor_40": round(location_40["anchor"], 12),
+        "entry_anchor_100": round(location_40["anchor"], 12),
         "latest_closed_5m_timestamp": latest5.isoformat() if latest5 else "",
         "stop": round(stop, 12),
         "target": round(target, 12),
