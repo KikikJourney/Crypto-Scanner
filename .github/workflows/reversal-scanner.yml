@@ -197,6 +197,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_execution_retest_calibration.py' -v
       - name: Validate adverse excursion timing diagnostic
         run: python -m unittest discover -s tests -p 'test_execution_adverse_timing.py' -v
+      - name: Validate entry timing calibration
+        run: python -m unittest discover -s tests -p 'test_execution_timing_calibration.py' -v
+      - name: Build entry timing calibration report
+        run: python execution_timing_calibration.py
       - name: Validate 100-candle entry location shadow
         run: python -m unittest discover -s tests -p 'test_execution_entry_location_100.py' -v
       - name: Audit historical execution thesis
@@ -369,7 +373,9 @@ jobs:
                        state / "universe_watchlist.csv",
                        state / "telegram_sent_actions.csv",
                        state / "alpha_watch_binance_research.csv",
-                       state / "alpha_watch_binance_research_report.csv"):
+                       state / "alpha_watch_binance_research_report.csv",
+                       state / "scalping_timing_calibration.csv",
+                       state / "scalping_timing_calibration_report.csv"):
               if path.exists():
                   target = root / path.name
                   target.parent.mkdir(parents=True, exist_ok=True)
