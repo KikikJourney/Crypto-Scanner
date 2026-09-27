@@ -86,7 +86,7 @@ def _direction_candidates(rows_15m, rows_5m):
     return out
 
 
-def build_plan(rows_15m, rows_5m):
+def _build_plan(rows_15m, rows_5m, allow_watch=False):
     if len(rows_15m) < 160 or len(rows_5m) < 60:
         return {"status": "DATA-LIMITED", "reason": "insufficient MTF candles"}
 
@@ -119,7 +119,10 @@ def build_plan(rows_15m, rows_5m):
             continue
         distance_atr = abs(price - entry) / micro_atr
         risk_pct = risk / price * 100.0
-        if distance_atr > 0.90 or risk_pct < 0.10:
+        execution_ready = distance_atr <= 0.90
+        if risk_pct < 0.10:
+            continue
+        if not execution_ready and not allow_watch:
             continue
 
         structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
@@ -162,7 +165,11 @@ def build_plan(rows_15m, rows_5m):
         score = min(100.0, score)
 
         candidate = {
-            "status": "ALPHA LONG" if direction == "LONG" else "ALPHA SHORT",
+            "status": (
+                ("ALPHA LONG" if direction == "LONG" else "ALPHA SHORT")
+                if execution_ready
+                else ("ALPHA WATCH LONG" if direction == "LONG" else "ALPHA WATCH SHORT")
+            ),
             "direction": direction,
             "confidence": round(score, 1),
             "entry": entry,
@@ -187,6 +194,8 @@ def build_plan(rows_15m, rows_5m):
             "reward_r": reward,
             "atr_pct": atr_pct,
             "entry_distance_atr": distance_atr,
+            "execution_ready": execution_ready,
+            "watch_reason": "" if execution_ready else "price is outside calibrated 100-candle execution zone",
             "entry_calibration": "100-candle",
             "entry_anchor_100": calibration["anchor"],
             "entry_buffer": calibration["buffer"],
@@ -206,3 +215,17 @@ def build_plan(rows_15m, rows_5m):
             best = candidate
 
     return best or {"status": "WAIT", "reason": "alpha execution geometry unavailable", "atr_pct": atr_pct}
+
+def build_plan(rows_15m, rows_5m):
+    """Return only execution-ready Alpha opportunities."""
+    return _build_plan(rows_15m, rows_5m, allow_watch=False)
+
+
+def build_discovery_plan(rows_15m, rows_5m):
+    """Return the best Alpha discovery candidate, including a pending watch.
+
+    WATCH is discovery evidence, not an executable trade. The calibrated
+    100-candle entry remains unchanged; the scanner simply records that price
+    has not reached the execution zone yet.
+    """
+    return _build_plan(rows_15m, rows_5m, allow_watch=True)
