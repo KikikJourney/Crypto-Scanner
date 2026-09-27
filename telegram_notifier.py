@@ -36,7 +36,7 @@ def format_action(row):
         f"RR Equivalent: {row.get('reward_r', '')}",
         "",
         "RISK MODEL",
-        "SL budget: maximum 5% of margin. TP target: 40%-100% of margin ROI.",
+        "SL budget: maximum 5% of margin. TP ladder: 30% / 60% / 120% of margin ROI.",
         "Standard scanner model: 10 USDT margin / 25x leverage / max SL 5% / TP1 30% / TP2 60% / TP3 120%.",
         "Flow inputs may include liquidity sweep, volume, whale/order-flow and liquidation context; missing external flow data is treated conservatively.",
         "",
