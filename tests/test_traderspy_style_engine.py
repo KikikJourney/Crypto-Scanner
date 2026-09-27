@@ -50,8 +50,9 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
         })
         if plan["status"].startswith("ACTION"):
             self.assertGreaterEqual(plan["confidence"], 70.0)
-            self.assertGreaterEqual(plan["reward_r"], 1.40)
-            self.assertLessEqual(plan["reward_r"], 3.50)
+            self.assertGreaterEqual(plan["tp_margin_pct"], 40.0)
+            self.assertLessEqual(plan["tp_margin_pct"], 100.0)
+            self.assertLessEqual(plan["stop_margin_pct"], 5.0)
             self.assertGreater(plan["entry"], 0)
             self.assertGreater(plan["stop"], 0)
             self.assertGreater(plan["target"], 0)
@@ -60,10 +61,11 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
     def test_requires_5m_execution_timing(self):
         self.assertIsNone(_entry_location_40(self.rows[:20], "LONG", 0.01))
 
-    def test_action_reward_is_bounded_to_2_8r(self):
+    def test_action_margin_roi_is_bounded_to_40_100_percent(self):
         plan = build_plan(self.rows, self.rows[-80:])
         if plan["status"] in {"ACTION LONG", "ACTION SHORT"}:
-            self.assertTrue(1.40 <= float(plan["reward_r"]) <= 3.50)
+            self.assertTrue(40.0 <= float(plan["tp_margin_pct"]) <= 100.0)
+            self.assertLessEqual(float(plan["stop_margin_pct"]), 5.0)
             self.assertIn("entry_anchor_40", plan)
 
 
