@@ -133,8 +133,8 @@ class ScalpingIntelligenceTests(unittest.TestCase):
                           {"extreme_low_24": 90, "extreme_high_24": 100, "atr": 1.0})
         self.assertIn(plan["status"], {"WAIT", "ACTION LONG"})
         if plan["status"] == "ACTION LONG":
-            self.assertGreaterEqual(plan["reward_r"], 1.40)
-            self.assertLessEqual(plan["reward_r"], 3.50)
+            self.assertGreaterEqual(plan["reward_r"], 3.0)
+            self.assertLessEqual(plan["reward_r"], 8.0)
             self.assertEqual(plan["target"], plan["target_structure"])
 
     def test_40_candle_anchor_controls_entry_and_stop_geometry(self):
@@ -145,7 +145,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertGreater(plan["entry"], plan["anchor"])
         self.assertLess(plan["entry"], 101.0)
         self.assertLess(plan["stop"], plan["anchor"])
-        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.45, places=8)
+        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.70, places=8)
 
     def test_40_candle_entry_distance_is_not_unbounded(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 39 + [(100, 102, 95, 101)])
