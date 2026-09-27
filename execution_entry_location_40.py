@@ -23,13 +23,13 @@ DETAIL_FILE = Path("data/scalping_entry_location_40.csv")
 CURRENT_STRATEGY_VERSION = "scalp-structure-v1"
 LOOKBACK_CANDLES = 40
 ATR_PERIOD = 14
-ENTRY_BUFFER_ATR = 0.10
+ENTRY_BUFFER_ATR = 0.25
 ENTRY_BUFFER_FLOOR_PCT = 0.02
-STOP_BUFFER_ATR = 0.35
+STOP_BUFFER_ATR = 0.45
 STOP_BUFFER_FLOOR_PCT = 0.08
 MAX_RISK_PCT = 2.0
-MIN_REWARD_R = 1.40
-MAX_REWARD_R = 3.50
+MIN_REWARD_R = 3.0
+MAX_REWARD_R = 8.0
 HORIZON_MINUTES = 120
 MIN_SAMPLE_FOR_REVIEW = 30
 
@@ -269,7 +269,7 @@ def calibrate(actions=None, market_rows=None):
             detail.append(row)
             continue
         if not MIN_REWARD_R <= reward_r <= MAX_REWARD_R:
-            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 1.40R-3.50R feasibility band"
+            row["status"], row["reason"] = "REJECTED_GEOMETRY", "structural target outside 3R-8R feasibility band"
             row["reward_r"] = f"{reward_r:.6f}"
             detail.append(row)
             continue
