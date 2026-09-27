@@ -7,7 +7,7 @@ from traderspy_style_engine import (
     rsi,
     volume_ratio,
     build_plan,
-    _entry_location_40,
+    _entry_location_100,
 )
 
 
@@ -59,14 +59,14 @@ class TraderSpyStyleEngineTests(unittest.TestCase):
 
 
     def test_requires_5m_execution_timing(self):
-        self.assertIsNone(_entry_location_40(self.rows[:20], "LONG", 0.01))
+        self.assertIsNone(_entry_location_100(self.rows[:20], "LONG", 0.01))
 
     def test_action_margin_roi_is_bounded_to_40_100_percent(self):
         plan = build_plan(self.rows, self.rows[-80:])
         if plan["status"] in {"ACTION LONG", "ACTION SHORT"}:
             self.assertTrue(40.0 <= float(plan["tp_margin_pct"]) <= 100.0)
             self.assertLessEqual(float(plan["stop_margin_pct"]), 5.0)
-            self.assertIn("entry_anchor_40", plan)
+            self.assertIn("entry_anchor_100", plan)
 
 
 if __name__ == "__main__":
