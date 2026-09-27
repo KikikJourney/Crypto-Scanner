@@ -194,12 +194,12 @@ def _reversal_score(rows, direction):
 
 
 
-def _entry_location_40(rows_5m, direction, micro_atr):
-    """Place execution entry just inside the 40-candle 5m extreme."""
-    if len(rows_5m) < 40 or micro_atr is None or micro_atr <= 0:
+def _entry_location_100(rows_5m, direction, micro_atr):
+    """Place execution entry just inside the 100-candle 5m extreme."""
+    if len(rows_5m) < 100 or micro_atr is None or micro_atr <= 0:
         return None
 
-    window = rows_5m[-40:]
+    window = rows_5m[-100:]
     lows = [_low(row) for row in window]
     highs = [_high(row) for row in window]
     if any(value <= 0 for value in lows + highs):
@@ -210,7 +210,7 @@ def _entry_location_40(rows_5m, direction, micro_atr):
     if latest_price <= 0:
         return None
 
-    # Delayed 40-candle execution: do not enter immediately above the extreme.
+    # Delayed 100-candle execution: do not enter immediately above the extreme.
     # Historical execution showed the old 0.10 ATR entry was reached too early
     # and then retraced close to the stop. Require a real rebound before entry.
     entry_buffer = max(micro_atr * 0.25, latest_price * 0.0003)
@@ -418,21 +418,21 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         return {"status": "DATA-LIMITED", "reason": "price/ATR unavailable"}
 
     micro_atr = atr(rows_5m, 14) or atr15 / 3.0
-    location_40 = _entry_location_40(rows_5m, direction, micro_atr)
+    location_40 = _entry_location_100(rows_5m, direction, micro_atr)
     if location_40 is None:
-        return {"status": "DATA-LIMITED", "reason": "40-candle 5m entry location unavailable"}
+        return {"status": "DATA-LIMITED", "reason": "100-candle 5m entry location unavailable"}
 
     entry = location_40["entry"]
     entry_low = entry
     entry_high = entry
 
     if direction == "LONG" and entry >= price:
-        return {"status": "WAIT", "reason": "40-candle long entry is not below current price"}
+        return {"status": "WAIT", "reason": "100-candle long entry is not below current price"}
     if direction == "SHORT" and entry <= price:
-        return {"status": "WAIT", "reason": "40-candle short entry is not above current price"}
+        return {"status": "WAIT", "reason": "100-candle short entry is not above current price"}
 
     # Do not publish the entry until price has actually rebounded from the
-    # 40-candle extreme. This removes the old near-extreme early trigger.
+    # 100-candle extreme. This removes the old near-extreme early trigger.
     rebound_atr = ((price - location_40["anchor"]) / micro_atr
                    if direction == "LONG"
                    else (location_40["anchor"] - price) / micro_atr)
@@ -440,12 +440,12 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if rebound_atr < min_rebound_atr:
         return {
             "status": "WAIT",
-            "reason": "40-candle reversal has not rebounded enough for execution",
+            "reason": "100-candle reversal has not rebounded enough for execution",
             "rebound_atr": round(rebound_atr, 3),
             "min_rebound_atr": min_rebound_atr,
         }
 
-    # The 40-candle anchor is an execution location, not permission to publish
+    # The 100-candle anchor is an execution location, not permission to publish
     # an unreachable order. If price has already expanded too far from the
     # anchor, the setup belongs in ALPHA/WATCH rather than ACTION.
     entry_distance_atr = abs(price - entry) / micro_atr if micro_atr > 0 else 999.0
@@ -453,7 +453,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     if entry_distance_atr > max_entry_distance_atr:
         return {
             "status": "WAIT",
-            "reason": "40-candle entry is too far from current price",
+            "reason": "100-candle entry is too far from current price",
             "entry_distance_atr": round(entry_distance_atr, 3),
             "max_entry_distance_atr": max_entry_distance_atr,
         }
@@ -467,7 +467,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     recent_15m_low = min(_low(x) for x in structure_rows_15)
     recent_15m_high = max(_high(x) for x in structure_rows_15)
 
-    # 40-candle timing remains the entry anchor. SL is governed by a
+    # 100-candle timing remains the entry anchor. SL is governed by a
     # margin-loss budget: <=5% of margin, converted through leverage.
     stop = location_40["stop"]
     risk = entry - stop if direction == "LONG" else stop - entry
@@ -482,7 +482,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             "risk_pct": round(risk / price * 100.0, 4),
             "stop_margin_pct": round(stop_margin_pct, 3),
             "max_margin_loss_pct": MAX_MARGIN_LOSS_PCT,
-            "reason": "40-candle structural stop exceeds 5% margin-loss budget",
+            "reason": "100-candle structural stop exceeds 5% margin-loss budget",
         }
 
     risk_pct = risk / price * 100.0
