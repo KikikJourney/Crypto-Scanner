@@ -49,7 +49,7 @@ DETAIL_FIELDS = [
     "id", "timestamp", "symbol", "direction", "baseline_entry", "baseline_stop",
     "baseline_target", "anchor_100", "entry_buffer", "stop_buffer", "planned_entry",
     "entry_improvement_pct", "planned_stop", "planned_target", "risk_pct", "reward_r",
-    "status", "fill_timestamp", "outcome", "outcome_r", "outcome_timestamp", "reason",
+    "stop_margin_pct", "tp_margin_pct", "status", "fill_timestamp", "outcome", "outcome_r", "outcome_timestamp", "reason",
 ]
 
 
@@ -283,7 +283,9 @@ def calibrate(actions=None, market_rows=None):
 
         row.update({
             "planned_stop": f"{planned_stop:.12g}", "planned_target": f"{target:.12g}",
-            "risk_pct": f"{risk_pct:.6f}", "reward_r": f"{reward_r:.6f}", "status": "UNFILLED",
+            "risk_pct": f"{risk_pct:.6f}", "reward_r": f"{reward_r:.6f}",
+            "stop_margin_pct": f"{stop_margin_pct:.6f}", "tp_margin_pct": f"{tp_margin_pct:.6f}",
+            "status": "UNFILLED",
         })
 
         future = _future_market(action, market)
