@@ -1,2 +1,2 @@
 model,sample,anchored,eligible,filled,resolved,wins,losses,ambiguous,unfilled,rejected_geometry,skipped,win_rate_pct,fill_rate_pct,net_r,expectancy_r,max_drawdown_r,avg_entry_improvement_pct,max_risk_pct,min_reward_r,max_reward_r,min_sample_for_review
-ENTRY_100C_5M_GEOMETRY_SHADOW,117,102,28,6,6,0,4,2,22,74,15,0.0,21.4286,-4.0,-0.666667,-4.0,0.996029,5.0,30.0,120.0,30
+ENTRY_100C_5M_GEOMETRY_SHADOW,117,102,102,26,25,0,11,14,76,0,15,0.0,25.4902,-11.0,-0.44,-11.0,1.142741,5.0,30.0,120.0,30
