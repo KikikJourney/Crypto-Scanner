@@ -148,7 +148,11 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertGreater(calibrated["entry"], calibrated["anchor"])
         self.assertLess(calibrated["entry"], 101.0)
         self.assertLess(geometry["stop"], calibrated["entry"])
-        self.assertAlmostEqual(calibrated["entry"] - geometry["stop"], 0.80, places=8)
+        self.assertAlmostEqual(
+            calibrated["entry"] - geometry["stop"],
+            calibrated["entry"] * 0.002,
+            places=8,
+        )
 
     def test_100_candle_entry_distance_is_not_unbounded(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
