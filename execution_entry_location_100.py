@@ -15,6 +15,8 @@ import csv
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, target_margin_pct_from_price, stop_margin_pct_from_price
+from entry_calibration import calibrate_entry
+from entry_geometry import build_anchor_stop, build_entry_geometry
 
 ACTION_HISTORY_FILE = Path("data/scalping_action_history.csv")
 MARKET_FILE = Path("data/scalping_market_5m.csv")
@@ -142,14 +144,28 @@ def _entry_touched(direction, candle, entry):
 
 
 def _geometry(direction, anchor, current_price, atr_value):
-    entry_buffer = max(ENTRY_BUFFER_ATR * atr_value, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
-    stop_buffer = max(STOP_BUFFER_ATR * atr_value, current_price * STOP_BUFFER_FLOOR_PCT / 100.0)
-    if direction == "LONG":
-        entry, stop = anchor + entry_buffer, anchor - stop_buffer
-    else:
-        entry, stop = anchor - entry_buffer, anchor + stop_buffer
-    return entry, stop, entry_buffer, stop_buffer
-
+    """Compose research calibration + geometry without mixing responsibilities."""
+    # The anchor/current price are already selected by the calibration layer.
+    calibrated = {
+        "anchor": anchor,
+        "entry": (
+            anchor + max(ENTRY_BUFFER_ATR * atr_value, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
+            if direction == "LONG"
+            else anchor - max(ENTRY_BUFFER_ATR * atr_value, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
+        ),
+        "current_price": current_price,
+    }
+    stop = build_anchor_stop(
+        direction, anchor, current_price, atr_value,
+        stop_buffer_atr=STOP_BUFFER_ATR,
+        stop_floor_pct=STOP_BUFFER_FLOOR_PCT,
+    )
+    geometry = build_entry_geometry(
+        direction,
+        calibrated["entry"],
+        structural_stop=stop,
+    )
+    return calibrated["entry"], geometry["stop"], abs(calibrated["entry"] - anchor), abs(calibrated["entry"] - geometry["stop"])
 
 def _summary(detail):
     anchored = [r for r in detail if r.get("anchor_100")]
