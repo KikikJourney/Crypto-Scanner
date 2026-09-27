@@ -16,6 +16,22 @@ from margin_risk_model import (
 )
 
 
+def build_anchor_stop(direction, anchor, current_price, micro_atr, stop_buffer_atr=0.45, stop_floor_pct=0.10):
+    """Build a research structural stop from the calibrated 100-candle anchor.
+
+    This is geometry only. It never changes the calibrated entry.
+    """
+    anchor = float(anchor)
+    current_price = float(current_price)
+    micro_atr = float(micro_atr)
+    if direction not in {"LONG", "SHORT"}:
+        raise ValueError("direction must be LONG or SHORT")
+    if anchor <= 0 or current_price <= 0 or micro_atr <= 0:
+        raise ValueError("anchor/current_price/micro_atr must be positive")
+    buffer = max(micro_atr * stop_buffer_atr, current_price * stop_floor_pct / 100.0)
+    return anchor - buffer if direction == "LONG" else anchor + buffer
+
+
 def build_entry_geometry(
     direction,
     entry,
