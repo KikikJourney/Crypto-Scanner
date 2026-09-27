@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Validate syntax
-        run: python -m py_compile scanner_v2.py universe_runner.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py traderspy_style_engine.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_40.py extreme_archive_integrity.py
+        run: python -m py_compile scanner_v2.py universe_runner.py margin_risk_model.py diagnostic_v21.py early_reversal_layer.py extreme_reversal_layer.py extreme_market_data.py extreme_runner.py extreme_event_stats.py actionable_reversal_layer.py traderspy_style_engine.py actionable_forward_test.py scalping_execution_layer.py scalping_intelligence.py early_reversal_engine.py scalping_forward_test.py telegram_notifier.py send_telegram_actions.py signal_funnel_diagnostic.py scalping_optimizer.py validation_gate.py evidence_audit.py execution_calibration.py execution_retest_calibration.py execution_adverse_timing.py execution_entry_location_40.py extreme_archive_integrity.py
       - name: Guard against fixed-R TP logic
         run: |
           python - <<'PY'
