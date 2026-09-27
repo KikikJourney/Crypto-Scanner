@@ -186,6 +186,12 @@ class ScalpingIntelligenceTests(unittest.TestCase):
                 "SHORT", 0.0, 0.0, 1.0, 80.0, 0.0, 1.0
             )
         )
+    def test_calibration_confidence_floor_is_direction_specific(self):
+        import scalping_intelligence as si
+        self.assertEqual(si.CALIBRATION_CONFIDENCE_LONG, 85.0)
+        self.assertEqual(si.CALIBRATION_CONFIDENCE_SHORT, 90.0)
+        self.assertLess(si.CALIBRATION_CONFIDENCE_LONG, si.CALIBRATION_CONFIDENCE_SHORT)
+
     def test_execution_geometry_uses_published_entry_for_risk_and_target(self):
         entry = 100.0
         stop = 98.0
