@@ -270,7 +270,7 @@ The current GitHub-hosted runner has experienced provider restrictions:
 - Bybit Futures: HTTP 403
 - Bitget USDT Futures: working public-data provider
 
-The system therefore falls through to the available provider.
+The system therefore falls through to the available provider. When this happens, Bitget is a fallback market-data source, not Binance-equivalent execution data; live cross-exchange validation should be performed before treating a setup as Binance Futures-executable.
 
 Current Bitget selection configuration:
 
