@@ -156,12 +156,18 @@ def _num(x):
 
 
 def select_scan_symbols(provider, symbols):
+    symbol_set = set(symbols)
     if provider == 'Bitget':
         raw = core.bitget('/api/v2/mix/market/tickers', {'productType': PRODUCT})['data']
-        symbol_set = set(symbols)
         ticker = {str(x.get('symbol', '')).upper(): x for x in raw if str(x.get('symbol', '')).upper() in symbol_set}
         liquid = sorted(symbols, key=lambda s: _num(ticker.get(s, {}).get('quoteVolume')), reverse=True)[:LIQUIDITY_BUCKET]
         movers = sorted(symbols, key=lambda s: abs(_num(ticker.get(s, {}).get('change24h'))), reverse=True)[:MOVER_BUCKET]
+        return sorted(set(liquid) | set(movers)), len(liquid), len(movers)
+    if provider == 'Binance':
+        raw = core.binance('/fapi/v1/ticker/24hr')
+        ticker = {str(x.get('symbol', '')).upper(): x for x in raw if str(x.get('symbol', '')).upper() in symbol_set}
+        liquid = sorted(symbols, key=lambda s: _num(ticker.get(s, {}).get('quoteVolume')), reverse=True)[:LIQUIDITY_BUCKET]
+        movers = sorted(symbols, key=lambda s: abs(_num(ticker.get(s, {}).get('priceChangePercent'))), reverse=True)[:MOVER_BUCKET]
         return sorted(set(liquid) | set(movers)), len(liquid), len(movers)
     return symbols, len(symbols), 0
 
