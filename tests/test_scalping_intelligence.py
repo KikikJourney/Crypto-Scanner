@@ -137,29 +137,35 @@ class ScalpingIntelligenceTests(unittest.TestCase):
             self.assertLessEqual(plan["reward_r"], 8.0)
             self.assertEqual(plan["target"], plan["target_structure"])
 
-    def test_100_candle_anchor_controls_entry_and_stop_geometry(self):
+    def test_100_candle_anchor_controls_calibrated_entry(self):
+        from entry_calibration import calibrate_entry
+        from entry_geometry import build_entry_geometry
+
         candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
-        plan = _entry_location_100(candles, "LONG", 1.0)
-        self.assertIsNotNone(plan)
-        self.assertEqual(plan["anchor"], 95.0)
-        self.assertGreater(plan["entry"], plan["anchor"])
-        self.assertLess(plan["entry"], 101.0)
-        self.assertLess(plan["stop"], plan["anchor"])
-        self.assertAlmostEqual(plan["entry"] - plan["stop"], 0.80, places=8)
+        calibrated = calibrate_entry(candles, "LONG", 1.0)
+        geometry = build_entry_geometry("LONG", calibrated["entry"])
+        self.assertEqual(calibrated["anchor"], 95.0)
+        self.assertGreater(calibrated["entry"], calibrated["anchor"])
+        self.assertLess(calibrated["entry"], 101.0)
+        self.assertLess(geometry["stop"], calibrated["entry"])
+        self.assertAlmostEqual(calibrated["entry"] - geometry["stop"], 0.80, places=8)
 
     def test_100_candle_entry_distance_is_not_unbounded(self):
         candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
         plan = _entry_location_100(candles, "LONG", 1.0)
         self.assertAlmostEqual(abs(101.0 - plan["entry"]) / 1.0, 5.75, places=6)
 
-    def test_100_candle_short_anchor_controls_entry_and_stop_geometry(self):
+    def test_100_candle_short_anchor_controls_calibrated_entry(self):
+        from entry_calibration import calibrate_entry
+        from entry_geometry import build_entry_geometry
+
         candles = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 105, 98, 104)])
-        plan = _entry_location_100(candles, "SHORT", 1.0)
-        self.assertIsNotNone(plan)
-        self.assertEqual(plan["anchor"], 105.0)
-        self.assertGreater(plan["stop"], plan["anchor"])
-        self.assertLess(plan["entry"], plan["anchor"])
-        self.assertGreater(plan["entry"], 104.0)
+        calibrated = calibrate_entry(candles, "SHORT", 1.0)
+        geometry = build_entry_geometry("SHORT", calibrated["entry"])
+        self.assertEqual(calibrated["anchor"], 105.0)
+        self.assertGreater(geometry["stop"], calibrated["entry"])
+        self.assertLess(calibrated["entry"], calibrated["anchor"])
+        self.assertGreater(calibrated["entry"], 104.0)
 
     def test_countertrend_early_reversal_requires_stronger_confirmation(self):
         self.assertFalse(_countertrend_early_reversal_allowed("SHORT", 0.0, 0.0, 0.875, 0.0))
