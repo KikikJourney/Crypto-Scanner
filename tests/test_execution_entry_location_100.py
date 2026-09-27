@@ -30,7 +30,7 @@ class EntryLocation100Tests(unittest.TestCase):
             "strategy_version": m.CURRENT_STRATEGY_VERSION,
             "entry": "100",
             "stop": "98",
-            # Structural target is expressed through the new 40%-100% margin ROI band.
+            # Structural target is expressed through the canonical 30%-120% margin ROI band.
             "target": "103.22" if direction == "LONG" else "96.72",
         }
 
