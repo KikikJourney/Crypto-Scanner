@@ -601,8 +601,7 @@ The scanner is allowed to produce zero actions when market conditions do not mee
 - independent MTF directional brain
 - 4H / 1H / 30m / 15m / 5m analysis
 - execution entry zone
-- V2.2 extreme-based stop
-- 2R target
+- canonical margin-based SL/TP geometry from the final calibrated entry
 - 15-minute action validity
 - scalping forward testing
 - Telegram notification pipeline
