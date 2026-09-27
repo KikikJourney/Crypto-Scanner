@@ -136,34 +136,74 @@ When a V2.2 score is >= 80 and aligned with the independent MTF direction, the M
 
 ## 4. Execution model
 
+The execution path now has an explicit separation between **entry calibration** and **entry geometry**.
+
 Files:
 
-- `extreme_runner.py`
+- `entry_calibration.py`
+- `entry_geometry.py`
 - `scalping_intelligence.py`
+- `execution_entry_location_100.py`
 - `scalping_execution_layer.py`
 
-The execution layer is isolated from the original V2.2 scoring engine.
+### Entry calibration
 
-### Entry
+**Entry calibration answers only: “Where/when should the execution attempt occur?”**
 
-The entry is based on the latest **closed 5m candle**.
+The current production calibration uses:
 
-A bounded entry zone is constructed around the 5m close using micro-ATR, with a minimum buffer.
+- 100 fully closed 5m candles
+- LONG anchor = lowest low of the 100-candle window
+- SHORT anchor = highest high of the 100-candle window
+- ATR-aware entry buffer
+- rebound validation
+- maximum entry-distance validation
 
-### Stop
+Calibration does **not** calculate the final SL/TP geometry.
 
-The stop remains anchored to the V2.2 24-hour extreme:
+### Entry geometry
 
-- LONG: 24h low minus 0.25 ATR
-- SHORT: 24h high plus 0.25 ATR
+**Entry geometry starts only after the calibrated entry is final.**
 
-This preserves the original extreme-based risk geometry while allowing the MTF layer to improve timing.
+The global execution geometry is:
 
-### Target
+| Parameter | Standard |
+|---|---:|
+| Margin | 10 USDT |
+| Leverage | 25x |
+| Maximum SL loss | 5% of margin |
+| TP1 | +30% margin ROI |
+| TP2 | +60% margin ROI |
+| TP3 | +120% margin ROI |
 
-Current execution target:
+The geometry layer converts those margin limits into explicit price levels from the final calibrated entry. The complete TP1/TP2/TP3 ladder is always available in the action output.
 
-**2R**
+A market-structure stop or target can be used as a **constraint**, but it cannot move or redefine the calibrated entry. If a structural stop exceeds the global 5% margin-loss budget, the geometry layer falls back to the canonical margin stop rather than expanding risk.
+
+### Data flow
+
+```
+MARKET / MTF ANALYSIS
+        |
+        v
+ENTRY CALIBRATION
+100-candle location + timing
+        |
+        v
+FINAL CALIBRATED ENTRY
+        |
+        v
+ENTRY GEOMETRY
+SL + TP1 + TP2 + TP3
+        |
+        v
+EXECUTION GATE
+        |
+        +--> ACTION
+        +--> WAIT
+```
+
+This separation is important for historical research: a change in entry timing can be evaluated independently from a change in SL/TP geometry.
 
 ### Signal validity
 
@@ -494,9 +534,13 @@ The goal is to catch logic or data-integrity regressions before treating a scann
 
 Current execution parameters include:
 
-- reward target: 2R
-- execution risk band: 0.10%–8.00%
-- stop buffer: 0.25 ATR beyond the V2.2 extreme
+- margin: 10 USDT
+- leverage: 25x
+- maximum SL loss: 5% of margin
+- TP1: +30% margin ROI
+- TP2: +60% margin ROI
+- TP3: +120% margin ROI
+- 100-candle entry calibration with ATR-aware buffer
 - action validity: 15 minutes
 - trigger gap limit in the dedicated execution layer: 1.25 ATR
 - confirmation window in the dedicated execution layer: 30 minutes
@@ -546,6 +590,10 @@ The scanner is allowed to produce zero actions when market conditions do not mee
 
 ### Implemented
 
+- explicit entry-calibration layer
+- explicit entry-geometry layer
+- 100-candle execution anchor
+- canonical 10 USDT / 25x / 5% SL / 30%-60%-120% TP ladder
 - V2.2 reversal-analysis engine
 - dynamic futures universe
 - Bitget MTF candle normalization
