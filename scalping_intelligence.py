@@ -8,7 +8,7 @@ from datetime import datetime, timezone, timedelta
 from math import isfinite
 
 from early_reversal_engine import evaluate_setup as evaluate_early_reversal
-from margin_risk_model import (DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, target_margin_pct_from_price, stop_margin_pct_from_price, build_margin_plan)
+from margin_risk_model import (DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, TP1_MARGIN_PCT, TP2_MARGIN_PCT, TP3_MARGIN_PCT, target_margin_pct_from_price, stop_margin_pct_from_price, build_margin_plan)
 from entry_calibration import calibrate_entry
 from entry_geometry import build_entry_geometry
 
