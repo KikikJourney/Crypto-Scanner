@@ -68,18 +68,37 @@ def _sweep(rows, direction):
 
 
 
-def _entry_timing_state(current_price, calibrated_entry, micro_atr):
-    """Evaluate entry timing only; no SL/TP geometry is involved."""
+def _entry_timing_state(current_price, calibrated_entry, micro_atr, direction=None):
+    """Evaluate timing only; the entry zone is directional and geometry-independent."""
     current_price = _f(current_price)
     calibrated_entry = _f(calibrated_entry)
     micro_atr = _f(micro_atr)
     if current_price is None or calibrated_entry is None or micro_atr is None or micro_atr <= 0:
         return {"execution_ready": False, "distance_atr": float("inf"), "reason": "timing inputs unavailable"}
     distance_atr = abs(current_price - calibrated_entry) / micro_atr
+
+    # The scanner's execution zone is the same directional zone exposed to
+    # Telegram: LONG enters from entry upward; SHORT enters from entry downward.
+    # The old symmetric ATR gate could mark a signal READY while price was on
+    # the wrong side of the calibrated entry.
+    zone_atr = 0.15
+    if direction == "LONG":
+        zone_low = calibrated_entry
+        zone_high = calibrated_entry + micro_atr * zone_atr
+    elif direction == "SHORT":
+        zone_low = calibrated_entry - micro_atr * zone_atr
+        zone_high = calibrated_entry
+    else:
+        zone_low = calibrated_entry - micro_atr * zone_atr
+        zone_high = calibrated_entry + micro_atr * zone_atr
+
+    execution_ready = zone_low <= current_price <= zone_high
     return {
-        "execution_ready": distance_atr <= 1.25,
+        "execution_ready": execution_ready,
         "distance_atr": distance_atr,
-        "reason": "within calibrated execution zone" if distance_atr <= 0.90 else "outside calibrated execution zone",
+        "entry_zone_low": zone_low,
+        "entry_zone_high": zone_high,
+        "reason": "inside directional entry zone" if execution_ready else "outside directional entry zone",
     }
 
 def _direction_candidates(rows_15m, rows_5m):
@@ -137,7 +156,7 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
         # The 100-candle calibration decides whether price is close enough to
         # the calibrated execution zone. No stop/target calculation is allowed
         # to influence this decision.
-        timing = _entry_timing_state(price, entry, micro_atr)
+        timing = _entry_timing_state(price, entry, micro_atr, direction)
         distance_atr = timing["distance_atr"]
         execution_ready = timing["execution_ready"]
         if not execution_ready and not allow_watch:
@@ -254,10 +273,14 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             "regime_score_15m": calibration.get("regime_score_15m"),
             "calibration_inputs": calibration.get("calibration_inputs", ""),
             "execution_ready": execution_ready,
-            "watch_reason": "" if execution_ready else "price is outside calibrated 100-candle execution zone",
-            "entry_calibration": "100-candle",
-            "entry_anchor_100": calibration["anchor"],
+            "watch_reason": "" if execution_ready else timing["reason"],
+            "entry_calibration": calibration.get("anchor_source", "100c"),
+            "entry_anchor_100": calibration["anchor_100"],
+            "entry_anchor_40": calibration["anchor_40"],
+            "entry_anchor_source": calibration["anchor_source"],
             "entry_buffer": calibration["buffer"],
+            "entry_zone_low": timing.get("entry_zone_low"),
+            "entry_zone_high": timing.get("entry_zone_high"),
             "location_15m": location,
             "participation": participation,
             "volume_ratio_5m": volume,

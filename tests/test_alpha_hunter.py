@@ -107,6 +107,17 @@ class AlphaHunterTests(unittest.TestCase):
         self.assertEqual(plan["flow_score"], 0.9)
         self.assertIn("100x5m", plan["calibration_inputs"])
 
+
+    def test_directional_timing_zone_matches_execution_side(self):
+        long_inside = alpha_hunter._entry_timing_state(100.10, 100.0, 1.0, "LONG")
+        long_below = alpha_hunter._entry_timing_state(99.90, 100.0, 1.0, "LONG")
+        short_inside = alpha_hunter._entry_timing_state(99.90, 100.0, 1.0, "SHORT")
+        short_above = alpha_hunter._entry_timing_state(100.10, 100.0, 1.0, "SHORT")
+        self.assertTrue(long_inside["execution_ready"])
+        self.assertFalse(long_below["execution_ready"])
+        self.assertTrue(short_inside["execution_ready"])
+        self.assertFalse(short_above["execution_ready"])
+
     def test_timing_state_is_independent_of_geometry(self):
         near = alpha_hunter._entry_timing_state(100.0, 99.8, 1.0)
         far = alpha_hunter._entry_timing_state(100.0, 95.0, 1.0)
