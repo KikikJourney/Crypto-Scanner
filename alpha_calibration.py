@@ -75,7 +75,7 @@ def _crowding(context, direction):
     if direct is not None: return clamp(direct)
     ratio = _num(context, "long_short_ratio", "global_long_short_ratio")
     if ratio is None or ratio <= 0: return None
-    return clamp(0.5 + min(0.5, max(0.0, (1.0 - ratio) if direction == "LONG" else (ratio - 1.0)))
+    return clamp(0.5 + min(0.5, max(0.0, (1.0 - ratio) if direction == "LONG" else (ratio - 1.0))))
 
 def _volatility(context, direction):
     direct = _num(context, "volatility_score", "atr_regime_score")
