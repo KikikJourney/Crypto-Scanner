@@ -14,7 +14,7 @@ class TelegramNotifierTests(unittest.TestCase):
             "entry_low": "157.50",
             "entry_high": "158.46",
             "stop": "157.1901",
-            "target": "162.7197",
+            "target": "162.7194",
             "risk_pct": "0.50",
             "reward_r": "6.0",
             "confidence": "86.5",
@@ -31,7 +31,7 @@ class TelegramNotifierTests(unittest.TestCase):
             "max_loss_usdt": "1",
             "target_pnl_usdt": "6",
             "tp1": "160.3497",
-            "tp2": "162.7197",
+            "tp2": "162.7194",
             "tp3": "167.4588",
             "tp1_pnl_usdt": "3",
             "tp2_pnl_usdt": "6",
@@ -46,9 +46,9 @@ class TelegramNotifierTests(unittest.TestCase):
         self.assertIn("Entry Zone: 157.5 - 158.46", text)
         self.assertIn("SL (10% margin): 157.1901", text)
         self.assertIn("TP1 (+30% margin): 160.3497", text)
-        self.assertIn("TP2 (+60% margin): 162.7197", text)
+        self.assertIn("TP2 (+60% margin): 162.7194", text)
         self.assertIn("TP3 (+120% margin): 167.4588", text)
-        self.assertIn("Selected TP: 162.7197", text)
+        self.assertIn("Selected TP: 162.7194", text)
         self.assertIn("Margin: 10 USDT | Leverage: 20x", text)
         self.assertIn("SL Margin Risk: 10% (-1 USDT)", text)
         self.assertIn("TP1 PnL: +3 USDT | TP2: +6 USDT | TP3: +12 USDT", text)
