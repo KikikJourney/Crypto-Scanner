@@ -79,23 +79,13 @@ class AlphaHunterTests(unittest.TestCase):
         self.assertGreater(plan["entry_distance_atr"], 0.9)
         self.assertIn("execution zone", plan["watch_reason"])
 
-    def test_timing_decision_does_not_depend_on_geometry(self):
-        rows15 = [candle(i * 900000, 110.0 - i * 0.08, 1000.0, 0.18) for i in range(160)]
-        rows15[-1] = candle(159 * 900000, 97.5, 1800.0, 0.30)
-        rows5 = [candle(i * 300000, 98.0 + max(0, i - 68) * 0.18, 100.0, 0.40) for i in range(100)]
-        rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
-
-        timing = {
-            "anchor": 98.8,
-            "buffer": 0.1,
-            "entry": 98.9,
-            "current_price": 99.0,
-            "distance_atr": 0.1,
-        }
-        with patch.object(alpha_hunter, "calibrate_entry", return_value=timing), \
-             patch.object(alpha_hunter, "build_entry_geometry", side_effect=AssertionError("geometry must not run before timing gate")):
-            with self.assertRaises(AssertionError):
-                alpha_hunter.build_plan(rows15, rows5)
+    def test_timing_state_is_independent_of_geometry(self):
+        near = alpha_hunter._entry_timing_state(100.0, 99.8, 1.0)
+        far = alpha_hunter._entry_timing_state(100.0, 95.0, 1.0)
+        self.assertTrue(near["execution_ready"])
+        self.assertFalse(far["execution_ready"])
+        self.assertAlmostEqual(near["distance_atr"], 0.2)
+        self.assertAlmostEqual(far["distance_atr"], 5.0)
 
     def test_final_target_is_capped_at_8r(self):
         rows15 = []
