@@ -48,9 +48,9 @@ class AlphaHunterTests(unittest.TestCase):
         for i in range(100):
             p = 98.0 + max(0, i - 68) * 0.18
             rows5.append(candle(i * 300000, p, 100.0, 0.40))
-        rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
+        rows5[-1] = candle(99 * 300000, 98.84, 110.0, 0.02)
 
-        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 99.0, "distance_atr": 0.25}
+        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 98.84, "distance_atr": 0.10}
         with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated):
             with patch.object(alpha_hunter, "_select_tp_margin_pct", return_value=None):
                 plan = build_plan(rows15, rows5)
@@ -81,7 +81,7 @@ class AlphaHunterTests(unittest.TestCase):
         self.assertIn(plan["status"], {"ALPHA WATCH LONG", "ALPHA WATCH SHORT"})
         self.assertFalse(plan["execution_ready"])
         self.assertGreater(plan["entry_distance_atr"], 0.9)
-        self.assertIn("execution zone", plan["watch_reason"])
+        self.assertIn("entry zone", plan["watch_reason"])
 
     def test_alpha_passes_mtf_and_flow_context_to_timing_calibration(self):
         rows15 = [candle(i * 900000, 110.0 - i * 0.05, 1000.0, 0.30) for i in range(160)]
