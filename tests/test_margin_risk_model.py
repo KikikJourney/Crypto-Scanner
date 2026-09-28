@@ -25,19 +25,19 @@ class MarginRiskModelTests(unittest.TestCase):
         self.assertAlmostEqual(plan["target"], 101.5, places=8)
         self.assertAlmostEqual(plan["tp1"], 101.5, places=8)
         self.assertAlmostEqual(plan["tp2"], 103.0, places=8)
-        self.assertAlmostEqual(plan["tp3"], 106.0, places=8)
+        self.assertAlmostEqual(plan["tp3"], 104.0, places=8)
         self.assertAlmostEqual(plan["max_loss_usdt"], 1.0, places=8)
         self.assertAlmostEqual(plan["target_pnl_usdt"], 3.0, places=8)
         self.assertEqual(plan["tp1_margin_pct"], 30.0)
         self.assertEqual(plan["tp2_margin_pct"], 60.0)
         self.assertEqual(plan["tp3_margin_pct"], 120.0)
 
-    def test_120_percent_margin_tp_is_6_percent_price_move_at_20x(self):
-        plan = build_margin_plan("LONG", 100.0, 10.0, 20.0, 10.0, 120.0)
-        self.assertAlmostEqual(plan["target"], 106.0, places=8)
-        self.assertAlmostEqual(plan["target_price_move_pct"], 6.0, places=8)
-        self.assertAlmostEqual(plan["target_pnl_usdt"], 12.0, places=8)
-        self.assertAlmostEqual(plan["reward_to_r"], 12.0, places=8)
+    def test_80_percent_margin_tp_is_4_percent_price_move_at_20x(self):
+        plan = build_margin_plan("LONG", 100.0, 10.0, 20.0, 10.0, 80.0)
+        self.assertAlmostEqual(plan["target"], 104.0, places=8)
+        self.assertAlmostEqual(plan["target_price_move_pct"], 4.0, places=8)
+        self.assertAlmostEqual(plan["target_pnl_usdt"], 8.0, places=8)
+        self.assertAlmostEqual(plan["reward_to_r"], 8.0, places=8)
 
     def test_short_plan_mirrors_long(self):
         plan = build_margin_plan("SHORT", 100.0, 10.0, 20.0, 10.0, 30.0)
@@ -52,9 +52,9 @@ class MarginRiskModelTests(unittest.TestCase):
 
     def test_tp_band_is_enforced(self):
         with self.assertRaises(ValueError):
-            build_margin_plan("LONG", 100, 10, 20, 10, 29)
+            build_margin_plan("LONG", 100, 10, 20, 10, 19)
         with self.assertRaises(ValueError):
-            build_margin_plan("LONG", 100, 10, 20, 10, 121)
+            build_margin_plan("LONG", 100, 10, 20, 10, 81)
 
     def test_stop_cap_is_enforced_at_10_percent(self):
         with self.assertRaises(ValueError):
