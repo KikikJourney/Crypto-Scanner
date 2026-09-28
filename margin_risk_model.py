@@ -9,8 +9,8 @@ from math import isfinite
 
 
 DEFAULT_MARGIN_USDT = 10.0
-DEFAULT_LEVERAGE = 25.0
-MAX_MARGIN_LOSS_PCT = 5.0
+DEFAULT_LEVERAGE = 20.0
+MAX_MARGIN_LOSS_PCT = 10.0
 TP1_MARGIN_PCT = 30.0
 TP2_MARGIN_PCT = 60.0
 TP3_MARGIN_PCT = 120.0
@@ -48,7 +48,7 @@ def build_margin_plan(
 ):
     """Build a price-level SL/TP from margin-risk percentages.
 
-    SL is capped at 5% of margin by default. TP must be between 30% and 120%
+    SL is capped at 10% of margin by default. TP must be between 30% and 120%
     of margin. These percentages are PnL-on-margin percentages, not raw price
     percentages.
     """
@@ -61,7 +61,7 @@ def build_margin_plan(
     tp_margin_pct = float(tp_margin_pct)
 
     if stop_margin_pct <= 0 or stop_margin_pct > MAX_MARGIN_LOSS_PCT:
-        raise ValueError("stop_margin_pct must be > 0 and <= 5%")
+        raise ValueError("stop_margin_pct must be > 0 and <= 10%")
     if not MIN_MARGIN_TP_PCT <= tp_margin_pct <= MAX_MARGIN_TP_PCT:
         raise ValueError("tp_margin_pct must be between 30% and 120%")
 
