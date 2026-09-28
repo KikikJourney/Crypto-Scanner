@@ -12,7 +12,8 @@ from entry_geometry import build_entry_geometry
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, target_margin_pct_from_price
 
 
-ALPHA_HUNTER_VERSION = "alpha-hunter-v2"\nMAX_ALPHA_REWARD_R = 8.0
+ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
+MAX_ALPHA_REWARD_R = 8.0
 
 
 def _f(v, default=0.0):
