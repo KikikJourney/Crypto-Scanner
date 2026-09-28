@@ -163,15 +163,24 @@ def bybit_symbol(sym,btc24):
 
 def binance_symbol(sym,btc24):
     t=binance('/fapi/v1/ticker/24hr',{'symbol':sym});raw=binance('/fapi/v1/klines',{'symbol':sym,'interval':'1h','limit':MIN_CANDLES+2});f=candle_features(raw[:-1]);tr=binance('/futures/data/takerlongshortRatio',{'symbol':sym,'period':'1h','limit':1});agg=sf(tr[-1]['buySellRatio']) if tr else None;tf={'ratios':[agg,None,None],'agg':agg,'spread_pct':0.0,'stability':1.0,'fills':1};fr=binance('/fapi/v1/fundingRate',{'symbol':sym,'limit':1});fund=sf(fr[-1]['fundingRate']) if fr else None;d=binance('/fapi/v1/depth',{'symbol':sym,'limit':20});b=sum(float(x[1]) for x in d.get('bids',[]));a=sum(float(x[1]) for x in d.get('asks',[]));
-    oi_current=sf(binance('/fapi/v1/openInterest',{'symbol':sym}).get('openInterest'))
-    oi_hist=binance('/futures/data/openInterestHist',{'symbol':sym,'period':'5m','limit':2})
-    oi_change=None
-    if len(oi_hist)>=2:
-        prev=sf(oi_hist[-2].get('sumOpenInterestValue'))
-        curr=sf(oi_hist[-1].get('sumOpenInterestValue'))
-        if prev not in (None,0) and curr is not None: oi_change=(curr-prev)/prev*100.0
-    crowd_rows=binance('/futures/data/globalLongShortAccountRatio',{'symbol':sym,'period':'5m','limit':1})
-    long_short_ratio=sf(crowd_rows[-1].get('longShortRatio')) if crowd_rows else None
+    # Derivatives evidence is additive: an unavailable OI/crowding endpoint
+    # must never invalidate an otherwise valid market scan.
+    oi_current=oi_change=long_short_ratio=None
+    try:
+        oi_current=sf(binance('/fapi/v1/openInterest',{'symbol':sym}).get('openInterest'))
+        oi_hist=binance('/futures/data/openInterestHist',{'symbol':sym,'period':'5m','limit':2})
+        if len(oi_hist)>=2:
+            prev=sf(oi_hist[-2].get('sumOpenInterestValue'))
+            curr=sf(oi_hist[-1].get('sumOpenInterestValue'))
+            if prev not in (None,0) and curr is not None:
+                oi_change=(curr-prev)/prev*100.0
+    except Exception:
+        pass
+    try:
+        crowd_rows=binance('/futures/data/globalLongShortAccountRatio',{'symbol':sym,'period':'5m','limit':1})
+        long_short_ratio=sf(crowd_rows[-1].get('longShortRatio')) if crowd_rows else None
+    except Exception:
+        pass
     result=make_result(sym,'Binance',float(t['lastPrice']),f,tf,b/a if b and a else None,fund,float(t.get('priceChangePercent',0)))
     result.update({'open_interest':oi_current,'oi_change_pct':oi_change,'long_short_ratio':long_short_ratio,'funding_rate':fund,'taker_buy_sell_ratio':agg})
     return result
