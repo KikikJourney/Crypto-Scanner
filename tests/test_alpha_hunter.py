@@ -28,7 +28,9 @@ class AlphaHunterTests(unittest.TestCase):
         rows5[-2] = candle(98 * 300000, 98.6, 100.0, 0.45)
         rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
 
-        plan = build_plan(rows15, rows5)
+        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 99.0, "distance_atr": 0.25}
+        with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated):
+            plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertIn(plan["direction"], {"LONG", "SHORT"})
         self.assertGreaterEqual(plan["reward_r"], 3.0)
@@ -48,8 +50,10 @@ class AlphaHunterTests(unittest.TestCase):
             rows5.append(candle(i * 300000, p, 100.0, 0.40))
         rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
 
-        with patch.object(alpha_hunter, "_select_tp_margin_pct", return_value=None):
-            plan = build_plan(rows15, rows5)
+        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 99.0, "distance_atr": 0.25}
+        with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated):
+            with patch.object(alpha_hunter, "_select_tp_margin_pct", return_value=None):
+                plan = build_plan(rows15, rows5)
 
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertIn("geometry_repaired_to_canonical_tp", plan["reason"])
@@ -101,16 +105,18 @@ class AlphaHunterTests(unittest.TestCase):
         rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
 
         oversized = (200.0, 200.0, 200.0, 200.0)
-        with patch.object(
-            alpha_hunter,
-            "_select_tp_margin_pct",
-            return_value=(120.0, 1.0, 100.0),
-        ), patch.object(
-            alpha_hunter,
-            "_opposing_structure_target",
-            return_value=oversized[0],
-        ):
-            plan = build_plan(rows15, rows5)
+        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 99.0, "distance_atr": 0.25}
+        with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated):
+            with patch.object(
+                alpha_hunter,
+                "_select_tp_margin_pct",
+                return_value=(120.0, 1.0, 100.0),
+            ), patch.object(
+                alpha_hunter,
+                "_opposing_structure_target",
+                return_value=oversized[0],
+            ):
+                plan = build_plan(rows15, rows5)
 
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertLessEqual(plan["reward_r"], 8.0)
