@@ -269,15 +269,20 @@ def _select_tp_margin_pct(direction, entry, structural_target, features, confide
     )
     desired_margin_pct = MIN_MARGIN_TP_PCT + conviction * (MAX_MARGIN_TP_PCT - MIN_MARGIN_TP_PCT)
     if structural_target is None:
-        return None
+        # No opposing structure is available, but canonical geometry still
+        # provides a valid TP1. Do not suppress discovery solely for that.
+        return MIN_MARGIN_TP_PCT, conviction, None
     structural_margin_pct = target_margin_pct_from_price(
         entry, structural_target, direction, DEFAULT_LEVERAGE
     )
-    if structural_margin_pct < MIN_MARGIN_TP_PCT:
-        return None
-    selected = min(structural_margin_pct, desired_margin_pct, MAX_MARGIN_TP_PCT)
-    if selected < MIN_MARGIN_TP_PCT:
-        return None
+    if structural_margin_pct <= 0:
+        return MIN_MARGIN_TP_PCT, conviction, structural_margin_pct
+
+    # Geometry owns the actual TP price. Structure only influences which
+    # canonical rung is selected; it cannot create a custom TP.
+    candidates = [MIN_MARGIN_TP_PCT, TP2_MARGIN_PCT, TP3_MARGIN_PCT]
+    feasible = [x for x in candidates if x <= structural_margin_pct]
+    selected = min(feasible, key=lambda x: abs(x - desired_margin_pct)) if feasible else MIN_MARGIN_TP_PCT
     return selected, conviction, structural_margin_pct
 
 def _timestamp(row):
