@@ -10,6 +10,9 @@ from margin_risk_model import (
     DEFAULT_LEVERAGE,
     DEFAULT_MARGIN_USDT,
     MAX_MARGIN_LOSS_PCT,
+    TP1_MARGIN_PCT,
+    TP2_MARGIN_PCT,
+    TP3_MARGIN_PCT,
     build_margin_plan,
     stop_margin_pct_from_price,
     target_margin_pct_from_price,
@@ -40,73 +43,43 @@ def build_entry_geometry(
     structural_target=None,
     selected_tp_margin_pct=None,
 ):
-    """Build/validate SL and TP geometry from the final calibrated entry.
+    """Build canonical SL/TP geometry from the FINAL calibrated entry.
 
-    The margin model is the hard risk boundary:
-    - margin 10 USDT
-    - leverage 25x
-    - maximum SL loss 5% of margin
-    - TP ladder 30/60/120% of margin
-
-    A structural stop/target is treated as a market constraint, never as an
-    alternative entry-calibration mechanism. Structural levels are accepted
-    only when they remain inside the global risk/target envelope.
+    Geometry is independent from entry timing/calibration:
+    10 USDT margin, 20x leverage, SL -10% margin, TP1/TP2/TP3
+    +30/+60/+120% margin.
     """
     if direction not in {"LONG", "SHORT"}:
         raise ValueError("direction must be LONG or SHORT")
 
-    if structural_stop is not None:
-        stop_risk_pct = stop_margin_pct_from_price(
-            entry, structural_stop, direction, DEFAULT_LEVERAGE
-        )
-        if 0 < stop_risk_pct <= MAX_MARGIN_LOSS_PCT:
-            stop = float(structural_stop)
-            stop_margin_pct = stop_risk_pct
-        else:
-            stop = None
-            stop_margin_pct = MAX_MARGIN_LOSS_PCT
-    else:
-        stop = None
-        stop_margin_pct = MAX_MARGIN_LOSS_PCT
-
-    if stop is None:
-        base = build_margin_plan(
-            direction,
-            entry,
-            DEFAULT_MARGIN_USDT,
-            DEFAULT_LEVERAGE,
-            MAX_MARGIN_LOSS_PCT,
-            30.0,
-        )
-        stop = base["stop"]
-        stop_margin_pct = base["stop_margin_pct"]
-
     if selected_tp_margin_pct is None:
-        selected_tp_margin_pct = 30.0
+        selected_tp_margin_pct = TP1_MARGIN_PCT
+    selected_tp_margin_pct = float(selected_tp_margin_pct)
+
+    ladder = (TP1_MARGIN_PCT, TP2_MARGIN_PCT, TP3_MARGIN_PCT)
+    selected_tp_margin_pct = min(ladder, key=lambda x: abs(x - selected_tp_margin_pct))
 
     plan = build_margin_plan(
         direction,
         entry,
         DEFAULT_MARGIN_USDT,
         DEFAULT_LEVERAGE,
-        stop_margin_pct,
+        MAX_MARGIN_LOSS_PCT,
         selected_tp_margin_pct,
     )
 
+    # Structural levels are diagnostics only. They cannot move canonical SL/TP.
+    plan["structural_stop"] = float(structural_stop) if structural_stop is not None else None
+    plan["structural_target"] = float(structural_target) if structural_target is not None else None
     if structural_target is not None:
         structural_margin_pct = target_margin_pct_from_price(
             entry, structural_target, direction, DEFAULT_LEVERAGE
         )
-        if structural_margin_pct > 0:
-            plan["structural_target"] = float(structural_target)
-            plan["structural_target_margin_pct"] = structural_margin_pct
-        else:
-            plan["structural_target"] = None
-            plan["structural_target_margin_pct"] = None
+        plan["structural_target_margin_pct"] = (
+            structural_margin_pct if structural_margin_pct > 0 else None
+        )
     else:
-        plan["structural_target"] = None
         plan["structural_target_margin_pct"] = None
 
-    # The returned SL/TP values are always derived from the final entry and
-    # the canonical margin model. The three TP ladder levels are never hidden.
+    plan["geometry_contract"] = "10USDT/20x/SL-10%/TP+30+60+120"
     return plan

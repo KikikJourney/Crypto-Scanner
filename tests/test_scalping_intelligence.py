@@ -150,7 +150,7 @@ class ScalpingIntelligenceTests(unittest.TestCase):
         self.assertLess(geometry["stop"], calibrated["entry"])
         self.assertAlmostEqual(
             calibrated["entry"] - geometry["stop"],
-            calibrated["entry"] * 0.002,
+            calibrated["entry"] * 0.005,
             places=8,
         )
 

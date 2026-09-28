@@ -14,7 +14,7 @@ This module is deliberately independent from live signal generation.
 import csv
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, target_margin_pct_from_price, stop_margin_pct_from_price
+from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, TP1_MARGIN_PCT, target_margin_pct_from_price, stop_margin_pct_from_price, build_margin_plan
 from entry_calibration import calibrate_entry
 from entry_geometry import build_anchor_stop, build_entry_geometry
 
@@ -160,10 +160,17 @@ def _geometry(direction, anchor, current_price, atr_value):
         stop_buffer_atr=STOP_BUFFER_ATR,
         stop_floor_pct=STOP_BUFFER_FLOOR_PCT,
     )
-    geometry = build_entry_geometry(
+    # Research shadow geometry is intentionally isolated from the live
+    # 10USDT/20x/10% contract so historical evidence remains comparable.
+    legacy_stop_margin_pct = 5.0
+    legacy_leverage = 25.0
+    geometry = build_margin_plan(
         direction,
         calibrated["entry"],
-        structural_stop=stop,
+        DEFAULT_MARGIN_USDT,
+        legacy_leverage,
+        legacy_stop_margin_pct,
+        TP1_MARGIN_PCT,
     )
     return calibrated["entry"], geometry["stop"], abs(calibrated["entry"] - anchor), abs(calibrated["entry"] - geometry["stop"])
 

@@ -30,23 +30,24 @@ class EntryCalibrationGeometryTests(unittest.TestCase):
     def test_geometry_is_derived_from_final_entry(self):
         plan = build_entry_geometry("LONG", 100.0)
         self.assertAlmostEqual(plan["entry"], 100.0)
-        self.assertAlmostEqual(plan["stop"], 99.8, places=8)
-        self.assertAlmostEqual(plan["tp1"], 101.2, places=8)
-        self.assertAlmostEqual(plan["tp2"], 102.4, places=8)
-        self.assertAlmostEqual(plan["tp3"], 104.8, places=8)
+        self.assertAlmostEqual(plan["stop"], 99.5, places=8)
+        self.assertAlmostEqual(plan["tp1"], 101.5, places=8)
+        self.assertAlmostEqual(plan["tp2"], 103.0, places=8)
+        self.assertAlmostEqual(plan["tp3"], 106.0, places=8)
         self.assertEqual(plan["tp1_margin_pct"], 30.0)
         self.assertEqual(plan["tp2_margin_pct"], 60.0)
         self.assertEqual(plan["tp3_margin_pct"], 120.0)
 
     def test_structural_stop_is_only_accepted_inside_risk_cap(self):
         plan = build_entry_geometry("LONG", 100.0, structural_stop=99.9)
-        self.assertAlmostEqual(plan["stop"], 99.9)
-        self.assertLessEqual(plan["stop_margin_pct"], 5.0)
+        self.assertAlmostEqual(plan["stop"], 99.5)
+        self.assertAlmostEqual(plan["structural_stop"], 99.9)
+        self.assertEqual(plan["stop_margin_pct"], 10.0)
 
     def test_structural_stop_outside_risk_cap_falls_back_to_margin_geometry(self):
         plan = build_entry_geometry("LONG", 100.0, structural_stop=95.0)
-        self.assertAlmostEqual(plan["stop"], 99.8, places=8)
-        self.assertEqual(plan["stop_margin_pct"], 5.0)
+        self.assertAlmostEqual(plan["stop"], 99.5, places=8)
+        self.assertEqual(plan["stop_margin_pct"], 10.0)
 
 
 if __name__ == "__main__":
