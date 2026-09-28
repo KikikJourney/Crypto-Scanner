@@ -111,18 +111,25 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
         if not calibration:
             continue
         entry = calibration["entry"]
-        # Geometry is intentionally constructed only after entry calibration.
+
+        # TIMING GATE — intentionally independent of SL/TP geometry.
+        # The 100-candle calibration decides whether price is close enough to
+        # the calibrated execution zone. No stop/target calculation is allowed
+        # to influence this decision.
+        distance_atr = abs(price - entry) / micro_atr
+        execution_ready = distance_atr <= 0.90
+        if not execution_ready and not allow_watch:
+            continue
+
+        # GEOMETRY begins only after timing has produced the final entry state.
+        # SL/TP cannot tighten, loosen, or otherwise alter entry timing.
         base_geometry = build_entry_geometry(direction, entry)
         stop = base_geometry["stop"]
         risk = entry - stop if direction == "LONG" else stop - entry
         if risk <= 0:
             continue
-        distance_atr = abs(price - entry) / micro_atr
         risk_pct = risk / price * 100.0
-        execution_ready = distance_atr <= 0.90
         if risk_pct < 0.10:
-            continue
-        if not execution_ready and not allow_watch:
             continue
 
         structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
