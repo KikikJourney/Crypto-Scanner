@@ -11,6 +11,7 @@ from early_reversal_engine import evaluate_setup as evaluate_early_reversal
 from margin_risk_model import (DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, MIN_MARGIN_TP_PCT, MAX_MARGIN_TP_PCT, TP1_MARGIN_PCT, TP2_MARGIN_PCT, TP3_MARGIN_PCT, target_margin_pct_from_price, stop_margin_pct_from_price, build_margin_plan)
 from entry_calibration import calibrate_entry
 from entry_geometry import build_entry_geometry
+from tp_geometry import calibrate_tp
 
 
 # Version boundary for forward-test evidence. Historical rows without this
@@ -498,29 +499,27 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
     structural_target = _opposing_structure_target(
         rows_15m, direction, entry, risk, min_reward_r=1.0, max_reward_r=20.0
     )
-    target_selection = _select_tp_margin_pct(
-        direction, entry, structural_target, v2_features, confidence
+    tp_calibration = calibrate_tp(
+        rows_15m, rows_5m, direction, entry, stop, context=v2_features
     )
-    if target_selection is None:
+    if tp_calibration is None:
         return {
             "status": "WAIT", "direction": direction,
             "confidence": round(confidence, 1),
             "location_15m": location_15, "reversal_5m": reversal_5,
             "risk_pct": round(risk_pct, 4),
-            "reason": "15m structure does not support the configured TP geometry",
+            "reason": "TP geometry has no supported 2R..8R price target",
         }
-    selected_tp_margin_pct, flow_conviction, structural_margin_pct = target_selection
     margin_plan = build_entry_geometry(
         direction,
         entry,
-        selected_tp_margin_pct=selected_tp_margin_pct,
         structural_target=structural_target,
+        target_price=tp_calibration["target"],
     )
     target = margin_plan["target"]
-    reward_r = (
-        (target - entry) / risk if direction == "LONG"
-        else (entry - target) / risk
-    )
+    reward_r = tp_calibration["reward_r"]
+    flow_conviction = tp_calibration["flow_conviction"]
+    structural_margin_pct = margin_plan.get("structural_target_margin_pct")
     if confidence < 80.0:
         return {
             "status": "WAIT", "direction": direction,
@@ -552,7 +551,9 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "tp1": round(margin_plan["tp1"], 12), "tp2": round(margin_plan["tp2"], 12), "tp3": round(margin_plan["tp3"], 12),
         "tp1_margin_pct": margin_plan["tp1_margin_pct"], "tp2_margin_pct": margin_plan["tp2_margin_pct"], "tp3_margin_pct": margin_plan["tp3_margin_pct"],
         "tp1_pnl_usdt": margin_plan["tp1_pnl_usdt"], "tp2_pnl_usdt": margin_plan["tp2_pnl_usdt"], "tp3_pnl_usdt": margin_plan["tp3_pnl_usdt"],
-        "flow_conviction": round(flow_conviction, 3), "structural_target_margin_pct": round(structural_margin_pct, 3),
+        "flow_conviction": round(flow_conviction, 3), "structural_target_margin_pct": round(structural_margin_pct, 3) if structural_margin_pct is not None else None,
+        "tp_target_source": tp_calibration["target_source"], "tp_trend_strength": tp_calibration["trend_strength"],
+        "tp_desired_reward_r": tp_calibration["desired_reward_r"],
         "entry_calibration": "100-candle + volume/flow/regime",
         "calibration_inputs": entry_calibration.get("calibration_inputs", ""),
         "timing_score": entry_calibration.get("timing_score"),
@@ -566,7 +567,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "entry_buffer_atr": entry_calibration.get("buffer_atr"),
         "entry_distance_atr": round(entry_distance_atr, 3),
         "entry_rebound_atr": round(rebound_atr, 3),
-        "target_structure": round(structural_target, 12),
+        "target_structure": round(structural_target, 12) if structural_target is not None else None,
         "rsi_5m": round(rsi5, 2) if rsi5 is not None else None,
         "trend_4h": score_4h, "trend_1h": score_1h, "structure_30m": score_30,
         "structure_15m": score_15, "location_15m": location_15,
