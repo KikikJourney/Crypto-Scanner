@@ -1,2 +1,2 @@
 provider,status,reason,sample_watch_events,entry_touches,unfilled,resolved_after_touch,wins,losses,ambiguous,fill_rate_pct,win_rate_pct,avg_bars_to_entry,avg_mfe_pct,avg_mae_pct,net_r,expectancy_r,horizon_bars,lookback_days,symbols,fetch_errors
-Binance,NO_COHORT,No current Binance ALPHA_WATCH cohort was emitted by the scanner.,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,7,0,0
+Binance,OK,historical Binance reconstruction,61,0,61,0,0,0,0,0.0,0,0,0,0,0,0,24,7,124,35
