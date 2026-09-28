@@ -82,7 +82,8 @@ def _entry_timing_state(current_price, calibrated_entry, micro_atr, direction=No
     # Telegram: LONG enters from entry upward; SHORT enters from entry downward.
     # The old symmetric ATR gate could mark a signal READY while price was on
     # the wrong side of the calibrated entry.
-    zone_atr = 0.15
+    # Match the calibrated entry buffer (0.25 ATR) with a small execution cushion.
+    zone_atr = 0.30
     if direction == "LONG":
         zone_low = calibrated_entry
         zone_high = calibrated_entry + micro_atr * zone_atr
