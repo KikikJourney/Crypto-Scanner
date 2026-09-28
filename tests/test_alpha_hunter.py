@@ -33,7 +33,7 @@ class AlphaHunterTests(unittest.TestCase):
             plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
         self.assertIn(plan["direction"], {"LONG", "SHORT"})
-        self.assertGreaterEqual(plan["reward_r"], 3.0)
+        self.assertGreaterEqual(plan["reward_r"], 2.0)
         self.assertLessEqual(plan["reward_r"], 8.0)
         self.assertLessEqual(plan["entry_distance_atr"], 0.9)
 
@@ -56,7 +56,7 @@ class AlphaHunterTests(unittest.TestCase):
                 plan = build_plan(rows15, rows5)
 
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
-        self.assertIn("geometry_repaired_to_canonical_tp", plan["reason"])
+        self.assertIn("tp:risk_projection:", plan["reason"])
 
     def test_discovery_keeps_far_entry_as_watch(self):
         rows15 = []

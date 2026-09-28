@@ -38,6 +38,13 @@ class EntryCalibrationGeometryTests(unittest.TestCase):
         self.assertEqual(plan["tp2_margin_pct"], 60.0)
         self.assertEqual(plan["tp3_margin_pct"], 120.0)
 
+    def test_custom_tp_price_is_authoritative_and_stays_within_2_to_8r(self):
+        plan = build_entry_geometry("LONG", 100.0, target_price=102.0)
+        self.assertAlmostEqual(plan["target"], 102.0, places=8)
+        self.assertAlmostEqual(plan["reward_to_r"], 4.0, places=8)
+        self.assertAlmostEqual(plan["tp_margin_pct"], 40.0, places=8)
+        self.assertEqual(plan["target_source"], "calibrated_price")
+
     def test_structural_stop_is_only_accepted_inside_risk_cap(self):
         plan = build_entry_geometry("LONG", 100.0, structural_stop=99.9)
         self.assertAlmostEqual(plan["stop"], 99.5)
