@@ -34,8 +34,7 @@ def _range_position(rows, direction, lookback=32):
     if span <= 0:
         return 0.5
     pos = (_close(rows[-1]) - low) / span
-    # LONG seeks the lower part of the range; SHORT seeks the upper part.
-    return 1.0 - pos if direction == "LONG" else pos
+    return pos if direction == "LONG" else 1.0 - pos
 
 
 def _volume_ratio(rows, period=20):
@@ -280,10 +279,10 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             "flow_score": calibration.get("flow_score"),
             "sweep_score": calibration.get("sweep_score"),
             "regime_score_15m": calibration.get("regime_score_15m"),
-            "calibration_inputs": calibration.get("calibration_inputs", "40x5m executable extreme + 100x5m reference"),
+            "calibration_inputs": calibration.get("calibration_inputs", ""),
             "execution_ready": execution_ready,
             "watch_reason": "" if execution_ready else timing["reason"],
-            "entry_calibration": calibration.get("anchor_source", "40c_timing"),
+            "entry_calibration": calibration.get("anchor_source", "100c"),
             "entry_anchor_100": calibration.get("anchor_100", calibration.get("anchor")),
             "entry_anchor_40": calibration.get("anchor_40", calibration.get("anchor")),
             "entry_anchor_source": calibration.get("anchor_source", "legacy"),
@@ -320,7 +319,7 @@ def build_discovery_plan(rows_15m, rows_5m, context=None):
     """Return the best Alpha discovery candidate, including a pending watch.
 
     WATCH is discovery evidence, not an executable trade. The calibrated
-    40-candle entry remains unchanged; the scanner simply records that price
+    100-candle entry remains unchanged; the scanner simply records that price
     has not reached the execution zone yet.
     """
     return _build_plan(rows_15m, rows_5m, allow_watch=True, context=context)

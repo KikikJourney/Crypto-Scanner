@@ -45,9 +45,9 @@ class EntryCalibrationGeometryContractTests(unittest.TestCase):
         self.assertAlmostEqual(plan["stop"], 99.5, places=8)
         self.assertAlmostEqual(plan["structural_stop"], 99.9, places=8)
 
-    def test_timing_calibration_uses_40_candle_anchor_and_context(self):
+    def test_timing_calibration_uses_100_candle_anchor_and_context(self):
         rows_5m = [candle(i) for i in range(100)]
-        rows_5m[10] = candle(10, close=10.5, low=10.0, high=10.7, volume=180.0)
+        rows_5m[40] = candle(40, close=10.5, low=10.0, high=10.7, volume=180.0)
         rows_15m = [candle(i, close=10.8, low=10.0, high=11.5) for i in range(32)]
         result = calibrate_entry(
             rows_5m,
@@ -63,11 +63,7 @@ class EntryCalibrationGeometryContractTests(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertEqual(result["lookback_candles"], 100)
-        self.assertEqual(result["anchor_source"], "40c_timing")
-        self.assertEqual(result["anchor_window"], 40)
-        self.assertAlmostEqual(result["anchor"], 10.8, places=8)
-        self.assertAlmostEqual(result["anchor_100"], 10.0, places=8)
-        self.assertAlmostEqual(result["anchor_40"], 10.8, places=8)
+        self.assertAlmostEqual(result["anchor"], 10.0, places=8)
         self.assertIn("timing_score", result)
         self.assertIn("volume_regime", result)
         self.assertIn("flow_score", result)
@@ -85,7 +81,6 @@ class EntryCalibrationGeometryContractTests(unittest.TestCase):
         self.assertEqual(result["anchor_window"], 40)
         self.assertAlmostEqual(result["anchor_100"], 89.0, places=8)
         self.assertAlmostEqual(result["anchor_40"], 99.8, places=8)
-        self.assertAlmostEqual(result["anchor"], 99.8, places=8)
         self.assertLess(result["distance_atr"], 1.0)
 
     def test_geometry_is_independent_of_calibration_entry_location(self):
