@@ -19,9 +19,16 @@ from scalping_intelligence import _timestamp as mtf_timestamp, SCALPING_STRATEGY
 from early_reversal_engine import infer_direction as infer_early_reversal_direction
 from signal_funnel_diagnostic import diagnose as diagnose_signal_funnel, write as write_signal_funnel
 from traderspy_style_engine import build_plan as traderspy_style_plan
-from alpha_hunter import build_plan as alpha_hunter_plan, ALPHA_HUNTER_VERSION
 
 WORKERS = 8
+
+
+def _alpha_hunter_plan(*args, **kwargs):
+    # Lazy import prevents extreme_runner -> alpha_hunter -> scalping_intelligence
+    # circular import during the scalping_intelligence test/module load.
+    from alpha_hunter import build_plan as alpha_hunter_plan
+    return alpha_hunter_plan(*args, **kwargs)
+
 ACTIONABLE_FILE = Path("data/actionable_signals.csv")
 def _signal_id(provider, symbol, direction, latest_closed_5m_timestamp):
     """Stable identity for one closed-5m setup; rescans must not duplicate it."""
@@ -297,7 +304,7 @@ def _brain_action(x, timestamp):
         # Direction discovery is independent of early reversal. Alpha Hunter
         # can form an opportunity thesis from location + participation and
         # return its own calibrated executable plan.
-        alpha = alpha_hunter_plan(x["scalping_rows_15m"], rows_5m)
+        alpha = _alpha_hunter_plan(x["scalping_rows_15m"], rows_5m)
         if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
             return _alpha_action(x, alpha, timestamp)
         return None
@@ -387,7 +394,7 @@ def _alpha_action(x, plan, timestamp):
         "timestamp": timestamp, "scan_timestamp": timestamp,
         "symbol": x["symbol"], "provider": x["provider"],
         "direction": plan["direction"], "score": plan["confidence"],
-        "v2_score": plan["confidence"], "strategy_version": ALPHA_HUNTER_VERSION,
+        "v2_score": plan["confidence"], "strategy_version": "alpha-hunter-v2",
         "confidence": plan["confidence"], "location_15m": plan["location_15m"],
         "reversal_5m": plan["liquidity_sweep_5m"],
         "entry": plan["entry"], "entry_low": plan["entry_low"], "entry_high": plan["entry_high"],
@@ -468,7 +475,7 @@ def _print_action_candidates(results, timestamp):
             print(f'{x["symbol"]} | TRADERSPY-STYLE DATA-LIMITED | {exc}')
 
         try:
-            alpha = alpha_hunter_plan(x["scalping_rows_15m"], x.get("scalping_rows_5m"))
+            alpha = _alpha_hunter_plan(x["scalping_rows_15m"], x.get("scalping_rows_5m"))
             if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
                 action = _alpha_action(x, alpha, timestamp)
                 candidates.append(action)
