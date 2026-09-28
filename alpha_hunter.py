@@ -77,7 +77,7 @@ def _entry_timing_state(current_price, calibrated_entry, micro_atr):
         return {"execution_ready": False, "distance_atr": float("inf"), "reason": "timing inputs unavailable"}
     distance_atr = abs(current_price - calibrated_entry) / micro_atr
     return {
-        "execution_ready": distance_atr <= 0.90,
+        "execution_ready": distance_atr <= 1.25,
         "distance_atr": distance_atr,
         "reason": "within calibrated execution zone" if distance_atr <= 0.90 else "outside calibrated execution zone",
     }
