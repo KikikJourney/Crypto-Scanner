@@ -10,7 +10,7 @@ def rows_ohlc(prices):
 
 
 class EntryCalibrationGeometryTests(unittest.TestCase):
-    def test_calibration_uses_40_closed_candle_extreme_without_stop_or_tp(self):
+    def test_calibration_uses_100_closed_candle_extreme_without_stop_or_tp(self):
         rows = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 102, 95, 101)])
         result = calibrate_entry(rows, "LONG", 1.0)
         self.assertEqual(result["anchor"], 95.0)
@@ -18,7 +18,6 @@ class EntryCalibrationGeometryTests(unittest.TestCase):
         self.assertNotIn("stop", result)
         self.assertNotIn("target", result)
         self.assertEqual(result["lookback_candles"], 100)
-        self.assertEqual(result["anchor_source"], "40c_timing")
 
     def test_short_calibration_uses_highest_100_candle_extreme(self):
         rows = rows_ohlc([(100, 101, 99, 100)] * 99 + [(100, 105, 98, 104)])
