@@ -49,7 +49,7 @@ class TelegramNotifierTests(unittest.TestCase):
         self.assertIn("SL Margin Risk: 5% (-0.5 USDT)", text)
         self.assertIn("Selected TP: 162.90 (77.78% margin / +7.78 USDT)", text)
         self.assertIn("Confidence: 86.5/100", text)
-        self.assertIn("Standard scanner model: 10 USDT margin / 25x leverage / max SL 5% / TP1 30% / TP2 60% / TP3 120%.", text)
+        self.assertIn("Canonical geometry: 10 USDT margin / 20x leverage / SL -10% / TP1 +30% / TP2 +60% / TP3 +120% of margin.", text)
         self.assertNotIn("TP 2R:", text)
         self.assertNotIn("TP 4R:", text)
         self.assertNotIn("TP 6R:", text)
