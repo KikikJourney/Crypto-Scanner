@@ -1,244 +1,240 @@
 timestamp,symbol,provider,stage,direction,confidence,alignment,risk_pct,v2_score,location_15m,exhaustion_15m,base_15m,structure_shift_5m,reversal_trigger_5m,early_reversal_score,timing_score,volume_ratio_5m,volume_regime,flow_score,regime_score_15m,entry_distance_atr,reason
-2026-09-28T05:55:52.416724+00:00,MORPHOUSDT,Bitget,ALPHA_WATCH,SHORT,82.7,,0.5107825388219793,87.7,0.8865570051049348,,1.0,-0.0025234878484354183,0.0,,0.375,2.0750306133808305,expansion,0.5,0.0,5.132488479262665,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,EDGEUSDT,Bitget,ALPHA_WATCH,SHORT,82.5,,0.515428267423308,87.6,0.8739946380697041,,1.0,0.006518675123326351,0.0,,0.125,0.5337545881150397,compression,0.5,0.0,7.249999999999972,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,MEGAUSDT,Bitget,NO_DIRECTION,,,,,87.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BTWUSDT,Bitget,ALPHA_WATCH,LONG,89.6,,0.469126642653153,86.9,0.9785755172131813,,1.0,0.010733248763739375,0.0,,0.375,1.59282875528518,expansion,0.5,0.0,7.1324021826750235,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ZENUSDT,Bitget,NO_DIRECTION,,,,,86.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,FLOCKUSDT,Bitget,ALPHA_WATCH,SHORT,81.5,,0.5217984477322248,85.9,0.9589816124469592,,0.8191266062560815,0.004914759637536489,0.0,,0.2216,1.0396644099181724,normal,0.5,0.0,9.370853080568661,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,GWEIUSDT,Bitget,ALPHA_WATCH,SHORT,83.4,,0.5159618862150476,85.5,0.921428571428572,,1.0,-0.00048709206039939567,0.0,,0.375,2.887605410292842,expansion,0.5,0.0,4.781250000000008,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SIGNUSDT,Bitget,NO_DIRECTION,,,,,85.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SNXUSDT,Bitget,NO_DIRECTION,,,,,84.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,COTIUSDT,Bitget,NO_DIRECTION,,,,,84.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TUTUSDT,Bitget,ALPHA_WATCH,SHORT,70.4,,0.5225075956153927,84.0,0.7984496124031009,,0.6261547247136282,-0.004608294930875679,0.0,,0.1881,0.9392320870704424,normal,0.5,0.0,8.837719298245586,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,83.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AGLDUSDT,Bitget,NO_DIRECTION,,,,,83.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PHAUSDT,Bitget,ALPHA_WATCH,SHORT,84.2,,0.5270977866865211,82.8,0.962490023942538,,1.0,-0.0011776581426648826,0.0,,0.375,1.5072366109779234,expansion,0.5,0.0,7.692078364565586,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,RAVEUSDT,Bitget,ALPHA_WATCH,SHORT,73.6,,0.5149080269421228,81.3,0.8285479901558649,,0.7999944900165988,0.00015592515592502336,0.0,,0.275,1.1999917350248983,normal,0.5,0.0,6.393312101910823,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ARKUSDT,Bitget,NO_DIRECTION,,,,,80.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PENDLEUSDT,Bitget,NO_DIRECTION,,,,,80.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MAGMAUSDT,Bitget,ALPHA_WATCH,SHORT,76.2,,0.5313619451951823,80.0,0.9377705627705621,,0.8284920768907381,-0.0016413011041481386,0.0,,0.2892,1.2427381153361072,normal,0.5,0.0,13.848668754894243,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,DOSUSDT,Bitget,NO_DIRECTION,,,,,79.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ENAUSDT,Bitget,ALPHA_WATCH,SHORT,79.2,,0.5206446880915541,79.1,0.7090779127948562,,1.0,0.0027482870265793553,0.0,,0.375,2.2864030153047548,expansion,0.5,0.0,5.54782608695658,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,INITUSDT,Bitget,NO_DIRECTION,,,,,79.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ACEUSDT,Bitget,NO_DIRECTION,,,,,78.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,OPNUSDT,Bitget,NO_DIRECTION,,,,,77.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,JTOUSDT,Bitget,ALPHA_WATCH,SHORT,69.3,,0.5152733422184144,76.6,0.8623024830699776,,0.46946075613836524,-0.005486725663716997,0.0,,0.125,0.7041911342075479,compression,0.5,0.0,5.812200956937786,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,AKEUSDT,Bitget,ALPHA_WATCH,SHORT,72.7,,0.5218028277418628,76.3,0.9475871187080933,,0.5847249433444995,-0.0051682826256547396,0.0,,0.1674,0.8770874150167494,normal,0.5,0.0,6.248545996169959,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,LITUSDT,Bitget,ALPHA_WATCH,SHORT,69.9,,0.5083073832650228,76.1,0.8291814946619214,,0.5550351466410778,-0.0038548752834465893,0.0,,0.1525,0.8325527199616167,normal,0.5,0.0,4.135542168674741,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ZORAUSDT,Bitget,NO_DIRECTION,,,,,74.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BROCCOLIUSDT,Bitget,ALPHA_WATCH,SHORT,81.6,,0.536854759164882,74.5,0.831746031746032,,1.0,-0.007730962504831805,0.0,,0.375,1.5459104374311992,expansion,0.5,0.0,8.22706422018351,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,USELESSUSDT,Bitget,NO_DIRECTION,,,,,73.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ACUUSDT,Bitget,NO_DIRECTION,,,,,73.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SYNUSDT,Bitget,NO_DIRECTION,,,,,72.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ALTUSDT,Bitget,ALPHA_WATCH,SHORT,83.4,,0.5122991160158287,72.4,0.9220779220779215,,1.0,-0.004792970310211633,0.0,,0.375,2.198460607454901,expansion,0.5,0.0,8.663333333333318,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,VVVUSDT,Bitget,NO_DIRECTION,,,,,72.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CYSUSDT,Bitget,ALPHA_WATCH,SHORT,82.5,,0.5118646978021907,71.7,0.8765008576329334,,1.0,-0.00850850850850851,0.0,,0.375,1.6609779915367395,expansion,0.5,0.0,4.668918918918908,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,VELODROMEUSDT,Bitget,NO_DIRECTION,,,,,70.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TRBUSDT,Bitget,NO_DIRECTION,,,,,69.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BIOUSDT,Bitget,NO_DIRECTION,,,,,69.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,OPGUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,ORDIUSDT,Bitget,NO_DIRECTION,,,,,69.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,STXUSDT,Bitget,NO_DIRECTION,,,,,69.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BSBUSDT,Bitget,NO_DIRECTION,,,,,69.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ZROUSDT,Bitget,ALPHA_WATCH,SHORT,81.0,,0.5419656199819861,68.6,0.7976653696498059,,1.0,-0.005356326343980655,0.0,,0.375,3.828463555712612,expansion,0.5,0.0,7.650169204737744,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,REUSDT,Bitget,NO_DIRECTION,,,,,68.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,HYPEUSDT,Bitget,NO_DIRECTION,,,,,68.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,UNITASUSDT,Bitget,ALPHA_WATCH,SHORT,88.5,,0.5288599264904611,68.0,0.9262295081967203,,1.0,-0.002655538694992331,1.0,,0.4281,0.90917225950783,normal,0.5,0.0,5.916204986149619,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,CHIPUSDT,Bitget,ALPHA_WATCH,SHORT,68.5,,0.5095272686633839,67.5,0.8247422680412361,,0.4669152699640422,-0.009248815700428618,0.0,,0.125,0.7003729049460633,compression,0.5,0.0,4.486842105263137,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,TAOUSDT,Bitget,NO_DIRECTION,,,,,67.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CFXUSDT,Bitget,NO_DIRECTION,,,,,67.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XMRUSDT,Bitget,NO_DIRECTION,,,,,67.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,WALUSDT,Bitget,NO_DIRECTION,,,,,67.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,LABUSDT,Bitget,NO_DIRECTION,,,,,66.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,STRKUSDT,Bitget,ALPHA_WATCH,SHORT,76.9,,0.5198082984526843,66.2,0.8645495787427107,,0.9744443851751884,-0.0021882951653942953,0.0,,0.3622,1.4616665777627826,expansion,0.5,0.0,7.550898721050872,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BEATUSDT,Bitget,ALPHA_WATCH,SHORT,67.4,,0.5147489639403585,65.9,0.7357440890125175,,0.5110631468260557,-0.005363727790814552,0.0,,0.1305,0.7665947202390835,normal,0.5,0.0,5.71615384615387,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,VETUSDT,Bitget,NO_DIRECTION,,,,,65.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GENIUSUSDT,Bitget,ALPHA_WATCH,SHORT,84.0,,0.510013533715377,65.6,0.9475616151022548,,1.0,-0.0020336182517239026,0.0,,0.375,2.8445846161547896,expansion,0.5,0.0,5.185777126099651,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,CRVUSDT,Bitget,NO_DIRECTION,,,,,65.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SONICUSDT,Bitget,ALPHA_WATCH,SHORT,82.0,,0.5106658047834505,65.0,0.8505747126436785,,1.0,-0.006833712984054655,0.0,,0.375,1.8390329163113706,expansion,0.5,0.0,5.823529411764738,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BASEDUSDT,Bitget,ALPHA_WATCH,SHORT,72.4,,0.5184360978433864,64.9,0.8648648648648651,,0.6721099853025811,-0.010087719298245557,0.0,,0.2111,1.0081649779538717,normal,0.5,0.0,7.7196969696969955,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BGBUSDT,Bitget,NO_DIRECTION,,,,,64.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ARUSDT,Bitget,NO_DIRECTION,,,,,64.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,DYDXUSDT,Bitget,NO_DIRECTION,,,,,64.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CROUSDT,Bitget,ALPHA_WATCH,SHORT,80.4,,0.5079180509412967,64.4,0.7687499999999992,,1.0,-0.0035786525595146723,0.0,,0.375,2.16235995719619,expansion,0.5,0.0,4.359756097561006,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,VELVETUSDT,Bitget,ALPHA_WATCH,SHORT,74.7,,0.5095202427111125,64.4,0.8179190751445089,,0.8920862413149838,-0.00942892723714634,0.0,,0.321,1.3381293619724757,expansion,0.5,0.0,3.8782051282051238,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BLESSUSDT,Bitget,NO_DIRECTION,,,,,63.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,IDUSDT,Bitget,NO_DIRECTION,,,,,63.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,REZUSDT,Bitget,NO_DIRECTION,,,,,63.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XTZUSDT,Bitget,NO_DIRECTION,,,,,63.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AKTUSDT,Bitget,ALPHA_WATCH,SHORT,75.2,,0.5129134120887409,63.0,0.8960000000000005,,0.81598818759957,-0.008200455580865712,0.0,,0.283,1.223982281399355,normal,0.5,0.0,6.558743169398867,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,MAGICUSDT,Bitget,NO_DIRECTION,,,,,62.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AEONUSDT,Bitget,NO_DIRECTION,,,,,62.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CAKEUSDT,Bitget,NO_DIRECTION,,,,,62.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,DOGEUSDT,Bitget,NO_DIRECTION,,,,,62.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ATOMUSDT,Bitget,ALPHA_WATCH,SHORT,81.3,,0.5143581147819506,62.1,0.8144329896907214,,1.0,-0.005729862038273239,0.0,,0.375,2.515533704742258,expansion,0.5,0.0,6.2281491002570855,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SUSHIUSDT,Bitget,NO_DIRECTION,,,,,61.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TLMUSDT,Bitget,NO_DIRECTION,,,,,61.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ARBUSDT,Bitget,ALPHA_WATCH,SHORT,71.2,,0.5219642269156592,61.5,0.83206106870229,,0.6387517613310466,-0.00825231207019204,0.0,,0.1944,0.95812764199657,normal,0.5,0.0,7.501004016064252,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BERAUSDT,Bitget,NO_DIRECTION,,,,,61.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PEPEUSDT,Bitget,NO_DIRECTION,,,,,61.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BILLUSDT,Bitget,NO_DIRECTION,,,,,61.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,INXUSDT,Bitget,REVERSAL_FAILED,LONG,85.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,SYRUPUSDT,Bitget,ALPHA_WATCH,SHORT,71.3,,0.5068989630236017,61.3,0.8230769230769235,,0.6548252259222247,-0.005280844935189581,0.0,,0.2024,0.982237838883337,normal,0.5,0.0,3.4279661016949117,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,METUSDT,Bitget,ALPHA_WATCH,SHORT,82.9,,0.5258068081343993,61.1,0.8956158663883089,,1.0,-0.008320950965824574,0.0,,0.375,2.257080278431102,expansion,0.5,0.0,7.452127659574454,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,AVNTUSDT,Bitget,NO_DIRECTION,,,,,60.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,LAUSDT,Bitget,NO_DIRECTION,,,,,60.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PIXELUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,TIAUSDT,Bitget,NO_DIRECTION,,,,,60.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ICPUSDT,Bitget,ALPHA_WATCH,SHORT,67.7,,0.507562611387298,59.6,0.7320261437908502,,0.5357472797809152,-0.010617120106171211,0.0,,0.1429,0.8036209196713727,normal,0.5,0.0,2.9318181818182234,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,59.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,FORMUSDT,Bitget,NO_DIRECTION,,,,,59.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,58.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SHIBUSDT,Bitget,NO_DIRECTION,,,,,58.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XLMUSDT,Bitget,NO_DIRECTION,,,,,58.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AXLUSDT,Bitget,NO_DIRECTION,,,,,58.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,UNIUSDT,Bitget,NO_DIRECTION,,,,,58.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,KAITOUSDT,Bitget,ALPHA_WATCH,SHORT,70.0,,0.5186014088641037,57.9,0.8222222222222214,,0.5704803626240856,-0.00888362451880368,0.0,,0.1602,0.8557205439361285,normal,0.5,0.0,7.455882352941193,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BCHUSDT,Bitget,ALPHA_WATCH,SHORT,86.9,,0.5261494658055523,57.6,0.8455452356381148,,1.0,0.013378033205619406,0.0,,0.375,1.5904741179687194,expansion,0.5,0.0,7.78302373581012,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,57.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XANUSDT,Bitget,ALPHA_WATCH,SHORT,80.1,,0.5247062788346379,57.5,0.7553191489361688,,1.0,-0.0011401579933219418,0.0,,0.375,1.7729796612125708,expansion,0.5,0.0,14.364864864864849,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,POLUSDT,Bitget,NO_DIRECTION,,,,,56.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,FOGOUSDT,Bitget,ALPHA_WATCH,SHORT,86.2,,0.5203373015872984,56.0,0.8089622641509446,,1.0,-0.008954154727793642,1.0,,0.375,0.41371811654478513,compression,0.5,0.0,7.308086560364519,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,HBARUSDT,Bitget,ALPHA_WATCH,LONG,82.5,,0.4859728048870286,55.9,0.6261904761904765,,1.0,0.02362619976795688,0.0,,0.375,10.145785532997637,expansion,0.5,0.0,3.2831610680447776,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SENTUSDT,Bitget,NO_DIRECTION,,,,,55.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AEROUSDT,Bitget,NO_DIRECTION,,,,,55.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SPKUSDT,Bitget,NO_DIRECTION,,,,,55.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,NOTUSDT,Bitget,NO_DIRECTION,,,,,55.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,COWUSDT,Bitget,NO_DIRECTION,,,,,55.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,IOUSDT,Bitget,NO_DIRECTION,,,,,55.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ENSUSDT,Bitget,ALPHA_WATCH,SHORT,73.9,,0.5094602549959648,54.9,0.828638497652583,,0.8245320063640365,-0.008838951310861447,0.0,,0.2873,1.2367980095460547,normal,0.5,0.0,4.197058823529416,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,GALAUSDT,Bitget,ALPHA_WATCH,SHORT,70.0,,0.5232839121887223,54.8,0.8277777777777766,,0.5613830422042354,-0.0041455550437585875,0.0,,0.1557,0.8420745633063531,normal,0.5,0.0,7.288461538461523,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ZECUSDT,Bitget,ALPHA_WATCH,SHORT,70.1,,0.5088514793842441,54.7,0.8023900242466214,,0.6047682411971441,-0.0016729104766825462,0.0,,0.1774,0.9071523617957161,normal,0.5,0.0,4.381554947560417,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ZAMAUSDT,Bitget,NO_DIRECTION,,,,,54.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,DOGSUSDT,Bitget,ALPHA_WATCH,SHORT,81.8,,0.513749818340353,54.3,0.837765957446808,,1.0,-0.010485197368421056,0.0,,0.375,1.6400956403655662,expansion,0.5,0.0,8.801162790697683,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,53.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XVGUSDT,Bitget,ALPHA_WATCH,SHORT,70.2,,0.5161854336578082,53.6,0.9100257069408744,,0.4696677272368532,-0.006176652254478089,0.0,,0.125,0.7045015908552797,compression,0.5,0.0,7.4570707070707165,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,VTHOUSDT,Bitget,NO_DIRECTION,,,,,53.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CHZUSDT,Bitget,ALPHA_WATCH,SHORT,73.2,,0.5156249999999987,53.1,0.8316831683168318,,0.7703256049366122,-0.010204081632653088,0.0,,0.2602,1.1554884074049183,normal,0.5,0.0,8.249999999999943,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,PENGUUSDT,Bitget,ALPHA_WATCH,SHORT,75.2,,0.5200008047877536,53.1,0.8241379310344825,,0.9161971178867484,-0.011185914034179229,0.0,,0.3331,1.3742956768301227,expansion,0.5,0.0,5.930043383947915,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BNBUSDT,Bitget,NO_DIRECTION,,,,,52.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ARKMUSDT,Bitget,NO_DIRECTION,,,,,52.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TAIKOUSDT,Bitget,REVERSAL_FAILED,LONG,67.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,NILUSDT,Bitget,ALPHA_WATCH,SHORT,82.7,,0.5103504141367254,52.0,0.8856140350877189,,1.0,-0.02553191489361702,0.0,,0.375,2.220550177694548,expansion,0.5,0.0,2.260936132983385,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,FILUSDT,Bitget,NO_DIRECTION,,,,,51.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AXSUSDT,Bitget,NO_DIRECTION,,,,,51.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PONSUSDT,Bitget,NO_DIRECTION,,,,,51.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,FLOKIUSDT,Bitget,NO_DIRECTION,,,,,51.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ETCUSDT,Bitget,NO_DIRECTION,,,,,50.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SOLUSDT,Bitget,NO_DIRECTION,,,,,50.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,DEEPUSDT,Bitget,NO_DIRECTION,,,,,50.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BBUSDT,Bitget,NO_DIRECTION,,,,,49.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MOVRUSDT,Bitget,ALPHA_WATCH,SHORT,79.9,,0.5266218382614876,49.7,0.7771428571428576,,0.9587093788224449,0.0057522562729346695,0.0,,0.2493,1.122891366532889,normal,0.5,0.0,7.743782383419729,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,1000BONKUSDT,Bitget,ALPHA_WATCH,SHORT,74.1,,0.525824964131995,49.3,0.8657534246575344,,0.7831152186760039,-0.012786980528915946,0.0,,0.2666,1.1746728280140057,normal,0.5,0.0,8.999999999999938,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,UAIUSDT,Bitget,ALPHA_WATCH,SHORT,66.9,,0.5291160173736125,49.3,0.7467248908296944,,0.4629506804977051,-0.0028020548402161835,0.0,,0.125,0.6944260207465577,compression,0.5,0.0,10.314814814814794,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,LDOUSDT,Bitget,ALPHA_WATCH,SHORT,81.7,,0.5203177727784033,48.5,0.8329177057356612,,1.0,-0.012061167348696951,0.0,,0.375,2.229944604677907,expansion,0.5,0.0,5.27268244575937,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,CROSSUSDT,Bitget,NO_DIRECTION,,,,,48.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AWEUSDT,Bitget,NO_DIRECTION,,,,,48.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,JCTUSDT,Bitget,NO_DIRECTION,,,,,48.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,龙虾USDT,Bitget,ALPHA_WATCH,SHORT,69.3,,0.5290454673682693,47.2,0.76875503183781,,0.5925646624574765,0.0024896038520464217,0.0,,0.1713,0.8888469936862148,normal,0.5,0.0,2.628556865526109,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,46.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,THETAUSDT,Bitget,NO_DIRECTION,,,,,46.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AAVEUSDT,Bitget,ALPHA_WATCH,SHORT,73.6,,0.5064815124364863,46.2,0.8060075093867323,,0.8316507184034179,-0.008156386922817714,0.0,,0.2908,1.2474760776051268,normal,0.5,0.0,3.204545454545421,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,XRPUSDT,Bitget,NO_DIRECTION,,,,,45.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,EIGENUSDT,Bitget,ALPHA_WATCH,SHORT,71.7,,0.5171848416661997,45.3,0.8015267175572505,,0.7095249037895176,-0.010481366459627252,0.0,,0.2298,1.0642873556842765,normal,0.5,0.0,4.931102362204721,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,45.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AVAXUSDT,Bitget,ALPHA_WATCH,SHORT,79.3,,0.5138721840074624,44.4,0.7140287769784165,,1.0,-0.010225535168195653,0.0,,0.375,2.995121580166473,expansion,0.5,0.0,4.665909090909112,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,EPICUSDT,Bitget,NO_DIRECTION,,,,,43.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,INUSDT,Bitget,NO_DIRECTION,,,,,43.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BRETTUSDT,Bitget,NO_DIRECTION,,,,,43.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,RAYUSDT,Bitget,NO_DIRECTION,,,,,43.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,RIVERUSDT,Bitget,NO_DIRECTION,,,,,42.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BTCUSDT,Bitget,NO_DIRECTION,,,,,41.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ETHUSDT,Bitget,ALPHA_WATCH,SHORT,74.8,,0.5017691321475028,41.6,0.7641729982466348,,0.9652079373988228,-0.004919997875714198,0.0,,0.3576,1.4478119060982342,expansion,0.5,0.0,1.5869814971580651,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BOMEUSDT,Bitget,NO_DIRECTION,,,,,41.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,APEUSDT,Bitget,ALPHA_WATCH,SHORT,67.0,,0.5120791628753351,40.7,0.710526315789472,,0.5217056933128693,-0.005765534913517053,0.0,,0.1359,0.782558539969304,normal,0.5,0.0,4.577586206896543,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SLXUSDT,Bitget,ALPHA_WATCH,SHORT,89.2,,0.5076585420062165,40.7,0.9585687382297555,,1.0,-0.011995801469485607,1.0,,0.375,0.6340854385530785,compression,0.5,0.0,4.594444444444546,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,OPUSDT,Bitget,NO_DIRECTION,,,,,40.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,BIGTIMEUSDT,Bitget,NO_DIRECTION,,,,,40.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,LYNUSDT,Bitget,REVERSAL_FAILED,SHORT,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,KITEUSDT,Bitget,NO_DIRECTION,,,,,39.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TRUMPUSDT,Bitget,ALPHA_WATCH,SHORT,70.5,,0.5133029133029184,39.4,0.7692307692307695,,0.6760427256910132,-0.008924144769459711,0.0,,0.213,1.0140640885365197,normal,0.5,0.0,4.737500000000019,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,DASHUSDT,Bitget,ALPHA_WATCH,SHORT,80.2,,0.5122208811104421,39.3,0.7581699346405247,,1.0,-0.005461165048543681,0.0,,0.375,2.0717547661229414,expansion,0.5,0.0,5.785714285714207,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,39.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,LINKUSDT,Bitget,NO_DIRECTION,,,,,39.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ATHUSDT,Bitget,NO_DIRECTION,,,,,39.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ADAUSDT,Bitget,ALPHA_WATCH,SHORT,67.0,,0.5174134419551825,38.6,0.74025974025974,,0.48243870189456123,-0.004911993450675427,0.0,,0.125,0.7236580528418418,compression,0.5,0.0,6.107142857142866,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SANDUSDT,Bitget,ALPHA_WATCH,SHORT,80.1,,0.521318825679691,38.5,0.7550200803212853,,1.0,-0.008293020041465243,0.0,,0.375,4.022420362483709,expansion,0.5,0.0,7.318627450980386,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,38.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,38.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ASTERUSDT,Bitget,NO_DIRECTION,,,,,38.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PUMPUSDT,Bitget,ALPHA_WATCH,LONG,77.5,,0.48560502660821503,37.6,0.6249999999999993,,1.0,0.021893491124260353,0.0,,0.1848,0.9294386200130709,normal,0.5,0.0,2.354284103720408,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,UBUSDT,Bitget,ALPHA_WATCH,LONG,80.5,,0.4915153810300573,36.8,0.7763975155279509,,1.0,0.009219624629568551,0.0,,0.125,0.5049068921105012,compression,0.5,0.0,3.836406743940983,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,XPLUSDT,Bitget,NO_DIRECTION,,,,,36.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GIGGLEUSDT,Bitget,NO_DIRECTION,,,,,35.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ONEUSDT,Bitget,ALPHA_WATCH,LONG,81.5,,0.45943252707466264,34.6,0.5733552032075814,,1.0,0.016944058308599835,0.0,,0.375,1.6891137288288023,expansion,0.5,0.0,4.543556967637072,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,STONKUSDT,Bitget,NO_DIRECTION,,,,,34.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,33.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SUPERUSDT,Bitget,ALPHA_WATCH,SHORT,79.8,,0.5062805367169906,32.7,0.7415730337078653,,1.0,-0.015025906735751222,0.0,,0.375,25.521570882603122,expansion,0.5,0.0,2.570895522388063,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,WUSDT,Bitget,NO_DIRECTION,,,,,32.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,XAIUSDT,Bitget,ALPHA_WATCH,SHORT,80.4,,0.5072809000861294,32.4,0.7720364741641327,,1.0,-0.003674086881348531,0.0,,0.375,1.9619145850216817,expansion,0.5,0.0,2.877659574468141,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,PROSUSDT,Bitget,NO_DIRECTION,,,,,31.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TRIAUSDT,Bitget,ALPHA_WATCH,LONG,82.7,,0.4794748520710034,31.4,0.6334661354581675,,1.0,0.018308227114716122,0.0,,0.375,2.3135540977605253,expansion,0.5,0.0,8.016666666666683,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,INJUSDT,Bitget,NO_DIRECTION,,,,,30.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,IRYSUSDT,Bitget,NO_DIRECTION,,,,,30.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SEIUSDT,Bitget,ALPHA_WATCH,LONG,76.5,,0.4898606452852646,30.0,0.572944297082228,,1.0,0.00813609467455631,0.0,,0.125,0.3516329889714924,compression,0.5,0.0,1.7900925212027812,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,LTCUSDT,Bitget,ALPHA_WATCH,LONG,87.0,,0.49645892351274323,29.9,0.8493975903614468,,1.0,0.007851534618129867,0.0,,0.375,1.6184688280586097,expansion,0.5,0.0,1.5625000000000087,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,0GUSDT,Bitget,NO_DIRECTION,,,,,29.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,LSKUSDT,Bitget,ALPHA_WATCH,LONG,79.7,,0.48701170553474804,28.8,0.7372881355932205,,1.0,0.011174968071519806,0.0,,0.2667,1.1751552990638752,normal,0.5,0.0,4.346226415094356,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ARXUSDT,Bitget,ALPHA_WATCH,LONG,77.7,,0.45849054973414566,28.7,0.6365253483545813,,1.0,0.007270511779041373,0.0,,0.125,0.5108949146932317,compression,0.5,0.0,6.18519313304721,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,APTUSDT,Bitget,ALPHA_WATCH,SHORT,79.6,,0.5155695779571279,28.0,0.7311411992263055,,1.0,-0.011280931586608412,0.0,,0.375,1.5398433301814995,expansion,0.5,0.0,4.216357308584675,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,25.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,NEARUSDT,Bitget,ALPHA_WATCH,SHORT,68.5,,0.5122959390736771,25.5,0.7964581416743335,,0.501430871995621,-0.006868907007063558,0.0,,0.1257,0.7521463079934315,normal,0.5,0.0,3.0436955407483293,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,MANTRAUSDT,Bitget,NO_DIRECTION,,,,,24.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GPSUSDT,Bitget,NO_DIRECTION,,,,,24.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,24.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GRVTUSDT,Bitget,NO_DIRECTION,,,,,23.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SKYUSDT,Bitget,NO_DIRECTION,,,,,23.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GRTUSDT,Bitget,ALPHA_WATCH,SHORT,72.6,,0.5306723659889169,23.1,0.7973977695167286,,0.7790067950292813,-0.013108614232209853,0.0,,0.2645,1.1685101925439219,normal,0.5,0.0,5.609154929577478,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,EGLDUSDT,Bitget,NO_DIRECTION,,,,,22.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CFGUSDT,Bitget,NO_DIRECTION,,,,,22.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,USUSDT,Bitget,NO_DIRECTION,,,,,22.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ONDOUSDT,Bitget,ALPHA_WATCH,LONG,76.7,,0.48626207356537293,21.7,0.5843270868824534,,1.0,0.018133802816901565,0.0,,0.125,0.3270359786262766,compression,0.5,0.0,2.322025052192089,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,QNTUSDT,Bitget,ALPHA_WATCH,SHORT,68.8,,0.5246198458501019,21.5,0.7454746711811433,,0.593145367565771,-0.03786893643850725,0.0,,0.1716,0.8897180513486564,normal,0.5,0.0,1.9634746404239225,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,IMXUSDT,Bitget,NO_DIRECTION,,,,,20.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PYTHUSDT,Bitget,ALPHA_WATCH,SHORT,68.0,,0.5151345488398195,20.1,0.6333333333333335,,0.6917075487495375,-0.01573623079805167,0.0,,0.2209,1.0375613231243064,normal,0.5,0.0,3.4534068136272738,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,HUSDT,Bitget,ALPHA_WATCH,SHORT,82.8,,0.5143479798290441,19.9,0.6394849785407712,,1.0,0.00797153024911039,0.0,,0.375,2.8291285170572005,expansion,0.5,0.0,4.99064171122994,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,POWERUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,EVAAUSDT,Bitget,NO_DIRECTION,,,,,18.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SKYAIUSDT,Bitget,ALPHA_OPPORTUNITY,SHORT,69.5,,0.5015821486029538,18.5,0.6445497630331751,,0.7711306371068404,-0.02088221492257161,0.0,,0.2606,1.1566959556602605,normal,0.5,0.0,0.5522922636103227,"alpha regime: location=0.64, participation=0.77, vol=1.16x, impulse=-2.088%, ATR=0.573%; geometry=structural_tp_geometry"
-2026-09-28T05:55:52.416724+00:00,QUSDT,Bitget,NO_DIRECTION,,,,,18.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,RUNEUSDT,Bitget,NO_DIRECTION,,,,,18.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,TRXUSDT,Bitget,NO_DIRECTION,,,,,15.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,IOTAUSDT,Bitget,NO_DIRECTION,,,,,15.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,AZTECUSDT,Bitget,ALPHA_WATCH,LONG,79.7,,0.4539649238146873,15.1,0.870813397129187,,0.8161044613710536,0.004896626768226322,0.0,,0.125,0.6928833045140464,compression,0.5,0.0,10.772624434389156,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SOONUSDT,Bitget,REVERSAL_FAILED,SHORT,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,CCUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,GRASSUSDT,Bitget,NO_DIRECTION,,,,,12.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,JUPUSDT,Bitget,NO_DIRECTION,,,,,12.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,KMNOUSDT,Bitget,NO_DIRECTION,,,,,12.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,PROMUSDT,Bitget,ALPHA_WATCH,LONG,76.4,,0.4921676140707535,12.7,0.5698974836905878,,1.0,0.012623525661460019,0.0,,0.125,0.29065406540654065,compression,0.5,0.0,2.6528941355674247,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SPACEUSDT,Bitget,NO_DIRECTION,,,,,12.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,11.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MUBARAKUSDT,Bitget,ALPHA_WATCH,LONG,82.7,,0.4758050935281562,11.3,0.8843187660668382,,1.0,0.020355292376017835,0.0,,0.125,0.4999113243962235,compression,0.5,0.0,5.477272727272732,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,2ZUSDT,Bitget,NO_DIRECTION,,,,,11.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,METISUSDT,Bitget,ALPHA_WATCH,SHORT,81.7,,0.522712053571431,11.2,0.8368794326241139,,1.0,-0.012366983031348908,0.0,,0.375,1.9790730058327846,expansion,0.5,0.0,5.624371859296445,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,牛来USDT,Bitget,ALPHA_WATCH,LONG,89.1,,0.4495374462222315,11.1,0.9552511415525123,,1.0,0.04407713498622581,0.0,,0.375,1.6779837036865999,expansion,0.5,0.0,4.284068965517242,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,KASUSDT,Bitget,ALPHA_WATCH,LONG,76.2,,0.48193486733623603,10.6,0.5614617940199328,,1.0,0.008465608465608414,0.0,,0.125,0.715946074404989,compression,0.5,0.0,5.490318906605903,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,ALLOUSDT,Bitget,ALPHA_WATCH,LONG,84.7,,0.4845833757507828,10.0,0.9832810867293632,,1.0,0.01018099547511322,0.0,,0.125,0.10141409275586459,compression,0.5,0.0,7.7329787234043135,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,BRUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,GRAMUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
-2026-09-28T05:55:52.416724+00:00,JASMYUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MARSCOINUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,SIRENUSDT,Bitget,ALPHA_WATCH,LONG,77.6,,0.46885115739326405,10.0,0.6308411214953275,,1.0,0.008624407072013897,0.0,,0.125,0.5975305472801458,compression,0.5,0.0,11.086956521739152,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,SUIUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MONUSDT,Bitget,NO_DIRECTION,,,,,9.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,NMRUSDT,Bitget,NO_DIRECTION,,,,,9.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,RAREUSDT,Bitget,NO_DIRECTION,,,,,8.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,MMTUSDT,Bitget,NO_DIRECTION,,,,,7.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,HUMAUSDT,Bitget,NO_DIRECTION,,,,,7.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ALGOUSDT,Bitget,NO_DIRECTION,,,,,7.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,CAPUSDT,Bitget,NO_DIRECTION,,,,,6.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,APRUSDT,Bitget,NO_DIRECTION,,,,,6.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,VIRTUALUSDT,Bitget,ALPHA_WATCH,SHORT,67.5,,0.5091333955881273,6.7,0.6375000000000004,,0.647061188389483,-0.021930930173934927,0.0,,0.1985,0.9705917825842245,normal,0.5,0.0,2.0693612774451187,price is outside calibrated 100-candle execution zone
-2026-09-28T05:55:52.416724+00:00,PLUMEUSDT,Bitget,NO_DIRECTION,,,,,4.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
-2026-09-28T05:55:52.416724+00:00,ORCAUSDT,Bitget,ALPHA_OPPORTUNITY,SHORT,70.8,,0.5033617698091402,3.0,0.8015873015873021,,0.6536599061748432,-0.014671361502347496,0.0,,0.2018,0.9804898592622647,normal,0.5,0.0,1.2236842105263175,"alpha regime: location=0.80, participation=0.65, vol=0.98x, impulse=-1.467%, ATR=0.549%; geometry=structural_tp_geometry"
+2026-09-28T06:48:59.965505+00:00,MEGAUSDT,Bitget,NO_DIRECTION,,,,,90.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,OPNUSDT,Bitget,NO_DIRECTION,,,,,90.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GUSDT,Bitget,NO_DIRECTION,,,,,89.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,OPGUSDT,Bitget,ALPHA_WATCH,SHORT,73.9,,0.50766018697981,88.0,0.9620253164556968,,0.6472323147586577,0.002388535031847092,0.0,,0.1986,0.9708484721379865,normal,0.5,0.0,5.972222222222139,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,EDGEUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,BSBUSDT,Bitget,NO_DIRECTION,,,,,85.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GIGGLEUSDT,Bitget,ALPHA_WATCH,SHORT,84.0,,0.5109901084268585,85.5,0.9484536082474255,,1.0,0.0021259633271327504,0.0,,0.375,2.95980907349102,expansion,0.5,0.0,5.956185567010386,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,METUSDT,Bitget,NO_DIRECTION,,,,,85.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,WALUSDT,Bitget,NO_DIRECTION,,,,,85.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ZENUSDT,Bitget,ALPHA_WATCH,SHORT,84.0,,0.5262293159544086,85.2,0.9504447268106738,,1.0,-0.0033646432076265276,0.0,,0.375,4.3216850267323945,expansion,0.5,0.0,8.124034003091204,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,INJUSDT,Bitget,ALPHA_WATCH,SHORT,78.3,,0.5221670734754265,84.4,0.896551724137931,,0.6922115041086232,0.004153269024651739,0.0,,0.125,0.5955572370554534,compression,0.5,0.0,6.609598853868204,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,TIAUSDT,Bitget,REVERSAL_FAILED,LONG,87.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,MORPHOUSDT,Bitget,ALPHA_WATCH,SHORT,84.2,,0.5167033429768982,84.2,0.9596499756927556,,1.0,0.0019937451133696877,0.0,,0.375,1.9239782099272649,expansion,0.5,0.0,8.473917672107852,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,DYDXUSDT,Bitget,NO_DIRECTION,,,,,84.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,MAGMAUSDT,Bitget,ALPHA_WATCH,SHORT,79.7,,0.5177788649706399,83.5,0.9761904761904749,,0.6780109473962621,0.004068065684377573,0.0,,0.125,0.4792296218983713,compression,0.5,0.0,7.699152542372893,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,AEROUSDT,Bitget,NO_DIRECTION,,,,,83.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,LABUSDT,Bitget,REVERSAL_FAILED,LONG,72.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,ETHFIUSDT,Bitget,NO_DIRECTION,,,,,82.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,UNIUSDT,Bitget,ALPHA_WATCH,SHORT,84.2,,0.512571631560049,82.5,0.9582043343653263,,1.0,0.001200873362445525,0.0,,0.375,5.111066131505056,expansion,0.5,0.0,4.435950413223143,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,JTOUSDT,Bitget,REVERSAL_FAILED,LONG,100.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,PIXELUSDT,Bitget,NO_DIRECTION,,,,,81.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SIGNUSDT,Bitget,NO_DIRECTION,,,,,80.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TRBUSDT,Bitget,NO_DIRECTION,,,,,80.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TUTUSDT,Bitget,NO_DIRECTION,,,,,80.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BEATUSDT,Bitget,ALPHA_WATCH,SHORT,82.5,,0.5130971032101277,80.4,0.8767908309455588,,1.0,-0.0012324929971988684,0.0,,0.375,3.210346640199538,expansion,0.5,0.0,4.905688622754534,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,FLOCKUSDT,Bitget,ALPHA_WATCH,SHORT,73.8,,0.522205257567714,79.9,0.9398084815321464,,0.6656504013228444,-0.0010854396030392404,0.0,,0.2078,0.9984756019842665,normal,0.5,0.0,11.40340909090888,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,AKEUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,GALAUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,TLMUSDT,Bitget,NO_DIRECTION,,,,,78.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PENDLEUSDT,Bitget,NO_DIRECTION,,,,,78.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ZORAUSDT,Bitget,NO_DIRECTION,,,,,78.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PENGUUSDT,Bitget,NO_DIRECTION,,,,,76.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,THETAUSDT,Bitget,NO_DIRECTION,,,,,76.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,WIFUSDT,Bitget,NO_DIRECTION,,,,,76.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ARKUSDT,Bitget,NO_DIRECTION,,,,,76.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,COWUSDT,Bitget,NO_DIRECTION,,,,,76.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,LITUSDT,Bitget,NO_DIRECTION,,,,,75.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BIOUSDT,Bitget,NO_DIRECTION,,,,,75.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,VELVETUSDT,Bitget,ALPHA_WATCH,SHORT,82.9,,0.5130712502547377,75.2,0.8950000000000007,,1.0,0.00142450142450149,0.0,,0.375,3.3428099518733325,expansion,0.5,0.0,5.733240223463722,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,USELESSUSDT,Bitget,ALPHA_WATCH,SHORT,72.5,,0.5175691244239552,74.9,0.8879461673493271,,0.6475733002408538,-0.005792336894837702,0.0,,0.1988,0.9713599503612806,normal,0.5,0.0,4.516702393712055,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,XMRUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,POLUSDT,Bitget,NO_DIRECTION,,,,,74.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,CRVUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,KAITOUSDT,Bitget,NO_DIRECTION,,,,,74.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,CAKEUSDT,Bitget,NO_DIRECTION,,,,,74.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,REUSDT,Bitget,NO_DIRECTION,,,,,74.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BASEDUSDT,Bitget,NO_DIRECTION,,,,,74.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PHAUSDT,Bitget,ALPHA_WATCH,SHORT,87.5,,0.5117183821452108,74.0,0.8747007182761376,,1.0,-0.01032301032301025,1.0,,0.4172,0.8766492386639273,normal,0.5,0.0,3.2963576158940433,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,AEONUSDT,Bitget,NO_DIRECTION,,,,,73.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BILLUSDT,Bitget,ALPHA_WATCH,SHORT,83.4,,0.5149613899613875,73.4,0.9189189189189197,,1.0,0.001686340640809521,0.0,,0.375,3.169199150871183,expansion,0.5,0.0,5.6363636363636545,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,FOGOUSDT,Bitget,ALPHA_WATCH,SHORT,77.0,,0.5116979121468144,73.1,0.8698060941828247,,0.9743234955434846,-0.0008941344778255837,0.0,,0.3622,1.461485243315227,expansion,0.5,0.0,4.064855875831482,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,XLMUSDT,Bitget,NO_DIRECTION,,,,,73.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,VELODROMEUSDT,Bitget,NO_DIRECTION,,,,,72.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ORDIUSDT,Bitget,NO_DIRECTION,,,,,72.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AXLUSDT,Bitget,NO_DIRECTION,,,,,72.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ENSUSDT,Bitget,NO_DIRECTION,,,,,72.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AVNTUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,DEEPUSDT,Bitget,NO_DIRECTION,,,,,71.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SHIBUSDT,Bitget,REVERSAL_FAILED,LONG,87.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,DOSUSDT,Bitget,NO_DIRECTION,,,,,70.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BCHUSDT,Bitget,NO_DIRECTION,,,,,70.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ENAUSDT,Bitget,NO_DIRECTION,,,,,70.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TAOUSDT,Bitget,ALPHA_WATCH,SHORT,73.7,,0.5072234257857064,70.0,0.8674454037582526,,0.7565689358812794,-0.002821707461119541,0.0,,0.2533,1.1348534038219191,normal,0.5,0.0,2.871226196005585,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,FORMUSDT,Bitget,ALPHA_WATCH,SHORT,75.7,,0.5148290884718555,69.6,0.906666666666667,,0.501169395255603,0.003007016371533618,0.0,,0.125,0.0,compression,0.5,0.0,6.321428571428529,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,DOGEUSDT,Bitget,NO_DIRECTION,,,,,69.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,WLFIUSDT,Bitget,NO_DIRECTION,,,,,69.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AAVEUSDT,Bitget,ALPHA_WATCH,SHORT,77.7,,0.5071994551245101,69.2,0.9086357947434307,,0.9703610799392699,0.0011402508551882481,0.0,,0.3602,1.4555416199089048,expansion,0.5,0.0,3.4426605504587173,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CYSUSDT,Bitget,NO_DIRECTION,,,,,69.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ETCUSDT,Bitget,NO_DIRECTION,,,,,69.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GENIUSUSDT,Bitget,NO_DIRECTION,,,,,68.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,STRKUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,ARBUSDT,Bitget,NO_DIRECTION,,,,,68.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,FARTCOINUSDT,Bitget,NO_DIRECTION,,,,,68.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,CHIPUSDT,Bitget,NO_DIRECTION,,,,,68.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,FLOKIUSDT,Bitget,ALPHA_WATCH,SHORT,83.2,,0.5094892557241911,68.4,0.9096045197740104,,1.0,-0.0036643459142542702,0.0,,0.375,5.26043322089395,expansion,0.5,0.0,6.440265486725666,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,TRUMPUSDT,Bitget,NO_DIRECTION,,,,,68.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,DOGSUSDT,Bitget,NO_DIRECTION,,,,,66.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SLXUSDT,Bitget,NO_DIRECTION,,,,,66.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SOLUSDT,Bitget,NO_DIRECTION,,,,,66.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ICPUSDT,Bitget,NO_DIRECTION,,,,,66.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,IDUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,ACEUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,IOSTUSDT,Bitget,NO_DIRECTION,,,,,65.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PEPEUSDT,Bitget,NO_DIRECTION,,,,,64.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BNBUSDT,Bitget,ALPHA_WATCH,SHORT,71.0,,0.5057338065486664,64.7,0.891059027777778,,0.5419800329347579,-0.0025738335675172174,0.0,,0.146,0.8129700494021369,normal,0.5,0.0,5.033778234086157,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,XANUSDT,Bitget,ALPHA_WATCH,SHORT,82.3,,0.5139568706704245,64.7,0.8665377176015465,,1.0,-0.0013100794235650856,0.0,,0.375,2.299867737950156,expansion,0.5,0.0,6.750000000000005,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,AWEUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,XTZUSDT,Bitget,NO_DIRECTION,,,,,63.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,LAUSDT,Bitget,ALPHA_WATCH,SHORT,76.1,,0.5083815283065779,63.4,0.8439849624060153,,0.9452796637568704,-0.00334253742188647,0.0,,0.3476,1.4179194956353056,expansion,0.5,0.0,3.9809582309581746,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,SUSHIUSDT,Bitget,NO_DIRECTION,,,,,63.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,INUSDT,Bitget,NO_DIRECTION,,,,,62.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,VETUSDT,Bitget,ALPHA_WATCH,SHORT,81.9,,0.50752024406934,62.9,0.844827586206897,,1.0,-0.004237773450922068,0.0,,0.375,1.8827126953593851,expansion,0.5,0.0,3.6130136986301062,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,ZECUSDT,Bitget,NO_DIRECTION,,,,,62.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,CHZUSDT,Bitget,ALPHA_WATCH,SHORT,72.6,,0.508420303605318,62.7,0.8712871287128697,,0.6773240358210657,-0.0031725888324874007,0.0,,0.2137,1.0159860537315986,normal,0.5,0.0,4.8409090909091415,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,SNXUSDT,Bitget,NO_DIRECTION,,,,,62.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ACUUSDT,Bitget,NO_DIRECTION,,,,,62.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ARKMUSDT,Bitget,ALPHA_WATCH,SHORT,72.2,,0.5102144439755144,62.1,0.8739495798319329,,0.6466233001784683,-0.004451038575667577,0.0,,0.1983,0.9699349502677024,normal,0.5,0.0,5.163333333333383,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,XRPUSDT,Bitget,NO_DIRECTION,,,,,62.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BTWUSDT,Bitget,ALPHA_WATCH,LONG,88.0,,0.4683349183768679,61.9,0.8977629639125688,,1.0,0.0034571976624881567,0.0,,0.375,1.8229227168917586,expansion,0.5,0.0,4.121112718256021,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,RENDERUSDT,Bitget,NO_DIRECTION,,,,,61.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ZAMAUSDT,Bitget,NO_DIRECTION,,,,,61.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AXSUSDT,Bitget,NO_DIRECTION,,,,,61.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,HUMAUSDT,Bitget,ALPHA_WATCH,SHORT,88.9,,0.5554680652936037,61.6,0.9473684210526319,,1.0,0.009118541033434674,0.0,,0.375,4.511203297632407,expansion,0.5,0.0,7.473247232472342,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,STXUSDT,Bitget,NO_DIRECTION,,,,,61.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,RAYUSDT,Bitget,ALPHA_WATCH,SHORT,73.4,,0.515928028457272,61.2,0.9544303797468349,,0.6224986886192369,-0.0011708459361889842,0.0,,0.1862,0.9337480329288552,normal,0.5,0.0,6.739690721649452,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,UNITASUSDT,Bitget,NO_DIRECTION,,,,,61.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ASTERUSDT,Bitget,NO_DIRECTION,,,,,61.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,FILUSDT,Bitget,NO_DIRECTION,,,,,60.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,HYPEUSDT,Bitget,REVERSAL_FAILED,LONG,67.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,IOUSDT,Bitget,NO_DIRECTION,,,,,60.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,MAGICUSDT,Bitget,NO_DIRECTION,,,,,60.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,RAVEUSDT,Bitget,ALPHA_WATCH,SHORT,82.7,,0.5160817343726514,60.5,0.8831341301460833,,1.0,0.008118234804329756,0.0,,0.125,0.238959149864641,compression,0.5,0.0,5.902682255845957,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,NOTUSDT,Bitget,NO_DIRECTION,,,,,60.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SKYAIUSDT,Bitget,NO_DIRECTION,,,,,60.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,XAIUSDT,Bitget,NO_DIRECTION,,,,,59.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,FETUSDT,Bitget,NO_DIRECTION,,,,,59.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,OPENUSDT,Bitget,NO_DIRECTION,,,,,59.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AVAXUSDT,Bitget,NO_DIRECTION,,,,,59.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,OPUSDT,Bitget,NO_DIRECTION,,,,,59.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,NILUSDT,Bitget,NO_DIRECTION,,,,,59.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ARUSDT,Bitget,NO_DIRECTION,,,,,58.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,DASHUSDT,Bitget,NO_DIRECTION,,,,,58.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SANDUSDT,Bitget,NO_DIRECTION,,,,,58.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SUPERUSDT,Bitget,ALPHA_WATCH,SHORT,83.2,,0.5135153880298863,58.4,0.9101123595505622,,1.0,0.0015511892450878735,0.0,,0.375,5.477361410721435,expansion,0.5,0.0,4.654458598726097,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,SENTUSDT,Bitget,NO_DIRECTION,,,,,58.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ATOMUSDT,Bitget,NO_DIRECTION,,,,,57.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BLESSUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,INXUSDT,Bitget,REVERSAL_FAILED,LONG,100.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,VTHOUSDT,Bitget,ALPHA_WATCH,SHORT,70.4,,0.5057222861826016,56.9,0.7327044025157254,,0.7157095268019433,0.00218072781790928,0.0,,0.2329,1.073564290202915,normal,0.5,0.0,4.9703389830508575,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,ZROUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,VVVUSDT,Bitget,ALPHA_OPPORTUNITY,SHORT,71.4,,0.5029350030239369,55.4,0.7413793103448271,,0.7715417579999463,-0.007888414787192169,0.0,,0.2608,1.1573126369999194,normal,0.5,0.0,1.1785714285714197,"alpha regime: location=0.74, participation=0.77, vol=1.16x, impulse=-0.789%, ATR=0.498%; geometry=structural_tp_geometry"
+2026-09-28T06:48:59.965505+00:00,SPKUSDT,Bitget,ALPHA_WATCH,SHORT,81.2,,0.5075058447151448,54.8,0.8111111111111111,,1.0,-0.0021579628830384738,0.0,,0.375,4.004238381291683,expansion,0.5,0.0,2.7727272727272494,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,EIGENUSDT,Bitget,NO_DIRECTION,,,,,54.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TAIKOUSDT,Bitget,NO_DIRECTION,,,,,54.5,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,UBUSDT,Bitget,ALPHA_WATCH,LONG,85.6,,0.489797328045771,54.5,0.780800000000003,,1.0,0.004505975315091909,0.0,,0.375,1.7005788893166462,expansion,0.5,0.0,3.8990683229813947,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CROUSDT,Bitget,NO_DIRECTION,,,,,54.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SUIUSDT,Bitget,REVERSAL_FAILED,LONG,85.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,LDOUSDT,Bitget,NO_DIRECTION,,,,,54.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,XVGUSDT,Bitget,REVERSAL_FAILED,LONG,67.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,BRETTUSDT,Bitget,NO_DIRECTION,,,,,52.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AGLDUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,BROCCOLIUSDT,Bitget,REVERSAL_FAILED,LONG,80.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,PIUSDT,Bitget,NO_DIRECTION,,,,,51.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GWEIUSDT,Bitget,NO_DIRECTION,,,,,51.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,UAIUSDT,Bitget,REVERSAL_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,SYNUSDT,Bitget,NO_DIRECTION,,,,,50.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BBUSDT,Bitget,ALPHA_WATCH,SHORT,73.8,,0.512183835487467,49.8,0.7973387922210848,,0.8569440968168682,-0.003809141940657562,0.0,,0.3035,1.2854161452253023,expansion,0.5,0.0,4.363026819923345,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CFXUSDT,Bitget,NO_DIRECTION,,,,,49.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,COTIUSDT,Bitget,REVERSAL_FAILED,LONG,67.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,LINKUSDT,Bitget,NO_DIRECTION,,,,,48.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,MOVRUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,SYRUPUSDT,Bitget,NO_DIRECTION,,,,,47.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BERAUSDT,Bitget,NO_DIRECTION,,,,,46.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BOMEUSDT,Bitget,NO_DIRECTION,,,,,46.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,WLDUSDT,Bitget,NO_DIRECTION,,,,,46.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ADAUSDT,Bitget,NO_DIRECTION,,,,,45.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PONSUSDT,Bitget,ALPHA_WATCH,SHORT,79.7,,0.5240041585034836,45.7,0.735608909459069,,1.0,0.009819875427866165,0.0,,0.1695,0.8835348842157335,normal,0.5,0.0,4.2775306564078015,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,牛来USDT,Bitget,NO_DIRECTION,,,,,44.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ATHUSDT,Bitget,NO_DIRECTION,,,,,44.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,RIVERUSDT,Bitget,REVERSAL_FAILED,LONG,68.8,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,1000BONKUSDT,Bitget,NO_DIRECTION,,,,,43.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,NXPCUSDT,Bitget,NO_DIRECTION,,,,,43.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BUSDT,Bitget,REVERSAL_FAILED,LONG,100.0,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,龙虾USDT,Bitget,ALPHA_OPPORTUNITY,SHORT,71.8,,0.5051201633111895,43.1,0.6182390397423696,,0.9641878522047554,-0.039271887522923384,0.0,,0.3571,1.4462817783071331,expansion,0.5,0.0,0.7212632340369644,"alpha regime: location=0.62, participation=0.96, vol=1.45x, impulse=-3.927%, ATR=1.420%; geometry=structural_tp_geometry"
+2026-09-28T06:48:59.965505+00:00,NEARUSDT,Bitget,NO_DIRECTION,,,,,40.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ETHUSDT,Bitget,NO_DIRECTION,,,,,40.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,XPLUSDT,Bitget,REVERSAL_FAILED,LONG,87.5,0.0,,0.0,1.0,,,,,,,,,,,,countertrend early reversal requires stronger confirmation
+2026-09-28T06:48:59.965505+00:00,EPICUSDT,Bitget,NO_DIRECTION,,,,,39.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,KITEUSDT,Bitget,ALPHA_WATCH,SHORT,82.4,,0.5112089213559273,38.7,0.8704137392661986,,1.0,-0.009920495321184792,0.0,,0.375,3.7761039464175292,expansion,0.5,0.0,4.416666666666647,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,ARXUSDT,Bitget,NO_DIRECTION,,,,,38.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ONEUSDT,Bitget,ALPHA_WATCH,LONG,78.1,,0.47266094730486147,36.8,0.6559139784946232,,1.0,0.009237275560172136,0.0,,0.125,0.35164179886760233,compression,0.5,0.0,3.306120019050641,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,BTCUSDT,Bitget,ALPHA_WATCH,SHORT,68.0,,0.5018429901762765,36.0,0.7759104870557274,,0.5019511973439569,-0.001647123133290585,0.0,,0.126,0.7529267960159353,normal,0.5,0.0,2.347156916347766,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CPUSDT,Bitget,NO_DIRECTION,,,,,35.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,POWERUSDT,Bitget,NO_DIRECTION,,,,,34.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,EGLDUSDT,Bitget,ALPHA_WATCH,SHORT,82.8,,0.512267333643553,33.9,0.641414141414139,,1.0,0.006043600259011349,0.0,,0.375,1.7332279526181136,expansion,0.5,0.0,4.024809160305308,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,LYNUSDT,Bitget,ALPHA_WATCH,LONG,83.9,,0.4901030919116416,33.8,0.6969696969696957,,1.0,0.008116495583671522,0.0,,0.375,13.861606950836595,expansion,0.5,0.0,3.2597493036211698,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,APTUSDT,Bitget,NO_DIRECTION,,,,,33.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TRIAUSDT,Bitget,ALPHA_WATCH,LONG,69.6,,0.48201218516218947,33.4,0.6962025316455699,,0.7093111755852748,-0.0029639762881896923,0.0,,0.2297,1.0639667633779122,normal,0.5,0.0,5.122093023255774,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,SUSDT,Bitget,NO_DIRECTION,,,,,32.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PLUMEUSDT,Bitget,NO_DIRECTION,,,,,32.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,WUSDT,Bitget,NO_DIRECTION,,,,,32.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GRVTUSDT,Bitget,ALPHA_WATCH,SHORT,65.0,,0.5072437903913785,30.6,0.5588914549653592,,0.5866023159758958,-0.0004049812696162638,0.0,,0.1683,0.8799034739638437,normal,0.5,0.0,3.6339528558477197,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,RAREUSDT,Bitget,NO_DIRECTION,,,,,30.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,LSKUSDT,Bitget,NO_DIRECTION,,,,,30.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,MANTRAUSDT,Bitget,NO_DIRECTION,,,,,29.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,HBARUSDT,Bitget,ALPHA_WATCH,LONG,81.8,,0.48248988150031763,28.5,0.8391038696537679,,1.0,0.013370646766169149,0.0,,0.125,0.6992176370321601,compression,0.5,0.0,3.7863349131121744,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,BIGTIMEUSDT,Bitget,NO_DIRECTION,,,,,28.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SEIUSDT,Bitget,ALPHA_WATCH,LONG,70.5,,0.4856991250108362,26.4,0.5888671874999994,,0.5840199076783585,0.003163401873707219,0.0,,0.167,0.8760298615175378,normal,0.5,0.0,2.9216814159291915,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,MARSCOINUSDT,Bitget,NO_DIRECTION,,,,,26.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,STONKUSDT,Bitget,ALPHA_WATCH,LONG,89.8,,0.4657926930990413,25.9,0.7391826923076937,,1.0,-0.005034856700232254,1.0,,0.625,2.7070651385982845,expansion,0.5,0.0,5.025735294117652,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,IRYSUSDT,Bitget,ALPHA_WATCH,SHORT,68.7,,0.5589035020055629,25.8,0.5752212389380535,,0.8106253150994794,-0.013129102844638793,0.0,,0.2803,1.2159379726492192,normal,0.5,0.0,6.973744292237446,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,METISUSDT,Bitget,NO_DIRECTION,,,,,25.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,IOTAUSDT,Bitget,NO_DIRECTION,,,,,25.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PROSUSDT,Bitget,NO_DIRECTION,,,,,25.1,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,0GUSDT,Bitget,NO_DIRECTION,,,,,24.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,BGBUSDT,Bitget,ALPHA_WATCH,SHORT,78.9,,0.5038854399768994,24.1,0.6964856230031939,,1.0,-0.0020760544837713263,0.0,,0.375,1.6916208346813328,expansion,0.5,0.0,5.329207920792063,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,EVAAUSDT,Bitget,ALPHA_WATCH,SHORT,69.2,,0.518831485985415,24.0,0.8461538461538456,,0.48699243862629493,-0.00013956734124213397,0.0,,0.125,0.7304886579394424,compression,0.5,0.0,8.322687224669592,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CFGUSDT,Bitget,NO_DIRECTION,,,,,23.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GPSUSDT,Bitget,ALPHA_WATCH,SHORT,64.8,,0.5037036747214294,23.6,0.6136944302503835,,0.5018513435130039,-0.0003506926179204393,0.0,,0.1259,0.7527770152695058,normal,0.5,0.0,1.5672185430463306,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,QUSDT,Bitget,NO_DIRECTION,,,,,23.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SKYUSDT,Bitget,CONFIDENCE_FAILED,LONG,81.2,0.0,,0.0,1.0,,,,,,,,,,,,historical calibration confidence floor not met
+2026-09-28T06:48:59.965505+00:00,HUSDT,Bitget,ALPHA_WATCH,SHORT,79.1,,0.5109077487017528,22.3,0.7038626609442034,,1.0,-0.004294917680744576,0.0,,0.375,1.644548132131351,expansion,0.5,0.0,3.489413680781754,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,2ZUSDT,Bitget,ALPHA_WATCH,LONG,86.1,,0.475688550100109,20.2,0.5552325581395356,,1.0,0.003516281914080538,1.0,,0.4461,0.9633361782848616,normal,0.5,0.0,5.765483870967757,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,KASUSDT,Bitget,NO_DIRECTION,,,,,20.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PYTHUSDT,Bitget,NO_DIRECTION,,,,,18.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,QNTUSDT,Bitget,ALPHA_OPPORTUNITY,SHORT,89.2,,0.5154069367519357,18.5,0.7103783619510713,,1.0,-0.03251822935847383,1.0,,0.625,1.8037759641655995,expansion,0.5,0.0,1.1670204554226185,"alpha regime: location=0.71, participation=1.00, vol=1.80x, impulse=-3.252%, ATR=2.640%; geometry=structural_tp_geometry"
+2026-09-28T06:48:59.965505+00:00,DOTUSDT,Bitget,NO_DIRECTION,,,,,17.7,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ONDOUSDT,Bitget,NO_DIRECTION,,,,,17.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,LTCUSDT,Bitget,NO_DIRECTION,,,,,17.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SOONUSDT,Bitget,NO_DIRECTION,,,,,16.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,AZTECUSDT,Bitget,ALPHA_WATCH,LONG,84.8,,0.4432542826956487,16.0,0.9909909909909899,,1.0,0.01719505642127874,0.0,,0.125,0.5435599762536012,compression,0.5,0.0,10.40743944636679,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,ALLOUSDT,Bitget,NO_DIRECTION,,,,,15.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SPACEUSDT,Bitget,ALPHA_WATCH,SHORT,83.2,,0.5070990036486187,15.7,0.6605504587155955,,1.0,0.005470887065259915,0.0,,0.375,4.621826232189843,expansion,0.5,0.0,3.817924528301868,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,MUBARAKUSDT,Bitget,ALPHA_WATCH,LONG,82.1,,0.4714022549715877,14.9,0.8540983606557384,,1.0,0.006613047363717646,0.0,,0.1604,0.8560577272992301,normal,0.5,0.0,4.505244755244759,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,GRAMUSDT,Bitget,NO_DIRECTION,,,,,14.3,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,RUNEUSDT,Bitget,ALPHA_WATCH,LONG,80.0,,0.4809908600311692,14.1,0.751748251748252,,1.0,0.008856682769726315,0.0,,0.125,0.5723685682952485,compression,0.5,0.0,6.3921725239616585,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,MINAUSDT,Bitget,NO_DIRECTION,,,,,13.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,TRXUSDT,Bitget,NO_DIRECTION,,,,,13.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,JASMYUSDT,Bitget,NO_DIRECTION,,,,,13.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,GRASSUSDT,Bitget,ALPHA_WATCH,SHORT,77.2,,0.5275237458549225,12.8,0.6095648162386582,,1.0,0.014947473424982056,0.0,,0.3201,1.3353689896056993,expansion,0.5,0.0,3.492166774216677,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,GRTUSDT,Bitget,ALPHA_WATCH,SHORT,70.6,,0.5099313186813097,12.7,0.7843866171003716,,0.6611677255047522,-0.002776920703486572,0.0,,0.2056,0.9917515882571283,normal,0.5,0.0,1.708412098298668,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,BRUSDT,Bitget,ALPHA_WATCH,SHORT,77.5,,0.5172657970977915,12.4,0.627469764100108,,1.0,0.009138967023104587,0.0,,0.125,0.21145850723013204,compression,0.5,0.0,5.512216624685126,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,APEUSDT,Bitget,NO_DIRECTION,,,,,12.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,IMXUSDT,Bitget,ALPHA_WATCH,SHORT,78.8,,0.5111656093358418,11.8,0.6898395721925132,,1.0,-0.003300330033003395,0.0,,0.375,2.3948458138478608,expansion,0.5,0.0,3.1161202185792316,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,USUSDT,Bitget,ALPHA_WATCH,LONG,78.1,,0.442528111072124,10.9,0.6570558375634518,,1.0,0.024065174951193844,0.0,,0.2783,1.2099468255417083,normal,0.5,0.0,7.785473572188713,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,ALGOUSDT,Bitget,NO_DIRECTION,,,,,10.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,JUPUSDT,Bitget,NO_DIRECTION,,,,,10.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,KMNOUSDT,Bitget,NO_DIRECTION,,,,,10.2,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,PUMPUSDT,Bitget,ALPHA_WATCH,SHORT,80.7,,0.5289080649324518,10.2,0.7846153846153848,,1.0,0.010528406833532001,0.0,,0.2886,1.240776095313068,normal,0.5,0.0,3.9957879088206223,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CCUSDT,Bitget,ALPHA_WATCH,SHORT,66.9,,0.5222987145141508,10.0,0.6109765940274403,,0.6454031288932008,-0.0024043715846994314,0.0,,0.1977,0.9681046933398013,normal,0.5,0.0,8.323643410852721,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,MMTUSDT,Bitget,NO_DIRECTION,,,,,10.0,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,SIRENUSDT,Bitget,ALPHA_WATCH,LONG,79.2,,0.46818195681346947,10.0,0.7102803738317761,,1.0,0.0064460678985819005,0.0,,0.125,0.24545564935510608,compression,0.5,0.0,12.569277108433704,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,CAPUSDT,Bitget,NO_DIRECTION,,,,,9.6,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,MONUSDT,Bitget,ALPHA_WATCH,SHORT,69.9,,0.5129043737060097,8.8,0.6524064171123001,,0.7896146087543641,-0.009140767824497267,0.0,,0.2698,1.184421913131546,normal,0.5,0.0,2.0310590631364587,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,VIRTUALUSDT,Bitget,NO_DIRECTION,,,,,8.8,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,NMRUSDT,Bitget,ALPHA_OPPORTUNITY,SHORT,63.9,,0.5031954148778005,8.0,0.5917085427135671,,0.47391933779186984,-0.0036471168063086064,0.0,,0.125,0.7108790066878048,compression,0.5,0.0,0.8163082437275764,"alpha regime: location=0.59, participation=0.47, vol=0.71x, impulse=-0.365%, ATR=0.783%; geometry=structural_tp_geometry"
+2026-09-28T06:48:59.965505+00:00,APRUSDT,Bitget,NO_DIRECTION,,,,,7.9,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
+2026-09-28T06:48:59.965505+00:00,ORCAUSDT,Bitget,ALPHA_WATCH,SHORT,69.2,,0.5087991718426522,6.8,0.7777777777777773,,0.5751048875850401,-0.007005253940455348,0.0,,0.1626,0.8626573313775601,normal,0.5,0.0,2.8716216216216175,price is outside calibrated 100-candle execution zone
+2026-09-28T06:48:59.965505+00:00,PROMUSDT,Bitget,NO_DIRECTION,,,,,6.4,,,,,,,,,,,,,early reversal direction returned None; no Alpha opportunity
