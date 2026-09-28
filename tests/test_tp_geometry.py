@@ -19,7 +19,7 @@ class TpGeometryTests(unittest.TestCase):
         self.assertGreaterEqual(result["reward_r"], MIN_TARGET_R)
         self.assertLessEqual(result["reward_r"], MAX_TARGET_R)
         self.assertGreater(result["target"], 100.0)
-        self.assertIn(result["target_source"], {"15m_pivot", "15m_range_boundary", "5m_pivot", "5m_range_projection"})
+        self.assertIn(result["target_source"], {"15m_pivot", "15m_range_boundary", "5m_pivot", "5m_range_projection", "risk_projection"})
 
     def test_short_target_is_below_entry(self):
         rows15 = [candle(i, 100 - i * 0.02, 99 - i * 0.02, 101 - i * 0.02) for i in range(80)]
@@ -35,7 +35,11 @@ class TpGeometryTests(unittest.TestCase):
 
     def test_no_tp_when_no_supported_price_geometry(self):
         rows = [candle(i, 100.0, 99.99, 100.01) for i in range(20)]
-        self.assertIsNone(calibrate_tp(rows, rows, "LONG", 100.0, 99.5, {}))
+        result = calibrate_tp(rows, rows, "LONG", 100.0, 99.5, {})
+        self.assertIsNotNone(result)
+        self.assertEqual(result["target_source"], "risk_projection")
+        self.assertGreaterEqual(result["reward_r"], MIN_TARGET_R)
+        self.assertLessEqual(result["reward_r"], MAX_TARGET_R)
 
 
 if __name__ == "__main__":
