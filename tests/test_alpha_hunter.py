@@ -10,6 +10,14 @@ def candle(ts, price, volume=100.0, span=0.2):
 
 
 class AlphaHunterTests(unittest.TestCase):
+    def test_direction_location_matches_extreme_thesis(self):
+        low = [candle(i * 900000, 100.0 - i * 0.01, 100.0, 0.2) for i in range(32)]
+        high = [candle(i * 900000, 100.0 + i * 0.01, 100.0, 0.2) for i in range(32)]
+        self.assertGreater(alpha_hunter._range_position(low, "LONG"), 0.95)
+        self.assertLess(alpha_hunter._range_position(low, "SHORT"), 0.05)
+        self.assertLess(alpha_hunter._range_position(high, "LONG"), 0.05)
+        self.assertGreater(alpha_hunter._range_position(high, "SHORT"), 0.95)
+
     def test_opportunity_in_volatile_low_range(self):
         rows15 = []
         for i in range(160):
@@ -94,7 +102,7 @@ class AlphaHunterTests(unittest.TestCase):
             "timing_score": 0.8, "volume_ratio_5m": 1.4,
             "volume_regime": "expansion", "flow_score": 0.9,
             "sweep_score": 1.0, "regime_score_15m": 0.8,
-            "calibration_inputs": "100x5m + 15m regime/location + volume regime + order-flow/liquidity",
+            "calibration_inputs": "40x5m executable extreme + 100x5m reference + 15m regime/location + volume regime + order-flow/liquidity",
         }
         context = {"order_flow_score": 0.9, "whale_score": 0.8, "liquidation_score": 0.7, "flow_conviction": 0.85}
         with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated) as mocked:
@@ -105,7 +113,7 @@ class AlphaHunterTests(unittest.TestCase):
         self.assertEqual(kwargs["context"], context)
         self.assertEqual(plan["timing_score"], 0.8)
         self.assertEqual(plan["flow_score"], 0.9)
-        self.assertIn("100x5m", plan["calibration_inputs"])
+        self.assertIn("40x5m executable extreme", plan["calibration_inputs"])
 
 
     def test_directional_timing_zone_matches_execution_side(self):
