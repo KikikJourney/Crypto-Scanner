@@ -3,13 +3,16 @@
 This module answers only: WHERE/WHEN should the scanner attempt execution?
 It deliberately does not calculate stop-loss or take-profit geometry.
 
-The production anchor is the 100 fully closed 5m candle extreme. ATR is used
-only to place a bounded execution buffer around that anchor.
+The 100-candle extreme remains the historical/reference anchor. A 40-candle
+timing anchor can take over when the 100-candle extreme is no longer reachable
+in the current 5m volatility regime. This is timing calibration, not geometry.
 """
 
 LOOKBACK_CANDLES = 100
+TIMING_LOOKBACK_CANDLES = 40
 ENTRY_BUFFER_ATR = 0.25
 ENTRY_BUFFER_FLOOR_PCT = 0.03
+MAX_PRIMARY_ANCHOR_DISTANCE_ATR = 2.0
 MIN_TIMING_SCORE = 0.35
 MAX_TIMING_SCORE = 1.00
 
@@ -33,11 +36,21 @@ def _high(row):
     return _f(row[2])
 
 
+def _anchor(window, direction):
+    lows = [_low(row) for row in window]
+    highs = [_high(row) for row in window]
+    if any(value is None or value <= 0 for value in lows + highs):
+        return None
+    return min(lows) if direction == "LONG" else max(highs)
+
+
 def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
     """Return calibrated entry location without producing SL/TP.
 
-    Output fields describe entry timing/location only:
-    anchor, current_price, entry, buffer, distance_atr.
+    The 100-candle extreme is retained as anchor_100 for auditability.
+    The recent 40-candle extreme becomes the executable timing anchor only
+    when the 100-candle anchor is more than 2 ATR away and the 40-candle
+    anchor materially improves reachability.
     """
     if direction not in {"LONG", "SHORT"}:
         return None
@@ -45,19 +58,27 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
         return None
 
     window = rows_5m[-LOOKBACK_CANDLES:]
-    lows = [_low(row) for row in window]
-    highs = [_high(row) for row in window]
-    if any(value is None or value <= 0 for value in lows + highs):
-        return None
-
     current_price = _close(rows_5m[-1])
     if current_price is None or current_price <= 0:
         return None
 
-    anchor = min(lows) if direction == "LONG" else max(highs)
+    anchor_100 = _anchor(window, direction)
+    anchor_40 = _anchor(rows_5m[-TIMING_LOOKBACK_CANDLES:], direction)
+    if anchor_100 is None or anchor_40 is None:
+        return None
 
-    # Timing calibration uses location first, then market participation.
-    # Missing external flow data is neutral rather than a hard rejection.
+    distance_100 = abs(current_price - anchor_100) / micro_atr
+    distance_40 = abs(current_price - anchor_40) / micro_atr
+
+    if distance_100 <= MAX_PRIMARY_ANCHOR_DISTANCE_ATR or distance_40 >= distance_100:
+        anchor = anchor_100
+        anchor_window = LOOKBACK_CANDLES
+        anchor_source = "100c"
+    else:
+        anchor = anchor_40
+        anchor_window = TIMING_LOOKBACK_CANDLES
+        anchor_source = "40c_timing"
+
     context = context or {}
     timing_components = []
 
@@ -107,10 +128,6 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
 
     timing_score = sum(timing_components) / len(timing_components)
 
-    # Adaptive buffer remains bounded around the 100-candle anchor. This is
-    # timing calibration only; SL/TP geometry is untouched.
-    # The anchor/buffer remains deterministic. Volume/flow/regime calibrate
-    # timing quality without silently moving the 100-candle entry geometry.
     buffer_factor = ENTRY_BUFFER_ATR
     buffer = max(micro_atr * buffer_factor, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
     entry = anchor + buffer if direction == "LONG" else anchor - buffer
@@ -118,11 +135,18 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
 
     return {
         "anchor": anchor,
+        "anchor_100": anchor_100,
+        "anchor_40": anchor_40,
+        "anchor_source": anchor_source,
+        "anchor_window": anchor_window,
+        "anchor_distance_100_atr": round(distance_100, 4),
+        "anchor_distance_40_atr": round(distance_40, 4),
         "buffer": buffer,
         "entry": entry,
         "current_price": current_price,
         "distance_atr": distance_atr,
         "lookback_candles": LOOKBACK_CANDLES,
+        "timing_lookback_candles": TIMING_LOOKBACK_CANDLES,
         "timing_score": round(timing_score, 4),
         "volume_ratio_5m": round(volume_ratio, 4),
         "volume_regime": "expansion" if volume_ratio >= 1.25 else "compression" if volume_ratio < 0.75 else "normal",
@@ -130,5 +154,5 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
         "sweep_score": round(sweep_score, 4),
         "regime_score_15m": round(regime_score, 4),
         "buffer_atr": round(buffer_factor, 4),
-        "calibration_inputs": "100x5m + 15m regime/location + volume regime + order-flow/liquidity",
+        "calibration_inputs": "100x5m reference + 40x5m timing + 15m regime/location + volume regime + order-flow/liquidity",
     }
