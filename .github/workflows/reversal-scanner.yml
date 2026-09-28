@@ -220,13 +220,18 @@ jobs:
       - name: Validate extreme archive integrity
         run: python -m extreme_archive_integrity
       - name: Research Alpha Watch against Binance history
-        if: github.event_name == 'push'
+        # Research is diagnostic-only. It must never block live scanning,
+        # Telegram delivery, or persistence when an external Binance request
+        # or historical reconstruction fails.
+        if: github.event_name == 'workflow_dispatch'
+        continue-on-error: true
         env:
           ALPHA_RESEARCH_DAYS: '7'
           ALPHA_RESEARCH_MAX_SYMBOLS: '124'
           ALPHA_RESEARCH_WORKERS: '8'
           ALPHA_RESEARCH_HORIZON_BARS: '24'
-        run: python alpha_watch_binance_research.py
+        run: |
+          python alpha_watch_binance_research.py
       - name: Send confirmed scalping actions to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
