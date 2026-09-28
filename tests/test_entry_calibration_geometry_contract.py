@@ -70,6 +70,19 @@ class EntryCalibrationGeometryContractTests(unittest.TestCase):
         self.assertIn("regime_score_15m", result)
         self.assertIn("calibration_inputs", result)
 
+    def test_40_candle_timing_anchor_replaces_unreachable_100_anchor(self):
+        rows_5m = [candle(i, close=100.0, low=99.8, high=100.2) for i in range(100)]
+        # Old 100-candle extreme is deliberately far away.
+        rows_5m[10] = candle(10, close=90.0, low=89.0, high=90.5, volume=150.0)
+        # Recent 40-candle extreme is close enough to be executable.
+        rows_5m[-1] = candle(99, close=100.0, low=99.8, high=100.2, volume=160.0)
+        result = calibrate_entry(rows_5m, "LONG", 1.0)
+        self.assertEqual(result["anchor_source"], "40c_timing")
+        self.assertEqual(result["anchor_window"], 40)
+        self.assertAlmostEqual(result["anchor_100"], 89.0, places=8)
+        self.assertAlmostEqual(result["anchor_40"], 99.8, places=8)
+        self.assertLess(result["distance_atr"], 1.0)
+
     def test_geometry_is_independent_of_calibration_entry_location(self):
         a = build_entry_geometry("LONG", 100.0)
         b = build_entry_geometry("LONG", 110.0)
