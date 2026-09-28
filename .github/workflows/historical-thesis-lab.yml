@@ -1,0 +1,25 @@
+name: Historical Thesis Lab
+
+on:
+  push:
+    branches:
+      - research/historical-thesis-lab-v1
+  workflow_dispatch:
+
+jobs:
+  thesis-lab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run historical thesis lab
+        run: python historical_thesis_lab.py
+      - name: Upload thesis reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-thesis-lab
+          path: |
+            data/historical_thesis_lab.csv
+            data/historical_thesis_lab_summary.csv
