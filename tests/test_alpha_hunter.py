@@ -83,6 +83,30 @@ class AlphaHunterTests(unittest.TestCase):
         self.assertGreater(plan["entry_distance_atr"], 0.9)
         self.assertIn("execution zone", plan["watch_reason"])
 
+    def test_alpha_passes_mtf_and_flow_context_to_timing_calibration(self):
+        rows15 = [candle(i * 900000, 110.0 - i * 0.05, 1000.0, 0.30) for i in range(160)]
+        rows15[-1] = candle(159 * 900000, 97.5, 1800.0, 0.30)
+        rows5 = [candle(i * 300000, 98.0 + max(0, i - 68) * 0.18, 100.0, 0.40) for i in range(100)]
+        rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
+        calibrated = {
+            "anchor": 98.6, "buffer": 0.2, "entry": 98.8,
+            "current_price": 99.0, "distance_atr": 0.25,
+            "timing_score": 0.8, "volume_ratio_5m": 1.4,
+            "volume_regime": "expansion", "flow_score": 0.9,
+            "sweep_score": 1.0, "regime_score_15m": 0.8,
+            "calibration_inputs": "100x5m + 15m regime/location + volume regime + order-flow/liquidity",
+        }
+        context = {"order_flow_score": 0.9, "whale_score": 0.8, "liquidation_score": 0.7, "flow_conviction": 0.85}
+        with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated) as mocked:
+            plan = build_plan(rows15, rows5, context=context)
+        self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
+        kwargs = mocked.call_args.kwargs
+        self.assertIs(kwargs["rows_15m"], rows15)
+        self.assertEqual(kwargs["context"], context)
+        self.assertEqual(plan["timing_score"], 0.8)
+        self.assertEqual(plan["flow_score"], 0.9)
+        self.assertIn("100x5m", plan["calibration_inputs"])
+
     def test_timing_state_is_independent_of_geometry(self):
         near = alpha_hunter._entry_timing_state(100.0, 99.8, 1.0)
         far = alpha_hunter._entry_timing_state(100.0, 95.0, 1.0)

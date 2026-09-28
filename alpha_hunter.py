@@ -102,7 +102,7 @@ def _direction_candidates(rows_15m, rows_5m):
     return out
 
 
-def _build_plan(rows_15m, rows_5m, allow_watch=False):
+def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
     if len(rows_15m) < 160 or len(rows_5m) < 60:
         return {"status": "DATA-LIMITED", "reason": "insufficient MTF candles"}
 
@@ -118,12 +118,17 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
         return {"status": "WAIT", "reason": "5m volatility regime outside alpha envelope", "atr_pct": atr_pct}
 
     candidates = _direction_candidates(rows_15m, rows_5m)
+    context = context or {}
     if not candidates:
         return {"status": "WAIT", "reason": "no alpha opportunity regime", "atr_pct": atr_pct}
 
     best = None
     for direction, location, impulse, volume, sweep, participation in candidates:
-        calibration = calibrate_entry(rows_5m, direction, micro_atr)
+        calibration = calibrate_entry(
+            rows_5m, direction, micro_atr,
+            rows_15m=rows_15m,
+            context=context,
+        )
         if not calibration:
             continue
         entry = calibration["entry"]
@@ -241,6 +246,13 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
             "reward_r": reward,
             "atr_pct": atr_pct,
             "entry_distance_atr": distance_atr,
+            "timing_score": calibration.get("timing_score"),
+            "volume_ratio_5m": calibration.get("volume_ratio_5m"),
+            "volume_regime": calibration.get("volume_regime", ""),
+            "flow_score": calibration.get("flow_score"),
+            "sweep_score": calibration.get("sweep_score"),
+            "regime_score_15m": calibration.get("regime_score_15m"),
+            "calibration_inputs": calibration.get("calibration_inputs", ""),
             "execution_ready": execution_ready,
             "watch_reason": "" if execution_ready else "price is outside calibrated 100-candle execution zone",
             "entry_calibration": "100-candle",
@@ -263,16 +275,20 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
 
     return best or {"status": "WAIT", "reason": "alpha execution geometry unavailable", "atr_pct": atr_pct}
 
-def build_plan(rows_15m, rows_5m):
-    """Return only execution-ready Alpha opportunities."""
-    return _build_plan(rows_15m, rows_5m, allow_watch=False)
+def build_plan(rows_15m, rows_5m, context=None):
+    """Return only execution-ready Alpha opportunities.
+
+    ``context`` carries optional order-flow/whale/liquidation features into the
+    timing calibration layer. It never changes canonical SL/TP geometry.
+    """
+    return _build_plan(rows_15m, rows_5m, allow_watch=False, context=context)
 
 
-def build_discovery_plan(rows_15m, rows_5m):
+def build_discovery_plan(rows_15m, rows_5m, context=None):
     """Return the best Alpha discovery candidate, including a pending watch.
 
     WATCH is discovery evidence, not an executable trade. The calibrated
     100-candle entry remains unchanged; the scanner simply records that price
     has not reached the execution zone yet.
     """
-    return _build_plan(rows_15m, rows_5m, allow_watch=True)
+    return _build_plan(rows_15m, rows_5m, allow_watch=True, context=context)

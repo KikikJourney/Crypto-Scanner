@@ -19,12 +19,12 @@ SUMMARY_FIELDS = [
     "data_errors", "direction_long", "direction_short", "no_direction",
     "alignment_failed", "location_failed", "reversal_failed",
     "confidence_failed", "risk_failed", "plan_data_failed", "invalid", "actions",
-    "alpha_long", "alpha_short", "alpha_watch_long", "alpha_watch_short", "v2_extreme_reversals",
+    "alpha_long", "alpha_short", "alpha_watch_long", "alpha_watch_short", "alpha_timing_ready", "alpha_timing_watch", "v2_extreme_reversals",
 ]
 
 SYMBOL_FIELDS = [
     "timestamp", "symbol", "provider", "stage", "direction",
-    "confidence", "alignment", "risk_pct", "v2_score", "location_15m", "exhaustion_15m", "base_15m", "structure_shift_5m", "reversal_trigger_5m", "early_reversal_score", "reason",
+    "confidence", "alignment", "risk_pct", "v2_score", "location_15m", "exhaustion_15m", "base_15m", "structure_shift_5m", "reversal_trigger_5m", "early_reversal_score", "timing_score", "volume_ratio_5m", "volume_regime", "flow_score", "regime_score_15m", "entry_distance_atr", "reason",
 ]
 
 
@@ -42,13 +42,15 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
 
         if not direction:
             counts["no_direction"] += 1
-            alpha = alpha_hunter_plan(x["scalping_rows_15m"], x["scalping_rows_5m"])
+            alpha_context = x.get("extreme_features") or {}
+            alpha = alpha_hunter_plan(x["scalping_rows_15m"], x["scalping_rows_5m"], context=alpha_context)
             discovery = alpha_hunter_discovery_plan(
-                x["scalping_rows_15m"], x["scalping_rows_5m"]
+                x["scalping_rows_15m"], x["scalping_rows_5m"], context=alpha_context
             )
             if alpha.get("status") in {"ALPHA LONG", "ALPHA SHORT"}:
                 alpha_direction = alpha["direction"]
                 counts[f"alpha_{alpha_direction.lower()}"] += 1
+                counts["alpha_timing_ready"] += 1
                 rows.append({
                     "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
                     "stage": "ALPHA_OPPORTUNITY", "direction": alpha_direction,
@@ -58,11 +60,12 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
                     "exhaustion_15m": "", "base_15m": alpha.get("participation", ""),
                     "structure_shift_5m": alpha.get("impulse_5m", ""),
                     "reversal_trigger_5m": alpha.get("liquidity_sweep_5m", ""),
-                    "early_reversal_score": "", "reason": alpha.get("reason", ""),
+                    "early_reversal_score": "", "timing_score": alpha.get("timing_score", ""), "volume_ratio_5m": alpha.get("volume_ratio_5m", ""), "volume_regime": alpha.get("volume_regime", ""), "flow_score": alpha.get("flow_score", ""), "regime_score_15m": alpha.get("regime_score_15m", ""), "entry_distance_atr": alpha.get("entry_distance_atr", ""), "reason": alpha.get("reason", ""),
                 })
             elif discovery.get("status") in {"ALPHA WATCH LONG", "ALPHA WATCH SHORT"}:
                 watch_direction = discovery["direction"]
                 counts[f"alpha_watch_{watch_direction.lower()}"] += 1
+                counts["alpha_timing_watch"] += 1
                 rows.append({
                     "timestamp": timestamp, "symbol": x["symbol"], "provider": provider,
                     "stage": "ALPHA_WATCH", "direction": watch_direction,
@@ -72,7 +75,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
                     "exhaustion_15m": "", "base_15m": discovery.get("participation", ""),
                     "structure_shift_5m": discovery.get("impulse_5m", ""),
                     "reversal_trigger_5m": discovery.get("liquidity_sweep_5m", ""),
-                    "early_reversal_score": "", "reason": discovery.get("watch_reason") or discovery.get("reason", ""),
+                    "early_reversal_score": "", "timing_score": discovery.get("timing_score", ""), "volume_ratio_5m": discovery.get("volume_ratio_5m", ""), "volume_regime": discovery.get("volume_regime", ""), "flow_score": discovery.get("flow_score", ""), "regime_score_15m": discovery.get("regime_score_15m", ""), "entry_distance_atr": discovery.get("entry_distance_atr", ""), "reason": discovery.get("watch_reason") or discovery.get("reason", ""),
                 })
             else:
                 rows.append({
@@ -160,7 +163,7 @@ def diagnose(results, errors, universe_count, scan_count, provider, timestamp):
         "plan_data_failed": counts["plan_data_failed"],
         "invalid": counts["invalid"], "actions": counts["actions"],
         "alpha_long": counts["alpha_long"], "alpha_short": counts["alpha_short"],
-        "alpha_watch_long": counts["alpha_watch_long"], "alpha_watch_short": counts["alpha_watch_short"],
+        "alpha_watch_long": counts["alpha_watch_long"], "alpha_watch_short": counts["alpha_watch_short"], "alpha_timing_ready": counts["alpha_timing_ready"], "alpha_timing_watch": counts["alpha_timing_watch"],
         "v2_extreme_reversals": counts["v2_extreme_reversals"],
     }
     return summary, rows
