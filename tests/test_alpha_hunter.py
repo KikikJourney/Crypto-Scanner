@@ -26,9 +26,9 @@ class AlphaHunterTests(unittest.TestCase):
         rows5[-4] = candle(96 * 300000, 98.2, 100.0, 0.45)
         rows5[-3] = candle(97 * 300000, 98.4, 100.0, 0.45)
         rows5[-2] = candle(98 * 300000, 98.6, 100.0, 0.45)
-        rows5[-1] = candle(99 * 300000, 99.0, 110.0, 0.02)
+        rows5[-1] = candle(99 * 300000, 98.84, 110.0, 0.02)
 
-        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 99.0, "distance_atr": 0.25}
+        calibrated = {"anchor": 98.6, "buffer": 0.2, "entry": 98.8, "current_price": 98.84, "distance_atr": 0.10}
         with patch.object(alpha_hunter, "calibrate_entry", return_value=calibrated):
             plan = build_plan(rows15, rows5)
         self.assertIn(plan["status"], {"ALPHA LONG", "ALPHA SHORT"})
@@ -73,7 +73,7 @@ class AlphaHunterTests(unittest.TestCase):
 
         far_calibration = {
             "anchor": 90.0, "buffer": 0.25, "entry": 90.25,
-            "current_price": 99.0, "distance_atr": 10.0,
+            "current_price": 98.84, "distance_atr": 10.0,
         }
         with patch.object(alpha_hunter, "calibrate_entry", return_value=far_calibration):
             plan = build_discovery_plan(rows15, rows5)
