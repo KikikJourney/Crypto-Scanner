@@ -20,7 +20,7 @@ class AlphaHunterTests(unittest.TestCase):
 
         rows5 = []
         for i in range(100):
-            p = 98.0 + max(0, i - 68) * 0.18
+            p = 98.0 + max(0, i - 95) * 0.18
             rows5.append(candle(i * 300000, p, 100.0, 0.40))
         rows5[-5] = candle(95 * 300000, 98.0, 100.0, 0.45)
         rows5[-4] = candle(96 * 300000, 98.2, 100.0, 0.45)
