@@ -9,10 +9,10 @@ from math import isfinite
 from scalping_intelligence import _close, _high, _low, _volume, atr, _opposing_structure_target, _select_tp_margin_pct
 from entry_calibration import calibrate_entry
 from entry_geometry import build_entry_geometry
-from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT
+from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, target_margin_pct_from_price
 
 
-ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
+ALPHA_HUNTER_VERSION = "alpha-hunter-v2"\nMAX_ALPHA_REWARD_R = 8.0
 
 
 def _f(v, default=0.0):
@@ -155,6 +155,29 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
             continue
         target = margin_plan["target"]
         reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
+
+        # Alpha Hunter must honor the global execution thesis: final TP is
+        # never allowed beyond 8R. This caps the target geometry itself rather
+        # than changing the 100-candle entry or tightening discovery thresholds.
+        if reward > MAX_ALPHA_REWARD_R:
+            capped_target = (
+                entry + risk * MAX_ALPHA_REWARD_R
+                if direction == "LONG"
+                else entry - risk * MAX_ALPHA_REWARD_R
+            )
+            capped_margin_pct = target_margin_pct_from_price(
+                entry, capped_target, direction, DEFAULT_LEVERAGE
+            )
+            margin_plan = build_entry_geometry(
+                direction,
+                entry,
+                selected_tp_margin_pct=capped_margin_pct,
+                structural_target=structural,
+            )
+            target = margin_plan["target"]
+            reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
+            geometry_reason = geometry_reason + "_capped_at_8R"
+
         score = 45.0 + 20.0 * location + 15.0 * participation
         if sweep:
             score += 10.0
