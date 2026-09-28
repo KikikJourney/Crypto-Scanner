@@ -431,7 +431,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
 
     # LAYER 1 — ENTRY CALIBRATION.
     # This layer may move/qualify the entry, but cannot define SL/TP.
-    entry_calibration = calibrate_entry(rows_5m, direction, micro_atr)
+    entry_calibration = calibrate_entry(rows_5m, direction, micro_atr, rows_15m=rows_15m, context=v2_features)
     if entry_calibration is None:
         return {"status": "DATA-LIMITED", "reason": "100-candle entry calibration unavailable"}
 
@@ -456,6 +456,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             "reason": "100-candle entry calibration has not rebounded enough",
             "rebound_atr": round(rebound_atr, 3),
             "min_rebound_atr": min_rebound_atr,
+            "timing_score": entry_calibration.get("timing_score"),
         }
 
     entry_distance_atr = entry_calibration["distance_atr"]
@@ -466,6 +467,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             "reason": "calibrated entry is too far from current price",
             "entry_distance_atr": round(entry_distance_atr, 3),
             "max_entry_distance_atr": max_entry_distance_atr,
+            "timing_score": entry_calibration.get("timing_score"),
         }
 
     # LAYER 2 — ENTRY GEOMETRY.
@@ -484,7 +486,7 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
             "risk_pct": round(risk / price * 100.0, 4),
             "stop_margin_pct": round(stop_margin_pct, 3),
             "max_margin_loss_pct": MAX_MARGIN_LOSS_PCT,
-            "reason": "entry geometry exceeds 5% margin-loss budget",
+            "reason": "entry geometry exceeds 10% margin-loss budget",
         }
 
     risk_pct = risk / price * 100.0
@@ -546,9 +548,17 @@ def build_plan(direction, rows_15m, rows_5m, v2_score, v2_features, require_v2_d
         "tp1_margin_pct": margin_plan["tp1_margin_pct"], "tp2_margin_pct": margin_plan["tp2_margin_pct"], "tp3_margin_pct": margin_plan["tp3_margin_pct"],
         "tp1_pnl_usdt": margin_plan["tp1_pnl_usdt"], "tp2_pnl_usdt": margin_plan["tp2_pnl_usdt"], "tp3_pnl_usdt": margin_plan["tp3_pnl_usdt"],
         "flow_conviction": round(flow_conviction, 3), "structural_target_margin_pct": round(structural_margin_pct, 3),
-        "entry_calibration": "100-candle",
+        "entry_calibration": "100-candle + volume/flow/regime",
+        "calibration_inputs": entry_calibration.get("calibration_inputs", ""),
+        "timing_score": entry_calibration.get("timing_score"),
+        "volume_ratio_5m": entry_calibration.get("volume_ratio_5m"),
+        "volume_regime": entry_calibration.get("volume_regime", ""),
+        "flow_score": entry_calibration.get("flow_score"),
+        "sweep_score": entry_calibration.get("sweep_score"),
+        "regime_score_15m": entry_calibration.get("regime_score_15m"),
         "entry_anchor_100": round(entry_calibration["anchor"], 12),
         "entry_buffer": round(entry_calibration["buffer"], 12),
+        "entry_buffer_atr": entry_calibration.get("buffer_atr"),
         "entry_distance_atr": round(entry_distance_atr, 3),
         "entry_rebound_atr": round(rebound_atr, 3),
         "target_structure": round(structural_target, 12),
