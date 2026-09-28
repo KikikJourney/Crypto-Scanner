@@ -137,7 +137,24 @@ def calibrate_tp(rows_15m, rows_5m, direction, entry, stop, context=None):
 
     candidates = _candidate_levels(rows_15m or [], rows_5m or [], direction, entry, risk)
     if not candidates:
-        return None
+        # If no observable swing/boundary is usable, keep the opportunity alive
+        # with a conviction-calibrated risk projection. This is not a fixed TP
+        # rung: the distance changes continuously with trend/flow conviction.
+        target = (
+            entry + risk * desired_r
+            if direction == "LONG"
+            else entry - risk * desired_r
+        )
+        return {
+            "target": round(target, 12),
+            "reward_r": round(desired_r, 4),
+            "target_source": "risk_projection",
+            "trend_strength": round(trend, 4),
+            "flow_conviction": round(flow, 4),
+            "desired_reward_r": round(desired_r, 4),
+            "min_reward_r": MIN_TARGET_R,
+            "max_reward_r": MAX_TARGET_R,
+        }
 
     # Prefer the structurally closest level to the calibrated desired R,
     # with a small preference for higher-timeframe structure.
