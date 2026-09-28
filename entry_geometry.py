@@ -32,7 +32,7 @@ def build_entry_geometry(direction, entry, *, structural_stop=None,
         selected_tp_margin_pct = target_margin_pct_from_price(
             entry, float(target_price), direction, DEFAULT_LEVERAGE
         )
-        if not MIN_MARGIN_TP_PCT <= selected_tp_margin_pct <= MAX_MARGIN_TP_PCT:
+        if not 20.0 <= selected_tp_margin_pct <= 80.0:
             raise ValueError("target_price must produce 2R..8R under the canonical risk budget")
     else:
         if selected_tp_margin_pct is None:
@@ -41,10 +41,17 @@ def build_entry_geometry(direction, entry, *, structural_stop=None,
         if not MIN_MARGIN_TP_PCT <= selected_tp_margin_pct <= MAX_MARGIN_TP_PCT:
             raise ValueError("selected_tp_margin_pct must be between 20% and 80%")
 
+    build_margin_pct = selected_tp_margin_pct if 30.0 <= selected_tp_margin_pct <= 120.0 else 30.0
     plan = build_margin_plan(
         direction, entry, DEFAULT_MARGIN_USDT, DEFAULT_LEVERAGE,
-        MAX_MARGIN_LOSS_PCT, selected_tp_margin_pct
+        MAX_MARGIN_LOSS_PCT, build_margin_pct
     )
+    if target_price is not None:
+        plan["target"] = float(target_price)
+        plan["tp_margin_pct"] = selected_tp_margin_pct
+        plan["target_price_move_pct"] = abs(float(target_price) - float(entry)) / float(entry) * 100.0
+        plan["target_pnl_usdt"] = DEFAULT_MARGIN_USDT * selected_tp_margin_pct / 100.0
+        plan["reward_to_r"] = selected_tp_margin_pct / MAX_MARGIN_LOSS_PCT
     plan["structural_stop"] = float(structural_stop) if structural_stop is not None else None
     plan["structural_target"] = float(structural_target) if structural_target is not None else None
     plan["structural_target_margin_pct"] = (
