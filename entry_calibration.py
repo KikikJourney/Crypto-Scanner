@@ -109,8 +109,9 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
 
     # Adaptive buffer remains bounded around the 100-candle anchor. This is
     # timing calibration only; SL/TP geometry is untouched.
-    bounded_score = max(MIN_TIMING_SCORE, min(MAX_TIMING_SCORE, timing_score))
-    buffer_factor = 0.15 + 0.20 * bounded_score
+    # The anchor/buffer remains deterministic. Volume/flow/regime calibrate
+    # timing quality without silently moving the 100-candle entry geometry.
+    buffer_factor = ENTRY_BUFFER_ATR
     buffer = max(micro_atr * buffer_factor, current_price * ENTRY_BUFFER_FLOOR_PCT / 100.0)
     entry = anchor + buffer if direction == "LONG" else anchor - buffer
     distance_atr = abs(current_price - entry) / micro_atr
