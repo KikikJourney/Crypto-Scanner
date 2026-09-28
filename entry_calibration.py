@@ -3,9 +3,10 @@
 This module answers only: WHERE/WHEN should the scanner attempt execution?
 It deliberately does not calculate stop-loss or take-profit geometry.
 
-The 100-candle extreme remains the historical/reference anchor. A 40-candle
-timing anchor can take over when the 100-candle extreme is no longer reachable
-in the current 5m volatility regime. This is timing calibration, not geometry.
+The 40-candle extreme is the executable timing anchor. The 100-candle
+extreme is retained only as historical/reference evidence. This preserves
+the scanner thesis: LONG near the recent 40-candle low, SHORT near the
+recent 40-candle high. Entry timing is independent from SL/TP geometry.
 """
 
 LOOKBACK_CANDLES = 100
@@ -47,10 +48,9 @@ def _anchor(window, direction):
 def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
     """Return calibrated entry location without producing SL/TP.
 
-    The 100-candle extreme is retained as anchor_100 for auditability.
-    The recent 40-candle extreme becomes the executable timing anchor only
-    when the 100-candle anchor is more than 2 ATR away and the 40-candle
-    anchor materially improves reachability.
+    The 40-candle extreme is always the executable timing anchor.
+    The 100-candle extreme is retained as a reference only; it must never
+    pull an executable entry away from the recent 40-candle extreme.
     """
     if direction not in {"LONG", "SHORT"}:
         return None
@@ -70,14 +70,11 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
     distance_100 = abs(current_price - anchor_100) / micro_atr
     distance_40 = abs(current_price - anchor_40) / micro_atr
 
-    if distance_100 <= MAX_PRIMARY_ANCHOR_DISTANCE_ATR or distance_40 >= distance_100:
-        anchor = anchor_100
-        anchor_window = LOOKBACK_CANDLES
-        anchor_source = "100c"
-    else:
-        anchor = anchor_40
-        anchor_window = TIMING_LOOKBACK_CANDLES
-        anchor_source = "40c_timing"
+    # Production timing thesis: recent 40-candle extreme is authoritative.
+    # The 100-candle value is diagnostics/reference only.
+    anchor = anchor_40
+    anchor_window = TIMING_LOOKBACK_CANDLES
+    anchor_source = "40c_timing"
 
     context = context or {}
     timing_components = []
@@ -154,5 +151,5 @@ def calibrate_entry(rows_5m, direction, micro_atr, rows_15m=None, context=None):
         "sweep_score": round(sweep_score, 4),
         "regime_score_15m": round(regime_score, 4),
         "buffer_atr": round(buffer_factor, 4),
-        "calibration_inputs": "100x5m reference + 40x5m timing + 15m regime/location + volume regime + order-flow/liquidity",
+        "calibration_inputs": "40x5m executable extreme + 100x5m reference + 15m regime/location + volume regime + order-flow/liquidity",
     }
