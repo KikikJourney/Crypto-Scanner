@@ -6,17 +6,17 @@ from send_telegram_actions import _execution_status, _still_actionable
 
 
 class TelegramNotifierTests(unittest.TestCase):
-    def test_format_action_contains_mtf_trade_plan(self):
+    def test_format_action_contains_explicit_geometry_prices(self):
         text = format_action({
             "direction": "LONG",
             "symbol": "RDDTUSDT",
             "entry": "157.98",
             "entry_low": "157.50",
             "entry_high": "158.46",
-            "stop": "155.51",
-            "target": "162.90",
-            "risk_pct": "1.55",
-            "reward_r": "2.0",
+            "stop": "157.1901",
+            "target": "162.7194",
+            "risk_pct": "0.50",
+            "reward_r": "6.0",
             "confidence": "86.5",
             "score": "72.2",
             "timeframes": "4H/1H/30m/15m/5m",
@@ -24,38 +24,39 @@ class TelegramNotifierTests(unittest.TestCase):
             "liquidity_sweep_5m": "True",
             "volume_5m": "0.82",
             "margin_usdt": "10",
-            "leverage": "25",
-            "notional_usdt": "250",
-            "stop_margin_pct": "5",
-            "tp_margin_pct": "77.78",
-            "max_loss_usdt": "0.5",
-            "target_pnl_usdt": "7.78",
-            "tp1": "159.8756",
-            "tp2": "161.7715",
-            "tp3": "165.5629",
+            "leverage": "20",
+            "notional_usdt": "200",
+            "stop_margin_pct": "10",
+            "tp_margin_pct": "60",
+            "max_loss_usdt": "1",
+            "target_pnl_usdt": "6",
+            "tp1": "160.3497",
+            "tp2": "162.7194",
+            "tp3": "167.4588",
             "tp1_pnl_usdt": "3",
             "tp2_pnl_usdt": "6",
             "tp3_pnl_usdt": "12",
-            "target_price_move_pct": "3.11",
+            "target_price_move_pct": "3.0",
             "flow_conviction": "0.72",
             "valid_until": "2026-09-18T07:15:00+00:00",
         })
         self.assertIn("ZORATHVAEL SIGNAL LONG", text)
-        self.assertIn("Entry: 157.50 - 158.46", text)
-        self.assertIn("SL: 155.51", text)
-        self.assertIn("TP: 162.90", text)
-        self.assertIn("RR Equivalent: 2.0", text)
-        self.assertIn("Margin: 10 USDT | Leverage: 25x", text)
-        self.assertIn("SL Margin Risk: 5% (-0.5 USDT)", text)
-        self.assertIn("Selected TP: 162.90 (77.78% margin / +7.78 USDT)", text)
-        self.assertIn("Confidence: 86.5/100", text)
-        self.assertIn("Canonical geometry: 10 USDT margin / 20x leverage / SL -10% / TP1 +30% / TP2 +60% / TP3 +120% of margin.", text)
+        self.assertIn("EXECUTION PRICES", text)
+        self.assertIn("Entry (calibrated): 157.98", text)
+        self.assertIn("Entry Zone: 157.5 - 158.46", text)
+        self.assertIn("SL (10% margin): 157.1901", text)
+        self.assertIn("TP1 (+30% margin): 160.3497", text)
+        self.assertIn("TP2 (+60% margin): 162.7194", text)
+        self.assertIn("TP3 (+120% margin): 167.4588", text)
+        self.assertIn("Selected TP: 162.7194", text)
+        self.assertIn("Margin: 10 USDT | Leverage: 20x", text)
+        self.assertIn("SL Margin Risk: 10% (-1 USDT)", text)
+        self.assertIn("TP1 PnL: +3 USDT | TP2: +6 USDT | TP3: +12 USDT", text)
+        self.assertIn("Canonical geometry: Entry → SL -0.50% price / TP1 +1.50% / TP2 +3.00% / TP3 +6.00% at 20x.", text)
         self.assertNotIn("TP 2R:", text)
         self.assertNotIn("TP 4R:", text)
         self.assertNotIn("TP 6R:", text)
-        self.assertIn("RISK MODEL", text)
         self.assertNotIn("Modal/Entry:", text)
-        self.assertIn("Leverage:", text)
         self.assertNotIn("Estimasi Loss @ SL:", text)
         self.assertNotIn("EXECUTION PLAN", text)
 
