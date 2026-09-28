@@ -85,20 +85,28 @@ def _entry_timing_state(current_price, calibrated_entry, micro_atr, direction=No
     if direction == "LONG":
         zone_low = calibrated_entry
         zone_high = calibrated_entry + micro_atr * zone_atr
+        execution_ready = zone_low <= current_price <= zone_high
     elif direction == "SHORT":
         zone_low = calibrated_entry - micro_atr * zone_atr
         zone_high = calibrated_entry
+        execution_ready = zone_low <= current_price <= zone_high
     else:
-        zone_low = calibrated_entry - micro_atr * zone_atr
-        zone_high = calibrated_entry + micro_atr * zone_atr
-
-    execution_ready = zone_low <= current_price <= zone_high
+        # Backward-compatible diagnostic mode for direct callers/tests that do
+        # not provide a trade direction. Production Alpha always supplies it.
+        zone_low = calibrated_entry - micro_atr * 1.25
+        zone_high = calibrated_entry + micro_atr * 1.25
+        execution_ready = distance_atr <= 1.25
     return {
         "execution_ready": execution_ready,
         "distance_atr": distance_atr,
         "entry_zone_low": zone_low,
         "entry_zone_high": zone_high,
-        "reason": "inside directional entry zone" if execution_ready else "outside directional entry zone",
+        "reason": (
+            "inside directional entry zone" if direction in {"LONG", "SHORT"} and execution_ready
+            else "within calibrated execution zone" if direction is None and execution_ready
+            else "outside directional entry zone" if direction in {"LONG", "SHORT"}
+            else "outside calibrated execution zone"
+        ),
     }
 
 def _direction_candidates(rows_15m, rows_5m):
@@ -275,9 +283,9 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             "execution_ready": execution_ready,
             "watch_reason": "" if execution_ready else timing["reason"],
             "entry_calibration": calibration.get("anchor_source", "100c"),
-            "entry_anchor_100": calibration["anchor_100"],
-            "entry_anchor_40": calibration["anchor_40"],
-            "entry_anchor_source": calibration["anchor_source"],
+            "entry_anchor_100": calibration.get("anchor_100", calibration.get("anchor")),
+            "entry_anchor_40": calibration.get("anchor_40", calibration.get("anchor")),
+            "entry_anchor_source": calibration.get("anchor_source", "legacy"),
             "entry_buffer": calibration["buffer"],
             "entry_zone_low": timing.get("entry_zone_low"),
             "entry_zone_high": timing.get("entry_zone_high"),
