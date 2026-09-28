@@ -191,6 +191,10 @@ def scan_one(sym, provider, btc24):
     result = core.fetch_symbol(sym, provider, btc24)
     rows = _rows(sym, provider)
     features = build_features(rows, result["price"])
+    # Carry live derivatives evidence into the Alpha calibration context.
+    for key in ("open_interest", "oi_change_pct", "long_short_ratio", "funding_rate", "taker_buy_sell_ratio"):
+        if key in result and result.get(key) is not None:
+            features[key] = result[key]
     result["extreme_features"] = features
     result["scan_timestamp"] = scan_started.isoformat()
     result["scalping_rows_15m"] = rows

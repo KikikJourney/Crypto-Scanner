@@ -162,7 +162,28 @@ def bybit_symbol(sym,btc24):
     t=bybit('/v5/market/tickers',{'category':'linear','symbol':sym})['result']['list'][0];raw=bybit('/v5/market/kline',{'category':'linear','symbol':sym,'interval':'60','limit':MIN_CANDLES+2})['result']['list'];f=candle_features(normalize_bybit_candles(raw));d=bybit('/v5/market/orderbook',{'category':'linear','symbol':sym,'limit':25})['result'];b=sum(float(x[1]) for x in d.get('b',[]));a=sum(float(x[1]) for x in d.get('a',[]));book=b/a if b and a else None;fills=bybit('/v5/market/recent-trade',{'category':'linear','symbol':sym,'limit':TAKER_FETCH})['result']['list'];tw,agg,sp,st,n=taker_pressure(fills);tf={'ratios':tw,'agg':agg,'spread_pct':sp,'stability':st,'fills':n};fr=bybit('/v5/market/funding/history',{'category':'linear','symbol':sym,'limit':1})['result']['list'];fund=sf(fr[0]['fundingRate']) if fr else None;return make_result(sym,'Bybit',float(t['lastPrice']),f,tf,book,fund,float(t.get('price24hPcnt',0))*100)
 
 def binance_symbol(sym,btc24):
-    t=binance('/fapi/v1/ticker/24hr',{'symbol':sym});raw=binance('/fapi/v1/klines',{'symbol':sym,'interval':'1h','limit':MIN_CANDLES+2});f=candle_features(raw[:-1]);tr=binance('/futures/data/takerlongshortRatio',{'symbol':sym,'period':'1h','limit':1});agg=sf(tr[-1]['buySellRatio']) if tr else None;tf={'ratios':[agg,None,None],'agg':agg,'spread_pct':0.0,'stability':1.0,'fills':1};fr=binance('/fapi/v1/fundingRate',{'symbol':sym,'limit':1});fund=sf(fr[-1]['fundingRate']) if fr else None;d=binance('/fapi/v1/depth',{'symbol':sym,'limit':20});b=sum(float(x[1]) for x in d.get('bids',[]));a=sum(float(x[1]) for x in d.get('asks',[]));return make_result(sym,'Binance',float(t['lastPrice']),f,tf,b/a if b and a else None,fund,float(t.get('priceChangePercent',0)))
+    t=binance('/fapi/v1/ticker/24hr',{'symbol':sym});raw=binance('/fapi/v1/klines',{'symbol':sym,'interval':'1h','limit':MIN_CANDLES+2});f=candle_features(raw[:-1]);tr=binance('/futures/data/takerlongshortRatio',{'symbol':sym,'period':'1h','limit':1});agg=sf(tr[-1]['buySellRatio']) if tr else None;tf={'ratios':[agg,None,None],'agg':agg,'spread_pct':0.0,'stability':1.0,'fills':1};fr=binance('/fapi/v1/fundingRate',{'symbol':sym,'limit':1});fund=sf(fr[-1]['fundingRate']) if fr else None;d=binance('/fapi/v1/depth',{'symbol':sym,'limit':20});b=sum(float(x[1]) for x in d.get('bids',[]));a=sum(float(x[1]) for x in d.get('asks',[]));
+    # Derivatives evidence is additive: an unavailable OI/crowding endpoint
+    # must never invalidate an otherwise valid market scan.
+    oi_current=oi_change=long_short_ratio=None
+    try:
+        oi_current=sf(binance('/fapi/v1/openInterest',{'symbol':sym}).get('openInterest'))
+        oi_hist=binance('/futures/data/openInterestHist',{'symbol':sym,'period':'5m','limit':2})
+        if len(oi_hist)>=2:
+            prev=sf(oi_hist[-2].get('sumOpenInterestValue'))
+            curr=sf(oi_hist[-1].get('sumOpenInterestValue'))
+            if prev not in (None,0) and curr is not None:
+                oi_change=(curr-prev)/prev*100.0
+    except Exception:
+        pass
+    try:
+        crowd_rows=binance('/futures/data/globalLongShortAccountRatio',{'symbol':sym,'period':'5m','limit':1})
+        long_short_ratio=sf(crowd_rows[-1].get('longShortRatio')) if crowd_rows else None
+    except Exception:
+        pass
+    result=make_result(sym,'Binance',float(t['lastPrice']),f,tf,b/a if b and a else None,fund,float(t.get('priceChangePercent',0)))
+    result.update({'open_interest':oi_current,'oi_change_pct':oi_change,'long_short_ratio':long_short_ratio,'funding_rate':fund,'taker_buy_sell_ratio':agg})
+    return result
 
 def discover():
     # Binance USDⓈ-M is the production source of truth for the futures scanner.

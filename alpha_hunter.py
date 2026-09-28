@@ -11,6 +11,7 @@ from entry_calibration import calibrate_entry
 from entry_geometry import build_entry_geometry
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, target_margin_pct_from_price
 from tp_geometry import calibrate_tp
+from alpha_calibration import calibrate_alpha
 
 
 ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
@@ -172,7 +173,22 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
         if not execution_ready and not allow_watch:
             continue
 
-        # GEOMETRY begins only after timing has produced the final entry state.
+        # Unified Alpha calibration runs after timing candidate discovery but before geometry.
+        # It is a quality/evidence layer, not a replacement for entry timing.
+        calibration_context = dict(context)
+        calibration_context.update({
+            "price": price,
+            "atr_pct": atr_pct,
+            "location_score": location,
+            "volume_ratio_5m": volume,
+            "volume_score": min(1.0, max(0.0, volume / 1.5)),
+            "liquidity_sweep_score": sweep,
+            "entry_timing_score": calibration.get("timing_score", 0.0),
+            "entry_distance_atr": distance_atr,
+        })
+        alpha_cal = calibrate_alpha(direction, calibration_context)
+
+        # GEOMETRY begins only after timing and quality evidence have been calculated.
         # SL/TP cannot tighten, loosen, or otherwise alter entry timing.
         base_geometry = build_entry_geometry(direction, entry)
         stop = base_geometry["stop"]
@@ -207,14 +223,16 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
         if margin_plan["stop_margin_pct"] > MAX_MARGIN_LOSS_PCT:
             continue
 
-        score = 45.0 + 20.0 * location + 15.0 * participation
+        base_score = 45.0 + 20.0 * location + 15.0 * participation
         if sweep:
-            score += 10.0
+            base_score += 10.0
         if volume >= 1.5:
-            score += 5.0
+            base_score += 5.0
         if impulse >= 0.003:
-            score += 5.0
-        score = min(100.0, score)
+            base_score += 5.0
+        # Blend legacy opportunity evidence with the unified calibration profile.
+        # This is a score blend, not a new hard threshold.
+        score = min(100.0, 0.45 * base_score + 0.55 * alpha_cal["quality_score"])
 
         candidate = {
             "status": (
@@ -224,6 +242,11 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             ),
             "direction": direction,
             "confidence": round(score, 1),
+            "alpha_quality_score": alpha_cal["quality_score"],
+            "alpha_timing_score": alpha_cal["timing_score"],
+            "alpha_data_completeness": alpha_cal["data_completeness"],
+            "alpha_calibration_status": alpha_cal["calibration_status"],
+            "alpha_calibration_components": alpha_cal["components"],
             "entry": entry,
             "entry_low": entry - micro_atr * 0.15 if direction == "SHORT" else entry,
             "entry_high": entry + micro_atr * 0.15 if direction == "LONG" else entry,
@@ -272,7 +295,9 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             "liquidity_sweep_5m": sweep,
             "timeframes": "15m/5m",
             "reason": (
-                f"alpha regime: location={location:.2f}, participation={participation:.2f}, "
+                f"alpha calibration: quality={alpha_cal['quality_score']:.1f}, timing={alpha_cal['timing_score']:.1f}, "
+                f"completeness={alpha_cal['data_completeness']:.0%}; "
+                f"regime: location={location:.2f}, participation={participation:.2f}, "
                 f"vol={volume:.2f}x, impulse={impulse:.3%}, ATR={atr_pct:.3f}%; "
                 f"geometry={geometry_reason}"
             ),
