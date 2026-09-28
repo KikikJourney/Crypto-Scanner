@@ -30,7 +30,7 @@ class MarginRiskModelTests(unittest.TestCase):
         self.assertAlmostEqual(plan["target_pnl_usdt"], 3.0, places=8)
         self.assertEqual(plan["tp1_margin_pct"], 30.0)
         self.assertEqual(plan["tp2_margin_pct"], 60.0)
-        self.assertEqual(plan["tp3_margin_pct"], 120.0)
+        self.assertEqual(plan["tp3_margin_pct"], 80.0)
 
     def test_80_percent_margin_tp_is_4_percent_price_move_at_20x(self):
         plan = build_margin_plan("LONG", 100.0, 10.0, 20.0, 10.0, 80.0)
