@@ -10,6 +10,7 @@ from scalping_intelligence import _close, _high, _low, _volume, atr, _opposing_s
 from entry_calibration import calibrate_entry
 from entry_geometry import build_entry_geometry
 from margin_risk_model import DEFAULT_LEVERAGE, DEFAULT_MARGIN_USDT, MAX_MARGIN_LOSS_PCT, target_margin_pct_from_price
+from tp_geometry import calibrate_tp
 
 
 ALPHA_HUNTER_VERSION = "alpha-hunter-v2"
@@ -182,57 +183,28 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             continue
 
         structural = _opposing_structure_target(rows_15m, direction, entry, risk, 1.0, 20.0)
-        # Alpha Hunter uses the same margin model as the execution lane.
         flow_features = {
             "liquidity_sweep_score": sweep,
             "volume_score": min(1.0, max(0.0, volume / 1.5)),
         }
-        tp_selection = _select_tp_margin_pct(
-            direction, entry, structural, flow_features,
-            45.0 + 20.0 * location + 15.0 * participation,
+        tp_calibration = calibrate_tp(
+            rows_15m, rows_5m, direction, entry, stop, context={**context, **flow_features}
         )
-        # Repair executable geometry instead of killing a valid opportunity
-        # when structural TP falls outside the margin-ROI envelope.
-        if tp_selection is None:
-            selected_tp_margin_pct = 30.0
-            flow_conviction = 0.0
-            structural_margin_pct = 0.0
-            geometry_reason = "geometry_repaired_to_canonical_tp"
-        else:
-            selected_tp_margin_pct, flow_conviction, structural_margin_pct = tp_selection
-            geometry_reason = "structural_tp_geometry"
+        if tp_calibration is None:
+            continue
         margin_plan = build_entry_geometry(
             direction,
             entry,
-            selected_tp_margin_pct=selected_tp_margin_pct,
             structural_target=structural,
+            target_price=tp_calibration["target"],
         )
+        target = margin_plan["target"]
+        reward = tp_calibration["reward_r"]
+        flow_conviction = tp_calibration["flow_conviction"]
+        structural_margin_pct = margin_plan.get("structural_target_margin_pct")
+        geometry_reason = f"tp:{tp_calibration['target_source']}:{reward:.2f}R"
         if margin_plan["stop_margin_pct"] > MAX_MARGIN_LOSS_PCT:
             continue
-        target = margin_plan["target"]
-        reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-
-        # Alpha Hunter must honor the global execution thesis: final TP is
-        # never allowed beyond 8R. This caps the target geometry itself rather
-        # than changing the 100-candle entry or tightening discovery thresholds.
-        if reward > MAX_ALPHA_REWARD_R:
-            capped_target = (
-                entry + risk * MAX_ALPHA_REWARD_R
-                if direction == "LONG"
-                else entry - risk * MAX_ALPHA_REWARD_R
-            )
-            capped_margin_pct = target_margin_pct_from_price(
-                entry, capped_target, direction, DEFAULT_LEVERAGE
-            )
-            margin_plan = build_entry_geometry(
-                direction,
-                entry,
-                selected_tp_margin_pct=capped_margin_pct,
-                structural_target=structural,
-            )
-            target = margin_plan["target"]
-            reward = (target - entry) / risk if direction == "LONG" else (entry - target) / risk
-            geometry_reason = geometry_reason + "_capped_at_8R"
 
         score = 45.0 + 20.0 * location + 15.0 * participation
         if sweep:
@@ -269,6 +241,9 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False, context=None):
             "target_price_move_pct": margin_plan["target_price_move_pct"],
             "flow_conviction": flow_conviction,
             "structural_target_margin_pct": structural_margin_pct,
+            "tp_target_source": tp_calibration["target_source"],
+            "tp_trend_strength": tp_calibration["trend_strength"],
+            "tp_desired_reward_r": tp_calibration["desired_reward_r"],
             "risk_pct": risk_pct,
             "reward_r": reward,
             "atr_pct": atr_pct,
