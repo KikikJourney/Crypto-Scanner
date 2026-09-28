@@ -66,6 +66,21 @@ def _sweep(rows, direction):
     return 1.0 if _high(last) > prior_high and _close(last) < prior_high else 0.0
 
 
+
+def _entry_timing_state(current_price, calibrated_entry, micro_atr):
+    """Evaluate entry timing only; no SL/TP geometry is involved."""
+    current_price = _f(current_price)
+    calibrated_entry = _f(calibrated_entry)
+    micro_atr = _f(micro_atr)
+    if current_price is None or calibrated_entry is None or micro_atr is None or micro_atr <= 0:
+        return {"execution_ready": False, "distance_atr": float("inf"), "reason": "timing inputs unavailable"}
+    distance_atr = abs(current_price - calibrated_entry) / micro_atr
+    return {
+        "execution_ready": distance_atr <= 0.90,
+        "distance_atr": distance_atr,
+        "reason": "within calibrated execution zone" if distance_atr <= 0.90 else "outside calibrated execution zone",
+    }
+
 def _direction_candidates(rows_15m, rows_5m):
     out = []
     for direction in ("LONG", "SHORT"):
@@ -116,8 +131,9 @@ def _build_plan(rows_15m, rows_5m, allow_watch=False):
         # The 100-candle calibration decides whether price is close enough to
         # the calibrated execution zone. No stop/target calculation is allowed
         # to influence this decision.
-        distance_atr = abs(price - entry) / micro_atr
-        execution_ready = distance_atr <= 0.90
+        timing = _entry_timing_state(price, entry, micro_atr)
+        distance_atr = timing["distance_atr"]
+        execution_ready = timing["execution_ready"]
         if not execution_ready and not allow_watch:
             continue
 
