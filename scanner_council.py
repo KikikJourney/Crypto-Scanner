@@ -93,7 +93,7 @@ def screen(sym,t):
       elif x['signal']=='SHORT':sh+=x['score']*x['weight'];sw+=x['weight']
     direction='LONG' if ls>sh else 'SHORT' if sh>ls else None
     if not direction:return None
-    win,opp,ww=(ls,sh,lw) if direction=='LONG' else (sh,ls,sw);cons=max(0,min(100,round((win-opp*.5)/(120*tw)*100)))
+    win,opp,ww=(ls,sh,lw) if direction=='LONG' else (sh,ls,sw);cons=max(0,min(100,round((win-opp*.5)/(25*tw)*100)))
     if cons<CFG['cons'] or ww<2:return None
     if direction=='LONG':sl=rl-a*.8;sl=p-a*CFG['sl'] if sl>=p else sl;tp=p+a*CFG['tp'];rr=(tp-p)/(p-sl)
     else:sl=rh+a*.8;sl=p+a*CFG['sl'] if sl<=p else sl;tp=p-a*CFG['tp'];rr=(p-tp)/(sl-p)
