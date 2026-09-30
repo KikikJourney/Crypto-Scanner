@@ -108,8 +108,8 @@ def screen(sym,t):
     win,opp,ww=(ls,sh,lw) if direction=='LONG' else (sh,ls,sw);cons=max(0,min(100,round((win-opp*.5)/(25*tw)*100)))
     if cons<CFG['cons'] or ww<2:return None
     # ===== COUNCIL ENTRY CALIBRATION =====
-    # The Council Pullback Predictor is the entry framework. No 40-candle
-    # extreme is used for entry, stop placement, or timing.
+    # The Council Pullback Predictor is the entry framework. Structural
+    # extremes are contextual only; entry, stop and timing come from Council.
     swing_hi=pb.get('fibHigh',max(h[-20:]))
     swing_lo=pb.get('fibLow',min(l[-20:]))
     span=swing_hi-swing_lo or a
