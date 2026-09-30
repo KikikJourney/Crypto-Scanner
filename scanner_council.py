@@ -14,7 +14,7 @@ def api(path,p=None):
     global LAST_REQ
     with API_LOCK:
         now=time.monotonic()
-        gap=1.05 if ('/long-short' in path or '/account-long-short' in path) else 0.18
+        gap=1.05 if ('/long-short' in path or '/account-long-short' in path or '/futures-' in path) else 0.18
         wait=gap-(now-LAST_REQ)
         if wait>0: time.sleep(wait)
         r=S.get(BASE+path,params=p or {},timeout=CFG['timeout'])
@@ -62,7 +62,7 @@ def pullback(c,h,l,v,d,p,m):
 def screen(sym,t):
   try:
     k,k15,k1,k4=[api('/api/v3/market/candles',{'category':PRODUCT,'symbol':sym,'interval':q,'limit':60}) for q in ('5m','15m','1H','4H')]
-    top=api('/api/v2/mix/market/long-short',{'symbol':sym,'period':'5m'});gl=api('/api/v2/mix/market/account-long-short',{'symbol':sym,'period':'5m'});tr=api('/api/v2/mix/market/fills',{'symbol':sym,'productType':PRODUCT,'limit':100})
+    top=api('/api/v3/market/futures-long-short',{'category':PRODUCT,'symbol':sym,'period':'5m'});gl=api('/api/v3/market/futures-account-long-short',{'category':PRODUCT,'symbol':sym,'period':'5m'});tr=api('/api/v3/market/fills',{'category':PRODUCT,'symbol':sym,'limit':100})
     if any(len(q)<55 for q in (k,k15,k1,k4)): return None
     c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t.get('lastPrice'));a=atr(h,l,c);d=[(1 if f(x[4])>f(x[1]) else -1 if f(x[4])<f(x[1]) else 0)*f(x[5]) for x in k];cv=[];z=0
     for q in d:z+=q;cv.append(z)
@@ -97,7 +97,7 @@ def screen(sym,t):
     if cons<CFG['cons'] or ww<2:return None
     if direction=='LONG':sl=rl-a*.8;sl=p-a*CFG['sl'] if sl>=p else sl;tp=p+a*CFG['tp'];rr=(tp-p)/(p-sl)
     else:sl=rh+a*.8;sl=p+a*CFG['sl'] if sl<=p else sl;tp=p-a*CFG['tp'];rr=(p-tp)/(sl-p)
-    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('change24h'))}
+    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('price24hPcnt'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
   q=json.dumps({'task':'Synthesize the 8-agent crypto futures scanner discussion. Return JSON with verdict LONG/SHORT/SKIP, score 0-100, and concise reasoning. Do not invent market data.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']},ensure_ascii=False)
@@ -147,10 +147,14 @@ def notify(x):
   if not tok or not chat:return
   z=['🏛️ ZORATHVAEL SCANNER COUNCIL',x['timestamp'],f"Transport {x.get('transport','unknown')} | Universe {x['scanned']}"]
   for q in x['results'][:10]:
-   z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
+   margin=5.0;lev=max(1,min(20,round(1/max(q['atrPct']/100,0.005))));z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Margin {margin:.2f} USDT | Leverage {lev}x",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
    if q.get('ai'):z.append(f"AI {q['ai']['verdict']} {q['ai']['score']}/100: {q['ai']['reasoning']}")
-  try:S.post(f'https://api.telegram.org/bot{tok}/sendMessage',json={'chat_id':chat,'text':'\n'.join(z)},timeout=15)
-  except Exception as e:print('Telegram error',e)
+  try:
+    r=S.post(f'https://api.telegram.org/bot{tok}/sendMessage',json={'chat_id':chat,'text':'\n'.join(z)},timeout=15)
+    r.raise_for_status();body=r.json()
+    if not body.get('ok'): raise RuntimeError(str(body)[:200])
+    print(f"TELEGRAM_OK message_id={body.get('result',{}).get('message_id','?')}")
+  except Exception as e:print('Telegram error',type(e).__name__,str(e)[:200])
 if __name__=='__main__':
   try:
     x=scan();print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
