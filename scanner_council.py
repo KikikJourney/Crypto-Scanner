@@ -55,9 +55,21 @@ def mtf(a,b,c,p):
     x=[[f(z[4]) for z in q] for q in (a,b,c)];t=['bull' if p>ema(q,50) else 'bear' for q in x]
     return {'trend15':t[0],'trend1h':t[1],'trend4h':t[2],'bullCount':t.count('bull'),'bearCount':t.count('bear')}
 def pullback(c,h,l,v,d,p,m):
-    hi,lo=max(h[-20:]),min(l[-20:]);rr=(hi-p)/(hi-lo or 1);x={'status':'none','direction':'NEUTRAL','retracement':rr*100,'conf':50,'reason':'none','volumeOk':sum(v[-3:])/3<sum(v[-20:])/20*.8}
-    if m['trend4h']=='bull' and .15<rr<.8:x.update(status='active' if rr<.382 else 'ending',direction='LONG',conf=70 if rr<.382 else 80,reason='bull pullback %.0f%%'%(rr*100))
-    elif m['trend4h']=='bear' and .15<rr<.8:x.update(status='active' if rr<.382 else 'ending',direction='SHORT',conf=70 if rr<.382 else 80,reason='bear rally %.0f%%'%(rr*100))
+    hi,lo=max(h[-20:]),min(l[-20:]);span=hi-lo
+    x={'status':'none','direction':'NEUTRAL','retracement':0,'conf':50,'reason':'Tidak ada pullback terdeteksi','volumeOk':False,'cvdFlat':False,'fibLow':lo,'fibHigh':hi}
+    if span<=0:return x
+    rr=(hi-p)/span
+    x['retracement']=rr*100
+    x['volumeOk']=sum(v[-3:])/3 < sum(v[-20:])/20*.8
+    is_up=m['trend4h']=='bull'; is_down=m['trend4h']=='bear'
+    if is_up and .15<rr<.8:
+        if rr<.382:x.update(status='active',direction='LONG',conf=70,reason='Pullback 23.6%-38.2% — masih berjalan')
+        elif rr<.618:x.update(status='ending',direction='LONG',conf=80,reason='Pullback 38.2%-61.8% — zona reversal')
+        else:x.update(status='ending',direction='LONG',conf=65,reason='Pullback 61.8%-78.6% — dalam')
+    elif is_down and .15<rr<.8:
+        if rr<.382:x.update(status='active',direction='SHORT',conf=70,reason='Rally 23.6%-38.2% — masih berjalan')
+        elif rr<.618:x.update(status='ending',direction='SHORT',conf=80,reason='Rally 38.2%-61.8% — zona reversal')
+        else:x.update(status='ending',direction='SHORT',conf=65,reason='Rally 61.8%-78.6% — dalam')
     return x
 def screen(sym,t):
   try:
@@ -95,26 +107,39 @@ def screen(sym,t):
     if not direction:return None
     win,opp,ww=(ls,sh,lw) if direction=='LONG' else (sh,ls,sw);cons=max(0,min(100,round((win-opp*.5)/(25*tw)*100)))
     if cons<CFG['cons'] or ww<2:return None
-    glo=min(l[-40:]);ghi=max(h[-40:]);
-    # Pullback-calibrated entry zone: 40-candle extrema define the geometry,
-    # while the actual entry is placed in the retracement pocket of the
-    # preceding impulse. This keeps geometry and timing calibration separate.
-    swing_hi=max(h[-20:]);swing_lo=min(l[-20:]);span=swing_hi-swing_lo or a
+    # ===== COUNCIL ENTRY CALIBRATION =====
+    # The Council Pullback Predictor is the entry framework. No 40-candle
+    # extreme is used for entry, stop placement, or timing.
+    swing_hi=pb.get('fibHigh',max(h[-20:]))
+    swing_lo=pb.get('fibLow',min(l[-20:]))
+    span=swing_hi-swing_lo or a
+    fib236=swing_hi-span*0.236
+    fib382=swing_hi-span*0.382
+    fib500=swing_hi-span*0.500
+    fib618=swing_hi-span*0.618
+    fib786=swing_hi-span*0.786
     if direction=='LONG':
-      # Long pullback: recover from swing low toward the impulse midpoint.
-      pb_lo=swing_lo+span*0.236; pb_hi=swing_lo+span*0.382
-      entry=min(p,max(pb_lo,min(pb_hi,p)))
-      # If price is already below the calibrated pocket, wait for the pocket;
-      # if it is above, do not chase it.
-      sl=max(glo-a*0.35,entry-a*0.8); tp=entry+a*CFG['tp']; rr=(tp-entry)/(entry-sl)
-      timing=max(0,min(100,round(100-abs(p-entry)/(a or p*.01)*35)))
+      zone_lo=min(fib618,fib382); zone_hi=max(fib618,fib382)
+      if pb.get('status')=='ending' and pb.get('direction')=='LONG':
+        entry=max(zone_lo,min(zone_hi,p)); timing=round(100-min(1,abs(p-entry)/(a or p*.01))*35)
+      elif pb.get('status')=='active' and pb.get('direction')=='LONG':
+        entry=(zone_lo+zone_hi)/2; timing=round(max(0,65-min(1,abs(p-entry)/(a or p*.01))*35))
+      else:
+        entry=(zone_lo+zone_hi)/2; timing=0
+      sl=min(swing_lo-a*0.35,entry-a*0.8); tp=entry+a*CFG['tp']
+      rr=(tp-entry)/(entry-sl) if entry>sl else 0
     else:
-      # Short pullback: rally from swing high toward the impulse midpoint.
-      pb_hi=swing_hi-span*0.236; pb_lo=swing_hi-span*0.382
-      entry=max(p,min(pb_hi,max(pb_lo,p)))
-      sl=min(ghi+a*0.35,entry+a*0.8); tp=entry-a*CFG['tp']; rr=(entry-tp)/(sl-entry)
-      timing=max(0,min(100,round(100-abs(p-entry)/(a or p*.01)*35)))
-    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':entry,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'geometryLow':glo,'geometryHigh':ghi,'pullbackZoneLow':pb_lo,'pullbackZoneHigh':pb_hi,'timingScore':timing,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('price24hPcnt'))}
+      zone_lo=min(fib382,fib618); zone_hi=max(fib382,fib618)
+      if pb.get('status')=='ending' and pb.get('direction')=='SHORT':
+        entry=max(zone_lo,min(zone_hi,p)); timing=round(100-min(1,abs(p-entry)/(a or p*.01))*35)
+      elif pb.get('status')=='active' and pb.get('direction')=='SHORT':
+        entry=(zone_lo+zone_hi)/2; timing=round(max(0,65-min(1,abs(p-entry)/(a or p*.01))*35))
+      else:
+        entry=(zone_lo+zone_hi)/2; timing=0
+      sl=max(swing_hi+a*0.35,entry+a*0.8); tp=entry-a*CFG['tp']
+      rr=(entry-tp)/(sl-entry) if sl>entry else 0
+    timing=max(0,min(100,timing))
+    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':entry,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'pullbackZoneLow':zone_lo,'pullbackZoneHigh':zone_hi,'timingScore':timing,'fib236':fib236,'fib382':fib382,'fib500':fib500,'fib618':fib618,'fib786':fib786,'pullbackZoneLow':pb_lo,'pullbackZoneHigh':pb_hi,'timingScore':timing,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('price24hPcnt'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
   q=json.dumps({'task':'Synthesize the 8-agent crypto futures scanner discussion. Return JSON with verdict LONG/SHORT/SKIP, score 0-100, and concise reasoning. Do not invent market data.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']},ensure_ascii=False)
