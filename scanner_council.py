@@ -32,7 +32,7 @@ def api(path,p=None):
     def via_proxy():
         req=requests.Request('GET','https://fapi.binance.com'+path,params=target_params).prepare()
         proxy_url=PROXY_BASE+quote(req.url,safe=':/?=&')
-        r=S.get(proxy_url,timeout=CFG['timeout'])
+        r=S.get(proxy_url,headers={'Origin':'https://github.com','Accept':'application/json'},timeout=CFG['timeout'])
         return _json_response(r,'cors.dev proxy')
 
     # Once the runner is known to be blocked, stay on the working transport for
