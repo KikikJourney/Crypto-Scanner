@@ -39,11 +39,11 @@ jobs:
           curl -4 -sS --max-time 10 https://ipconfig.io/json || true
           echo
           echo "Bitget Futures preflight:"
-          curl -4 -sS -D /tmp/binance_headers -o /tmp/binance_body --max-time 15 https://api.bitget.com/api/v2/mix/market/tickers?productType=USDT-FUTURES || true
+          curl -4 -sS -D /tmp/bitget_headers -o /tmp/bitget_body --max-time 15 'https://api.bitget.com/api/v3/market/tickers?category=USDT-FUTURES' || true
           echo "Headers:"
-          sed -n '1,20p' /tmp/binance_headers 2>/dev/null || true
+          sed -n '1,20p' /tmp/bitget_headers 2>/dev/null || true
           echo "Body:"
-          head -c 300 /tmp/binance_body 2>/dev/null || true
+          head -c 300 /tmp/bitget_body 2>/dev/null || true
           echo
       - name: Run Scanner Council
         env:
@@ -52,12 +52,14 @@ jobs:
           BITGET_BASE_URL: https://api.bitget.com
           FREETHEAI_API_KEY: ${{ secrets.FREETHEAI_API_KEY }}
           FREETHEAI_MODEL: fta/zai/glm-5.3
-        run: python scanner_council.py | tee scanner_result.json
+        run: python scanner_council.py | tee scanner_result.log
       - name: Upload scan evidence
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: scanner-council-result
-          path: scanner_result.json
+          path: |
+            scanner_result.json
+            scanner_result.log
           if-no-files-found: warn
           retention-days: 3
