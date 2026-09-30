@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: zorathvael-scanner-council
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   scan:
@@ -38,8 +38,8 @@ jobs:
           echo "Runner egress:"
           curl -4 -sS --max-time 10 https://ipconfig.io/json || true
           echo
-          echo "Binance Futures preflight:"
-          curl -4 -sS -D /tmp/binance_headers -o /tmp/binance_body --max-time 15 https://fapi.binance.com/fapi/v1/ping || true
+          echo "Bitget Futures preflight:"
+          curl -4 -sS -D /tmp/binance_headers -o /tmp/binance_body --max-time 15 https://api.bitget.com/api/v2/mix/market/tickers?productType=USDT-FUTURES || true
           echo "Headers:"
           sed -n '1,20p' /tmp/binance_headers 2>/dev/null || true
           echo "Body:"
