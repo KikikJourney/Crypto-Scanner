@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
 B=['https://fapi.binance.com','https://fapi1.binance.com','https://fapi2.binance.com','https://fapi3.binance.com','https://fapi4.binance.com']
 PROXY_BASE=os.getenv('BINANCE_PROXY_BASE','https://proxy.cors.dev/').rstrip('/')+'/'
-TRANSPORT_MODE='direct'
+TRANSPORT_MODE='auto'
 S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/1.1','Accept':'application/json'})
 CFG={'limit':60,'minvol':15000000,'top':50,'proxy_top':12,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':22}
 def f(x,d=0.0):
@@ -28,6 +28,22 @@ def api(path,p=None):
     global TRANSPORT_MODE
     errors=[]
     target_params=p or {}
+
+    def via_proxy():
+        req=requests.Request('GET','https://fapi.binance.com'+path,params=target_params).prepare()
+        proxy_url=PROXY_BASE+quote(req.url,safe=':/?=&')
+        r=S.get(proxy_url,timeout=CFG['timeout'])
+        return _json_response(r,'cors.dev proxy')
+
+    # Once the runner is known to be blocked, stay on the working transport for
+    # the rest of this scan instead of repeating failed direct requests.
+    if TRANSPORT_MODE=='proxy':
+        try:
+            return via_proxy()
+        except Exception as e:
+            errors.append(str(e))
+            TRANSPORT_MODE='auto'
+
     for z in range(2):
         for b in B:
             try:
@@ -38,17 +54,17 @@ def api(path,p=None):
             except Exception as e:
                 errors.append(str(e))
         time.sleep(.35*(z+1))
+
     if PROXY_BASE:
         try:
-            req=requests.Request('GET','https://fapi.binance.com'+path,params=target_params).prepare()
-            proxy_url=PROXY_BASE+quote(req.url,safe=':/?=&')
-            r=S.get(proxy_url,timeout=CFG['timeout'])
-            data=_json_response(r,'cors.dev proxy')
+            data=via_proxy()
             TRANSPORT_MODE='proxy'
             return data
         except Exception as e:
             errors.append(str(e))
+
     raise RuntimeError('Binance unavailable after direct+proxy transport: '+' | '.join(errors[-6:]))
+
 def ema(a,n):
     if len(a)<n:return a[-1]
     k=2/(n+1);e=sum(a[:n])/n
