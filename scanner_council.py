@@ -25,8 +25,6 @@ def api(path,p=None):
         j=r.json()
         if str(j.get('code'))!='00000': raise RuntimeError(f"Bitget API {j.get('code')}: {j.get('msg')}")
         return j.get('data',[])
-    except Exception as e:
-        raise RuntimeError('Bitget unavailable: '+str(e))
 
 def ema(a,n):
     if len(a)<n:return a[-1]
