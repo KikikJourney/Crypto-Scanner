@@ -100,12 +100,32 @@ def screen(sym,t):
     return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('change24h'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
-  q=json.dumps({'task':'Synthesize 8 agent discussion. JSON only.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']})
+  q=json.dumps({'task':'Synthesize the 8-agent crypto futures scanner discussion. Return JSON with verdict LONG/SHORT/SKIP, score 0-100, and concise reasoning. Do not invent market data.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']},ensure_ascii=False)
+  # Primary: FreeTheAI, an OpenAI-compatible free API project. The key stays
+  # in GitHub Actions Secrets; never place it in source or logs.
+  key=os.getenv('FREETHEAI_API_KEY')
+  if key:
+    try:
+      base=os.getenv('FREETHEAI_BASE_URL','https://api.freetheai.org/v1').rstrip('/')
+      model=os.getenv('FREETHEAI_MODEL','fta/zai/glm-5.3')
+      r=S.post(base+'/chat/completions',headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'},json={'model':model,'messages':[{'role':'system','content':'You are the neutral AI moderator for a quantitative crypto futures scanner. Return JSON only.'},{'role':'user','content':q}],'temperature':0.1,'max_tokens':300},timeout=CFG['timeout'])
+      r.raise_for_status();a=r.json()['choices'][0]['message']['content'];a=json.loads(a[a.find('{'):a.rfind('}')+1])
+      v=str(a.get('verdict','SKIP')).upper();v='LONG' if v=='LONG' else 'SHORT' if v=='SHORT' else 'SKIP'
+      return {'verdict':v,'score':max(0,min(100,int(a.get('score',50)))),'reasoning':str(a.get('reasoning',''))[:250],'provider':'FreeTheAI/'+model}
+    except Exception as e:
+      print('AI FreeTheAI fallback:',type(e).__name__,str(e)[:160])
+  # Secondary free/public fallback: keep deterministic scanner operational if
+  # no FreeTheAI key is configured or its free quota is unavailable.
   for m in ('mistral','llama','openai-fast',''):
    try:
-    u='https://text.pollinations.ai/'+requests.utils.quote(q)+(('?model='+m) if m else '');r=S.get(u,timeout=CFG['timeout']);a=json.loads(r.text[r.text.find('{'):r.text.rfind('}')+1]);v=str(a.get('verdict','SKIP')).upper();v='LONG' if 'LONG' in v and 'SHORT' not in v else 'SHORT' if 'SHORT' in v and 'LONG' not in v else 'SKIP';return {'verdict':v,'score':max(0,min(100,int(a.get('score',50)))),'reasoning':str(a.get('reasoning',''))[:250],'provider':m or 'default'}
+    u='https://text.pollinations.ai/'+requests.utils.quote(q)+(('?model='+m) if m else '')
+    r=S.get(u,timeout=CFG['timeout']);a=json.loads(r.text[r.text.find('{'):r.text.rfind('}')+1])
+    v=str(a.get('verdict','SKIP')).upper();v='LONG' if v=='LONG' and 'SHORT' not in v else 'SHORT' if v=='SHORT' and 'LONG' not in v else 'SKIP'
+    return {'verdict':v,'score':max(0,min(100,int(a.get('score',50)))),'reasoning':str(a.get('reasoning',''))[:250],'provider':'Pollinations/'+(m or 'default')}
    except Exception:pass
   return {'verdict':'ERROR','score':0,'reasoning':'AI moderator unavailable','provider':'-'}
+
+
 def scan():
   contracts=api('/api/v2/mix/market/contracts',{'productType':PRODUCT});ticks=api('/api/v2/mix/market/tickers',{'productType':PRODUCT})
   tm={x['symbol']:x for x in ticks}
