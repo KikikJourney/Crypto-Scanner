@@ -1,69 +1,25 @@
 import os,json,time,requests
-from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
-B=['https://fapi.binance.com','https://fapi1.binance.com','https://fapi2.binance.com','https://fapi3.binance.com','https://fapi4.binance.com']
-PROXY_BASE=os.getenv('BINANCE_PROXY_BASE','').rstrip('/')+'/' if os.getenv('BINANCE_PROXY_BASE') else ''
-TRANSPORT_MODE='auto'
-S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/1.1','Accept':'application/json'})
-CFG={'limit':60,'minvol':15000000,'top':50,'proxy_top':12,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':22}
+BASE='https://api.bitget.com'
+PRODUCT='USDT-FUTURES'
+TRANSPORT_MODE='bitget'
+S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/2.0','Accept':'application/json'})
+CFG={'limit':60,'minvol':15000000,'top':50,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':15}
 def f(x,d=0.0):
     try:return float(x)
     except:return d
-def _json_response(r,source):
-    ct=(r.headers.get('content-type') or '').lower()
-    body=r.text[:240].replace('\\n',' ')
-    if r.status_code==429 or r.status_code>=500:
-        raise RuntimeError(f'{source} HTTP {r.status_code}: {body}')
-    if r.status_code>=400:
-        raise RuntimeError(f'{source} HTTP {r.status_code}: {body}')
-    if 'json' not in ct and not r.text.lstrip().startswith(('{','[')):
-        raise RuntimeError(f'{source} non-JSON HTTP {r.status_code} content-type={ct}: {body}')
-    try:
-        return r.json()
-    except Exception as e:
-        raise RuntimeError(f'{source} invalid JSON HTTP {r.status_code}: {body}') from e
-
 def api(path,p=None):
-    global TRANSPORT_MODE
-    errors=[]
-    target_params=p or {}
-
-    def via_proxy():
-        req=requests.Request('GET','https://fapi.binance.com'+path,params=target_params).prepare()
-        proxy_url=PROXY_BASE+quote(req.url,safe=':/?=&')
-        r=S.get(proxy_url,headers={'Origin':'https://github.com','Accept':'application/json'},timeout=CFG['timeout'])
-        return _json_response(r,'cors.dev proxy')
-
-    # Once the runner is known to be blocked, stay on the working transport for
-    # the rest of this scan instead of repeating failed direct requests.
-    if TRANSPORT_MODE=='proxy':
-        try:
-            return via_proxy()
-        except Exception as e:
-            errors.append(str(e))
-            TRANSPORT_MODE='auto'
-
-    for z in range(2):
-        for b in B:
-            try:
-                r=S.get(b+path,params=target_params,timeout=CFG['timeout'])
-                data=_json_response(r,b)
-                TRANSPORT_MODE='direct'
-                return data
-            except Exception as e:
-                errors.append(str(e))
-        time.sleep(.35*(z+1))
-
-    if PROXY_BASE:
-        try:
-            data=via_proxy()
-            TRANSPORT_MODE='proxy'
-            return data
-        except Exception as e:
-            errors.append(str(e))
-
-    raise RuntimeError('Binance unavailable after direct+proxy transport: '+' | '.join(errors[-6:]))
+    try:
+        r=S.get(BASE+path,params=p or {},timeout=CFG['timeout'])
+        ct=(r.headers.get('content-type') or '').lower(); body=r.text[:240].replace('\\n',' ')
+        if r.status_code>=400: raise RuntimeError(f'Bitget HTTP {r.status_code}: {body}')
+        if 'json' not in ct and not r.text.lstrip().startswith(('{','[')): raise RuntimeError(f'Bitget non-JSON: {body}')
+        j=r.json()
+        if str(j.get('code'))!='00000': raise RuntimeError(f"Bitget API {j.get('code')}: {j.get('msg')}")
+        return j.get('data',[])
+    except Exception as e:
+        raise RuntimeError('Bitget unavailable: '+str(e))
 
 def ema(a,n):
     if len(a)<n:return a[-1]
@@ -100,9 +56,9 @@ def pullback(c,h,l,v,d,p,m):
     return x
 def screen(sym,t):
   try:
-    k,k15,k1,k4=[api('/fapi/v1/klines',{'symbol':sym,'interval':q,'limit':60}) for q in ('5m','15m','1h','4h')]
-    top=api('/futures/data/topLongShortPositionRatio',{'symbol':sym,'period':'5m','limit':1});gl=api('/futures/data/globalLongShortAccountRatio',{'symbol':sym,'period':'5m','limit':1});tr=api('/fapi/v1/aggTrades',{'symbol':sym,'limit':100})
-    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPrice']);a=atr(h,l,c);d=[f(x[9])-f(x[10]) for x in k];cv=[];z=0
+    k,k15,k1,k4=[api('/api/v2/mix/market/candles',{'symbol':sym,'productType':PRODUCT,'granularity':q,'limit':60}) for q in ('5m','15m','1H','4H')]
+    top=api('/api/v2/mix/market/long-short',{'symbol':sym,'period':'5m'});gl=api('/api/v2/mix/market/account-long-short',{'symbol':sym,'period':'5m'});tr=api('/api/v2/mix/market/fills',{'symbol':sym,'productType':PRODUCT,'limit':100})
+    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPr']);a=atr(h,l,c);d=[f(x[9])-f(x[10]) for x in k];cv=[];z=0
     for q in d:z+=q;cv.append(z)
     r=regime(c,h,l,v,a,p);m=mtf(k15,k1,k4,p);ag=[];e21=ema(c,21);e50=ema(c,50);rv=rsi(c);rl=min(l[-20:-1]);rh=max(h[-20:-1]);ll,lh,lc,lo=l[-1],h[-1],c[-1],o[-1];lw=min(lc,lo)-ll;uw=lh-max(lc,lo);bd=abs(lc-lo);rg=lh-ll or 1
     if ll<rl*.997 and lc>rl and lw>bd and lw>rg*.3:ag.append(agent('wyckoff','Wyckoff','LONG',22,'Spring',80))
@@ -112,14 +68,15 @@ def screen(sym,t):
     else:ag.append(agent('wyckoff','Wyckoff','NEUTRAL',0,'No pattern',50))
     dr=sum(d[-5:]);s='LONG' if dr>0 else 'SHORT' if dr<0 else 'NEUTRAL';ag.append(agent('of','OrderFlow',s,22 if dr else 0,'Delta '+s,75 if dr else 50))
     flat=(max(cv[-10:])-min(cv[-10:]))/p<.01;avg=sum(abs(x) for x in d[-20:])/20;dec=abs(d[-1])/(avg or 1);pm=(c[-1]-c[-6])/c[-6]*100;s='LONG' if d[-1]<0 and dec<.7 and flat and pm<-.15 else 'SHORT' if d[-1]>0 and dec<.7 and flat and pm>.15 else 'NEUTRAL';ag.append(agent('exh','Exhaustion',s,25 if s!='NEUTRAL' else 0,'CVD/exhaustion',80 if s!='NEUTRAL' else 50))
-    tp=f(top[0].get('longShortRatio',1)) if top else 1;gs=f(gl[0].get('longShortRatio',1)) if gl else 1;s='LONG' if (gs<=.6 and tp>=1.2) or tp>=1.2 else 'SHORT' if (gs>=1.8 and tp<=.85) or tp<=.85 else 'NEUTRAL';ag.append(agent('sm','SmartMoney',s,25 if (gs<=.6 and tp>=1.2) or (gs>=1.8 and tp<=.85) else 12 if s!='NEUTRAL' else 0,'Positioning',85 if s!='NEUTRAL' else 50))
+    tp=f(top[-1].get('longShortRatio',1)) if top else 1;gs=f(gl[-1].get('longShortAccountRatio',1)) if gl else 1;s='LONG' if (gs<=.6 and tp>=1.2) or tp>=1.2 else 'SHORT' if (gs>=1.8 and tp<=.85) or tp<=.85 else 'NEUTRAL';ag.append(agent('sm','SmartMoney',s,25 if (gs<=.6 and tp>=1.2) or (gs>=1.8 and tp<=.85) else 12 if s!='NEUTRAL' else 0,'Positioning',85 if s!='NEUTRAL' else 50))
     rhi,rlo=max(h[-60:]),min(l[-60:]);pos=(p-rlo)/(rhi-rlo or 1);s='LONG' if pos<.2 else 'SHORT' if pos>.8 else 'LONG' if pos<.35 else 'SHORT' if pos>.65 else 'NEUTRAL';ag.append(agent('struct','Structure',s,20 if pos<.2 or pos>.8 else 10 if s!='NEUTRAL' else 0,'Range %.0f%%'%(pos*100),75 if s!='NEUTRAL' else 50))
     wb=ws=wbv=wsv=0
     for x in tr:
-      usd=f(x.get('p'))*f(x.get('q'))
+      usd=f(x.get('price'))*f(x.get('size'))
       if usd>=30000:
-       if not x.get('m'):wb+=1;wbv+=usd
-       else:ws+=1;wsv+=usd
+       side=str(x.get('side','')).lower()
+       if side=='buy':wb+=1;wbv+=usd
+       elif side=='sell':ws+=1;wsv+=usd
     wr=wbv/(wbv+wsv or 1);s='LONG' if wb+ws>=2 and wr>=.6 else 'SHORT' if wb+ws>=2 and wr<=.4 else 'NEUTRAL';ag.append(agent('whale','Whale',s,22 if s!='NEUTRAL' else 0,'Whale flow',80 if s!='NEUTRAL' else 40))
     s='LONG' if m['bullCount']>=2 else 'SHORT' if m['bearCount']>=2 else 'NEUTRAL';ag.append(agent('mtf','MTF',s,22 if abs(m['bullCount']-m['bearCount'])==3 else 12 if s!='NEUTRAL' else 0,'4H/1H/15m alignment',85 if abs(m['bullCount']-m['bearCount'])==3 else 60))
     pb=pullback(c,h,l,v,d,p,m);s=pb['direction'] if pb['status']=='ending' else 'NEUTRAL';ag.append(agent('pb','Pullback',s,20 if s!='NEUTRAL' else 0,pb['reason'],pb['conf']))
@@ -134,7 +91,7 @@ def screen(sym,t):
     if cons<CFG['cons'] or ww<2:return None
     if direction=='LONG':sl=rl-a*.8;sl=p-a*CFG['sl'] if sl>=p else sl;tp=p+a*CFG['tp'];rr=(tp-p)/(p-sl)
     else:sl=rh+a*.8;sl=p+a*CFG['sl'] if sl<=p else sl;tp=p-a*CFG['tp'];rr=(p-tp)/(sl-p)
-    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('priceChangePercent'))}
+    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('change24h'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
   q=json.dumps({'task':'Synthesize 8 agent discussion. JSON only.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']})
@@ -144,8 +101,11 @@ def moderator(x):
    except Exception:pass
   return {'verdict':'ERROR','score':0,'reasoning':'AI moderator unavailable','provider':'-'}
 def scan():
-  info=api('/fapi/v1/exchangeInfo');ticks=api('/fapi/v1/ticker/24hr');tm={x['symbol']:x for x in ticks};syms=[x['symbol'] for x in info['symbols'] if x.get('contractType')=='PERPETUAL' and x.get('quoteAsset')=='USDT' and x.get('status')=='TRADING' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']];syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:(CFG['proxy_top'] if TRANSPORT_MODE=='proxy' else CFG['top'])];out=[]
-  print(f'TRANSPORT={TRANSPORT_MODE} | symbols={len(syms)}')
+  contracts=api('/api/v2/mix/market/contracts',{'productType':PRODUCT});ticks=api('/api/v2/mix/market/tickers',{'productType':PRODUCT})
+  tm={x['symbol']:x for x in ticks}
+  syms=[x['symbol'] for x in contracts if x.get('symbolType')=='perpetual' and x.get('quoteCoin')=='USDT' and x.get('symbolStatus')=='normal' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']]
+  syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:CFG['top']];out=[]
+  print(f'TRANSPORT={TRANSPORT_MODE} | Bitget USDT-FUTURES | symbols={len(syms)}')
   with ThreadPoolExecutor(max_workers=3 if TRANSPORT_MODE=='direct' else 4) as ex:
    for q in as_completed([ex.submit(screen,s,tm[s]) for s in syms]):
     x=q.result()
@@ -169,4 +129,4 @@ if __name__=='__main__':
     x=scan();print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
   except RuntimeError as e:
     print('DATA_UNAVAILABLE: '+str(e))
-    print('No signal emitted; Binance Futures transport/data was unavailable.')
+    print('No signal emitted; Bitget Futures transport/data was unavailable.')
