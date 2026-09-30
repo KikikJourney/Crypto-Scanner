@@ -4,14 +4,21 @@ from datetime import datetime,timezone
 BASE=os.getenv('BITGET_BASE_URL','https://api.bitget.com').rstrip('/')
 PRODUCT='USDT-FUTURES'
 TRANSPORT_MODE='bitget'
-S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/2.0','Accept':'application/json'})
+S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/2.1','Accept':'application/json'})
+API_LOCK=__import__('threading').Lock(); LAST_REQ=0.0
 CFG={'limit':60,'minvol':15000000,'top':50,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':15}
 def f(x,d=0.0):
     try:return float(x)
     except:return d
 def api(path,p=None):
-    try:
+    global LAST_REQ
+    with API_LOCK:
+        now=time.monotonic()
+        gap=1.05 if ('/long-short' in path or '/account-long-short' in path) else 0.18
+        wait=gap-(now-LAST_REQ)
+        if wait>0: time.sleep(wait)
         r=S.get(BASE+path,params=p or {},timeout=CFG['timeout'])
+        LAST_REQ=time.monotonic()
         ct=(r.headers.get('content-type') or '').lower(); body=r.text[:240].replace('\\n',' ')
         if r.status_code>=400: raise RuntimeError(f'Bitget HTTP {r.status_code}: {body}')
         if 'json' not in ct and not r.text.lstrip().startswith(('{','[')): raise RuntimeError(f'Bitget non-JSON: {body}')
@@ -58,7 +65,8 @@ def screen(sym,t):
   try:
     k,k15,k1,k4=[api('/api/v2/mix/market/candles',{'symbol':sym,'productType':PRODUCT,'granularity':q,'limit':60}) for q in ('5m','15m','1H','4H')]
     top=api('/api/v2/mix/market/long-short',{'symbol':sym,'period':'5m'});gl=api('/api/v2/mix/market/account-long-short',{'symbol':sym,'period':'5m'});tr=api('/api/v2/mix/market/fills',{'symbol':sym,'productType':PRODUCT,'limit':100})
-    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPr']);a=atr(h,l,c);d=[f(x[9])-f(x[10]) for x in k];cv=[];z=0
+    if any(len(q)<50 for q in (k,k15,k1,k4)): return None
+    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPr']);a=atr(h,l,c);d=[0.0 for x in k];cv=[];z=0
     for q in d:z+=q;cv.append(z)
     r=regime(c,h,l,v,a,p);m=mtf(k15,k1,k4,p);ag=[];e21=ema(c,21);e50=ema(c,50);rv=rsi(c);rl=min(l[-20:-1]);rh=max(h[-20:-1]);ll,lh,lc,lo=l[-1],h[-1],c[-1],o[-1];lw=min(lc,lo)-ll;uw=lh-max(lc,lo);bd=abs(lc-lo);rg=lh-ll or 1
     if ll<rl*.997 and lc>rl and lw>bd and lw>rg*.3:ag.append(agent('wyckoff','Wyckoff','LONG',22,'Spring',80))
@@ -103,10 +111,10 @@ def moderator(x):
 def scan():
   contracts=api('/api/v2/mix/market/contracts',{'productType':PRODUCT});ticks=api('/api/v2/mix/market/tickers',{'productType':PRODUCT})
   tm={x['symbol']:x for x in ticks}
-  syms=[x['symbol'] for x in contracts if x.get('symbolType')=='perpetual' and x.get('quoteCoin')=='USDT' and x.get('symbolStatus')=='normal' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']]
+  syms=[x['symbol'] for x in contracts if x.get('symbolType')=='perpetual' and x.get('quoteCoin')=='USDT' and x.get('symbolStatus')=='normal' and str(x.get('isRwa','NO')).upper()!='YES' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']]
   syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:CFG['top']];out=[]
   print(f'TRANSPORT={TRANSPORT_MODE} | Bitget USDT-FUTURES | symbols={len(syms)}')
-  with ThreadPoolExecutor(max_workers=3 if TRANSPORT_MODE=='direct' else 4) as ex:
+  with ThreadPoolExecutor(max_workers=1) as ex:
    for q in as_completed([ex.submit(screen,s,tm[s]) for s in syms]):
     x=q.result()
     if x:out.append(x)
