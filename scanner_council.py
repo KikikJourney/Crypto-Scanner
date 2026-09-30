@@ -1,23 +1,54 @@
 import os,json,time,requests
+from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
 B=['https://fapi.binance.com','https://fapi1.binance.com','https://fapi2.binance.com','https://fapi3.binance.com','https://fapi4.binance.com']
-S=requests.Session();S.headers['User-Agent']='Zorathvael-Scanner-Council/1.0'
-CFG={'limit':60,'minvol':15000000,'top':50,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':22}
+PROXY_BASE=os.getenv('BINANCE_PROXY_BASE','https://proxy.cors.dev/').rstrip('/')+'/'
+TRANSPORT_MODE='direct'
+S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/1.1','Accept':'application/json'})
+CFG={'limit':60,'minvol':15000000,'top':50,'proxy_top':12,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':22}
 def f(x,d=0.0):
     try:return float(x)
     except:return d
+def _json_response(r,source):
+    ct=(r.headers.get('content-type') or '').lower()
+    body=r.text[:240].replace('\\n',' ')
+    if r.status_code==429 or r.status_code>=500:
+        raise RuntimeError(f'{source} HTTP {r.status_code}: {body}')
+    if r.status_code>=400:
+        raise RuntimeError(f'{source} HTTP {r.status_code}: {body}')
+    if 'json' not in ct and not r.text.lstrip().startswith(('{','[')):
+        raise RuntimeError(f'{source} non-JSON HTTP {r.status_code} content-type={ct}: {body}')
+    try:
+        return r.json()
+    except Exception as e:
+        raise RuntimeError(f'{source} invalid JSON HTTP {r.status_code}: {body}') from e
+
 def api(path,p=None):
-    err=None
-    for z in range(3):
+    global TRANSPORT_MODE
+    errors=[]
+    target_params=p or {}
+    for z in range(2):
         for b in B:
             try:
-                r=S.get(b+path,params=p,timeout=12)
-                if r.status_code==429 or r.status_code>=500:err=RuntimeError('HTTP '+str(r.status_code));continue
-                r.raise_for_status();return r.json()
-            except Exception as e:err=e
-        time.sleep(.5)
-    raise RuntimeError('Binance unavailable: '+str(err))
+                r=S.get(b+path,params=target_params,timeout=CFG['timeout'])
+                data=_json_response(r,b)
+                TRANSPORT_MODE='direct'
+                return data
+            except Exception as e:
+                errors.append(str(e))
+        time.sleep(.35*(z+1))
+    if PROXY_BASE:
+        try:
+            req=requests.Request('GET','https://fapi.binance.com'+path,params=target_params).prepare()
+            proxy_url=PROXY_BASE+quote(req.url,safe=':/?=&')
+            r=S.get(proxy_url,timeout=CFG['timeout'])
+            data=_json_response(r,'cors.dev proxy')
+            TRANSPORT_MODE='proxy'
+            return data
+        except Exception as e:
+            errors.append(str(e))
+    raise RuntimeError('Binance unavailable after direct+proxy transport: '+' | '.join(errors[-6:]))
 def ema(a,n):
     if len(a)<n:return a[-1]
     k=2/(n+1);e=sum(a[:n])/n
@@ -97,20 +128,21 @@ def moderator(x):
    except Exception:pass
   return {'verdict':'ERROR','score':0,'reasoning':'AI moderator unavailable','provider':'-'}
 def scan():
-  info=api('/fapi/v1/exchangeInfo');ticks=api('/fapi/v1/ticker/24hr');tm={x['symbol']:x for x in ticks};syms=[x['symbol'] for x in info['symbols'] if x.get('contractType')=='PERPETUAL' and x.get('quoteAsset')=='USDT' and x.get('status')=='TRADING' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']];syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:CFG['top']];out=[]
-  with ThreadPoolExecutor(max_workers=3) as ex:
+  info=api('/fapi/v1/exchangeInfo');ticks=api('/fapi/v1/ticker/24hr');tm={x['symbol']:x for x in ticks};syms=[x['symbol'] for x in info['symbols'] if x.get('contractType')=='PERPETUAL' and x.get('quoteAsset')=='USDT' and x.get('status')=='TRADING' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']];syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:(CFG['proxy_top'] if TRANSPORT_MODE=='proxy' else CFG['top'])];out=[]
+  print(f'TRANSPORT={TRANSPORT_MODE} | symbols={len(syms)}')
+  with ThreadPoolExecutor(max_workers=3 if TRANSPORT_MODE=='direct' else 4) as ex:
    for q in as_completed([ex.submit(screen,s,tm[s]) for s in syms]):
     x=q.result()
     if x:out.append(x)
   out.sort(key=lambda x:x['consensus'],reverse=True)
   for x in out[:CFG['ai']]:x['ai']=moderator(x)
-  return {'timestamp':datetime.now(timezone.utc).isoformat(),'scanned':len(syms),'results':out}
+  return {'timestamp':datetime.now(timezone.utc).isoformat(),'transport':TRANSPORT_MODE,'scanned':len(syms),'results':out}
 def fmt(v):
   v=f(v);d=2 if v>=1000 else 4 if v>=1 else 6 if v>=.01 else 8 if v>=.0001 else 10;return f'{v:.{d}f}'.rstrip('0').rstrip('.')
 def notify(x):
   tok,chat=os.getenv('TELEGRAM_BOT_TOKEN'),os.getenv('TELEGRAM_CHAT_ID')
   if not tok or not chat:return
-  z=['🏛️ ZORATHVAEL SCANNER COUNCIL',x['timestamp'],'Universe '+str(x['scanned'])]
+  z=['🏛️ ZORATHVAEL SCANNER COUNCIL',x['timestamp'],f"Transport {x.get('transport','unknown')} | Universe {x['scanned']}"]
   for q in x['results'][:10]:
    z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
    if q.get('ai'):z.append(f"AI {q['ai']['verdict']} {q['ai']['score']}/100: {q['ai']['reasoning']}")
