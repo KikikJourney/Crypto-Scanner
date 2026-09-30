@@ -96,15 +96,25 @@ def screen(sym,t):
     win,opp,ww=(ls,sh,lw) if direction=='LONG' else (sh,ls,sw);cons=max(0,min(100,round((win-opp*.5)/(25*tw)*100)))
     if cons<CFG['cons'] or ww<2:return None
     glo=min(l[-40:]);ghi=max(h[-40:]);
+    # Pullback-calibrated entry zone: 40-candle extrema define the geometry,
+    # while the actual entry is placed in the retracement pocket of the
+    # preceding impulse. This keeps geometry and timing calibration separate.
+    swing_hi=max(h[-20:]);swing_lo=min(l[-20:]);span=swing_hi-swing_lo or a
     if direction=='LONG':
-      entry=glo+a*0.10; entry=min(entry,p)
+      # Long pullback: recover from swing low toward the impulse midpoint.
+      pb_lo=swing_lo+span*0.236; pb_hi=swing_lo+span*0.382
+      entry=min(p,max(pb_lo,min(pb_hi,p)))
+      # If price is already below the calibrated pocket, wait for the pocket;
+      # if it is above, do not chase it.
       sl=max(glo-a*0.35,entry-a*0.8); tp=entry+a*CFG['tp']; rr=(tp-entry)/(entry-sl)
-      timing=max(0,min(100,round(100-(entry-glo)/(a or p*.01)*35)))
+      timing=max(0,min(100,round(100-abs(p-entry)/(a or p*.01)*35)))
     else:
-      entry=ghi-a*0.10; entry=max(entry,p)
+      # Short pullback: rally from swing high toward the impulse midpoint.
+      pb_hi=swing_hi-span*0.236; pb_lo=swing_hi-span*0.382
+      entry=max(p,min(pb_hi,max(pb_lo,p)))
       sl=min(ghi+a*0.35,entry+a*0.8); tp=entry-a*CFG['tp']; rr=(entry-tp)/(sl-entry)
-      timing=max(0,min(100,round(100-(ghi-entry)/(a or p*.01)*35)))
-    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':entry,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'geometryLow':glo,'geometryHigh':ghi,'timingScore':timing,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('price24hPcnt'))}
+      timing=max(0,min(100,round(100-abs(p-entry)/(a or p*.01)*35)))
+    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':entry,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'geometryLow':glo,'geometryHigh':ghi,'pullbackZoneLow':pb_lo,'pullbackZoneHigh':pb_hi,'timingScore':timing,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('price24hPcnt'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
   q=json.dumps({'task':'Synthesize the 8-agent crypto futures scanner discussion. Return JSON with verdict LONG/SHORT/SKIP, score 0-100, and concise reasoning. Do not invent market data.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']},ensure_ascii=False)
@@ -155,7 +165,7 @@ def notify(x):
   z=['🏛️ ZORATHVAEL SCANNER COUNCIL',x['timestamp'],f"Transport {x.get('transport','unknown')} | Universe {x['scanned']}"]
   if not x.get('results'): z += ['', 'NO SIGNAL — no setup passed the calibrated Council consensus on this scan.']
   for q in x['results'][:10]:
-   margin=5.0;lev=max(1,min(20,round(1/max(q['atrPct']/100,0.005))));z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Timing {q.get('timingScore',0)}/100 | Geo L {fmt(q.get('geometryLow',0))} H {fmt(q.get('geometryHigh',0))}",f"Margin {margin:.2f} USDT | Leverage {lev}x",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
+   margin=5.0;lev=max(1,min(20,round(1/max(q['atrPct']/100,0.005))));z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Timing {q.get('timingScore',0)}/100 | Pullback Zone {fmt(q.get('pullbackZoneLow',0))}–{fmt(q.get('pullbackZoneHigh',0))}",f"Margin {margin:.2f} USDT | Leverage {lev}x",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
    if q.get('ai'):z.append(f"AI {q['ai']['verdict']} {q['ai']['score']}/100: {q['ai']['reasoning']}")
   try:
     r=S.post(f'https://api.telegram.org/bot{tok}/sendMessage',json={'chat_id':chat,'text':'\n'.join(z)},timeout=15)
