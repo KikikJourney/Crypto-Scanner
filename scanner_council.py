@@ -127,10 +127,11 @@ def moderator(x):
 
 
 def scan():
-  contracts=api('/api/v2/mix/market/contracts',{'productType':PRODUCT});ticks=api('/api/v2/mix/market/tickers',{'productType':PRODUCT})
+  ticks=api('/api/v3/market/tickers',{'category':PRODUCT})
   tm={x['symbol']:x for x in ticks}
-  syms=[x['symbol'] for x in contracts if x.get('symbolType')=='perpetual' and x.get('quoteCoin')=='USDT' and x.get('symbolStatus')=='normal' and str(x.get('isRwa','NO')).upper()!='YES' and f(tm.get(x['symbol'],{}).get('quoteVolume'))>CFG['minvol']]
-  syms=sorted(syms,key=lambda s:f(tm[s]['quoteVolume']),reverse=True)[:CFG['top']];out=[]
+  instruments=api('/api/v3/market/instruments',{'category':PRODUCT})
+  syms=[x['symbol'] for x in instruments if x.get('type')=='perpetual' and x.get('quoteCoin')=='USDT' and x.get('status')=='online' and str(x.get('isRwa','NO')).upper()!='YES' and f(tm.get(x['symbol'],{}).get('turnover24h'))>CFG['minvol']]
+  syms=sorted(syms,key=lambda s:f(tm[s]['turnover24h']),reverse=True)[:CFG['top']];out=[]
   print(f'TRANSPORT={TRANSPORT_MODE} | Bitget USDT-FUTURES | symbols={len(syms)}')
   with ThreadPoolExecutor(max_workers=1) as ex:
    for q in as_completed([ex.submit(screen,s,tm[s]) for s in syms]):
