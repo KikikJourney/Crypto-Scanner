@@ -50,6 +50,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           BITGET_BASE_URL: https://api.bitget.com
+          FREETHEAI_API_KEY: ${{ secrets.FREETHEAI_API_KEY }}
+          FREETHEAI_MODEL: fta/zai/glm-5.3
         run: python scanner_council.py | tee scanner_result.json
       - name: Upload scan evidence
         if: always()
