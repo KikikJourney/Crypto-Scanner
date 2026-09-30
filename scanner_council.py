@@ -87,7 +87,7 @@ def screen(sym,t):
     if cons<CFG['cons'] or ww<2:return None
     if direction=='LONG':sl=rl-a*.8;sl=p-a*CFG['sl'] if sl>=p else sl;tp=p+a*CFG['tp'];rr=(tp-p)/(p-sl)
     else:sl=rh+a*.8;sl=p+a*CFG['sl'] if sl<=p else sl;tp=p-a*CFG['tp'];rr=(p-tp)/(sl-p)
-    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':tp,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('priceChangePercent'))}
+    return {'symbol':sym.replace('USDT',''),'direction':direction,'price':p,'entry':p,'tp':tp,'sl':sl,'rr':rr,'consensus':cons,'longScore':ls,'shortScore':sh,'agents':ag,'weights':w,'regime':r,'mtf':m,'pullback':pb,'topPos':top,'globalLS':gs,'rsi':rv,'atr':a,'atrPct':a/p*100,'rangePos':pos*100,'change24':f(t.get('priceChangePercent'))}
   except Exception as e:print('WARN',sym,e);return None
 def moderator(x):
   q=json.dumps({'task':'Synthesize 8 agent discussion. JSON only.','symbol':x['symbol'],'regime':x['regime'],'consensus':x['consensus'],'direction':x['direction'],'agents':x['agents']})
@@ -117,4 +117,8 @@ def notify(x):
   try:S.post(f'https://api.telegram.org/bot{tok}/sendMessage',json={'chat_id':chat,'text':'\n'.join(z)},timeout=15)
   except Exception as e:print('Telegram error',e)
 if __name__=='__main__':
-  x=scan();print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
+  try:
+    x=scan();print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
+  except RuntimeError as e:
+    print('DATA_UNAVAILABLE: '+str(e))
+    print('No signal emitted; Binance Futures transport/data was unavailable.')
