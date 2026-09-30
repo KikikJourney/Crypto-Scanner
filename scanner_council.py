@@ -146,6 +146,7 @@ def notify(x):
   tok,chat=os.getenv('TELEGRAM_BOT_TOKEN'),os.getenv('TELEGRAM_CHAT_ID')
   if not tok or not chat:return
   z=['🏛️ ZORATHVAEL SCANNER COUNCIL',x['timestamp'],f"Transport {x.get('transport','unknown')} | Universe {x['scanned']}"]
+  if not x.get('results'): z += ['', 'NO SIGNAL — no setup passed the calibrated Council consensus on this scan.']
   for q in x['results'][:10]:
    margin=5.0;lev=max(1,min(20,round(1/max(q['atrPct']/100,0.005))));z += ['',f"{q['direction']} {q['symbol']} | Consensus {q['consensus']}%",f"Entry {fmt(q['entry'])} | TP {fmt(q['tp'])} | SL {fmt(q['sl'])} | RR {q['rr']:.2f}R",f"Margin {margin:.2f} USDT | Leverage {lev}x",f"Regime {q['regime']['type']} | 4H {q['mtf']['trend4h']} 1H {q['mtf']['trend1h']} 15m {q['mtf']['trend15']}"]
    if q.get('ai'):z.append(f"AI {q['ai']['verdict']} {q['ai']['score']}/100: {q['ai']['reasoning']}")
@@ -157,7 +158,9 @@ def notify(x):
   except Exception as e:print('Telegram error',type(e).__name__,str(e)[:200])
 if __name__=='__main__':
   try:
-    x=scan();print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
+    x=scan()
+    with open('scanner_result.json','w',encoding='utf-8') as fh: json.dump(x,fh,indent=2,ensure_ascii=False)
+    print(json.dumps(x,indent=2,ensure_ascii=False));notify(x)
   except RuntimeError as e:
     print('DATA_UNAVAILABLE: '+str(e))
     print('No signal emitted; Bitget Futures transport/data was unavailable.')
