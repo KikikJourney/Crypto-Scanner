@@ -49,8 +49,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          HTTP_PROXY: ${{ secrets.BINANCE_HTTP_PROXY }}
-          HTTPS_PROXY: ${{ secrets.BINANCE_HTTPS_PROXY }}
+          BITGET_BASE_URL: https://api.bitget.com
         run: python scanner_council.py | tee scanner_result.json
       - name: Upload scan evidence
         if: always()
