@@ -6,7 +6,7 @@ PRODUCT='USDT-FUTURES'
 TRANSPORT_MODE='bitget'
 S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/2.1','Accept':'application/json'})
 API_LOCK=__import__('threading').Lock(); LAST_REQ=0.0
-CFG={'limit':60,'minvol':15000000,'top':50,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':15}
+CFG={'limit':100,'minvol':15000000,'top':50,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':15}
 def f(x,d=0.0):
     try:return float(x)
     except:return d
@@ -63,7 +63,7 @@ def screen(sym,t):
   try:
     k,k15,k1,k4=[api('/api/v2/mix/market/candles',{'symbol':sym,'productType':PRODUCT,'granularity':q,'limit':60}) for q in ('5m','15m','1H','4H')]
     top=api('/api/v2/mix/market/long-short',{'symbol':sym,'period':'5m'});gl=api('/api/v2/mix/market/account-long-short',{'symbol':sym,'period':'5m'});tr=api('/api/v2/mix/market/fills',{'symbol':sym,'productType':PRODUCT,'limit':100})
-    if any(len(q)<50 for q in (k,k15,k1,k4)): return None
+    if any(len(q)<55 for q in (k,k15,k1,k4)): return None
     c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPr']);a=atr(h,l,c);d=[(1 if f(x[4])>f(x[1]) else -1 if f(x[4])<f(x[1]) else 0)*f(x[5]) for x in k];cv=[];z=0
     for q in d:z+=q;cv.append(z)
     r=regime(c,h,l,v,a,p);m=mtf(k15,k1,k4,p);ag=[];e21=ema(c,21);e50=ema(c,50);rv=rsi(c);rl=min(l[-20:-1]);rh=max(h[-20:-1]);ll,lh,lc,lo=l[-1],h[-1],c[-1],o[-1];lw=min(lc,lo)-ll;uw=lh-max(lc,lo);bd=abs(lc-lo);rg=lh-ll or 1
