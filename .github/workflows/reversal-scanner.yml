@@ -33,8 +33,21 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Validate Council engine
         run: python -m py_compile scanner_council.py
+      - name: Diagnose runner network
+        run: |
+          echo "Runner egress:"
+          curl -4 -sS --max-time 10 https://ipconfig.io/json || true
+          echo
+          echo "Binance Futures preflight:"
+          curl -4 -sS -D /tmp/binance_headers -o /tmp/binance_body --max-time 15 https://fapi.binance.com/fapi/v1/ping || true
+          echo "Headers:"
+          sed -n '1,20p' /tmp/binance_headers 2>/dev/null || true
+          echo "Body:"
+          head -c 300 /tmp/binance_body 2>/dev/null || true
+          echo
       - name: Run Scanner Council
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BINANCE_PROXY_BASE: https://proxy.cors.dev/
         run: python scanner_council.py
