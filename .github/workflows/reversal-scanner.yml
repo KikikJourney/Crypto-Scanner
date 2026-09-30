@@ -50,4 +50,12 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           BINANCE_PROXY_BASE: https://proxy.cors.dev/
-        run: python scanner_council.py
+        run: python scanner_council.py | tee scanner_result.json
+      - name: Upload scan evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: scanner-council-result
+          path: scanner_result.json
+          if-no-files-found: warn
+          retention-days: 3
