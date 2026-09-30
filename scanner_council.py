@@ -61,10 +61,10 @@ def pullback(c,h,l,v,d,p,m):
     return x
 def screen(sym,t):
   try:
-    k,k15,k1,k4=[api('/api/v2/mix/market/candles',{'symbol':sym,'productType':PRODUCT,'granularity':q,'limit':60}) for q in ('5m','15m','1H','4H')]
+    k,k15,k1,k4=[api('/api/v3/market/candles',{'category':PRODUCT,'symbol':sym,'interval':q,'limit':60}) for q in ('5m','15m','1H','4H')]
     top=api('/api/v2/mix/market/long-short',{'symbol':sym,'period':'5m'});gl=api('/api/v2/mix/market/account-long-short',{'symbol':sym,'period':'5m'});tr=api('/api/v2/mix/market/fills',{'symbol':sym,'productType':PRODUCT,'limit':100})
     if any(len(q)<55 for q in (k,k15,k1,k4)): return None
-    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t['lastPr']);a=atr(h,l,c);d=[(1 if f(x[4])>f(x[1]) else -1 if f(x[4])<f(x[1]) else 0)*f(x[5]) for x in k];cv=[];z=0
+    c=[f(x[4]) for x in k];o=[f(x[1]) for x in k];h=[f(x[2]) for x in k];l=[f(x[3]) for x in k];v=[f(x[5]) for x in k];p=f(t.get('lastPrice'));a=atr(h,l,c);d=[(1 if f(x[4])>f(x[1]) else -1 if f(x[4])<f(x[1]) else 0)*f(x[5]) for x in k];cv=[];z=0
     for q in d:z+=q;cv.append(z)
     r=regime(c,h,l,v,a,p);m=mtf(k15,k1,k4,p);ag=[];e21=ema(c,21);e50=ema(c,50);rv=rsi(c);rl=min(l[-20:-1]);rh=max(h[-20:-1]);ll,lh,lc,lo=l[-1],h[-1],c[-1],o[-1];lw=min(lc,lo)-ll;uw=lh-max(lc,lo);bd=abs(lc-lo);rg=lh-ll or 1
     if ll<rl*.997 and lc>rl and lw>bd and lw>rg*.3:ag.append(agent('wyckoff','Wyckoff','LONG',22,'Spring',80))
