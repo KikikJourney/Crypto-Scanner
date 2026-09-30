@@ -1,7 +1,7 @@
 import os,json,time,requests
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
-BASE='https://api.bitget.com'
+BASE=os.getenv('BITGET_BASE_URL','https://api.bitget.com').rstrip('/')
 PRODUCT='USDT-FUTURES'
 TRANSPORT_MODE='bitget'
 S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/2.0','Accept':'application/json'})
