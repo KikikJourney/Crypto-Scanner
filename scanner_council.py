@@ -3,7 +3,7 @@ from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
 B=['https://fapi.binance.com','https://fapi1.binance.com','https://fapi2.binance.com','https://fapi3.binance.com','https://fapi4.binance.com']
-PROXY_BASE=os.getenv('BINANCE_PROXY_BASE','https://proxy.cors.dev/').rstrip('/')+'/'
+PROXY_BASE=os.getenv('BINANCE_PROXY_BASE','').rstrip('/')+'/' if os.getenv('BINANCE_PROXY_BASE') else ''
 TRANSPORT_MODE='auto'
 S=requests.Session();S.headers.update({'User-Agent':'Zorathvael-Scanner-Council/1.1','Accept':'application/json'})
 CFG={'limit':60,'minvol':15000000,'top':50,'proxy_top':12,'cons':45,'tp':2.0,'sl':1.5,'ai':3,'timeout':22}
