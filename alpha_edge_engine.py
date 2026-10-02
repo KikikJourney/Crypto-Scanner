@@ -196,7 +196,6 @@ def candidate(symbol, ticker, source):
             flow_ok=flow["delta"]>0.05 if direction=="LONG" else flow["delta"]<-0.05
             sweep_bonus=liq["strength"]
             # OI/funding/crowding are evidence layers, not binary blockers.
-            ext=ext
             funding=ext["funding"]
             crowd=ext["crowding"]
             crowd_score=0.5
