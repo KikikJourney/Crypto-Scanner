@@ -27,6 +27,7 @@ def format_action(row):
         f"Exhaustion: {row.get('flow',{}).get('exhaustion','')}",
         f"Open Interest: {row.get('external',{}).get('open_interest','')}",
         f"Funding: {row.get('external',{}).get('funding','')}",
+        f"Taker ratio: {row.get('external',{}).get('taker_ratio','')}",
         f"Crowding: {row.get('external',{}).get('crowding','')}",
         f"MTF alignment: {row.get('mtf_score','')}/3",
         "",
