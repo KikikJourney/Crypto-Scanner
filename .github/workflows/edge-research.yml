@@ -1,0 +1,32 @@
+name: Alpha Edge Historical Research
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run historical edge study
+        env:
+          BINANCE_BASE_URL: https://fapi.binance.com
+          EDGE_RESEARCH_SYMBOLS: '20'
+        run: python edge_research.py | tee edge_research.log
+      - name: Upload research evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: alpha-edge-historical-research
+          path: |
+            edge_evidence.json
+            edge_research.log
+          retention-days: 14
