@@ -134,14 +134,23 @@ def pullback_calibration(r, direction):
     return {"zone_low":zone_lo,"zone_high":zone_hi,"inside":inside,"timing":round(timing,2),
             "trigger":trigger,"leg":leg,"atr":a,"disp":round(disp,4)}
 
-def external_features(symbol):
+def external_features(symbol, source="Binance"):
     out={"open_interest":None,"funding":None,"crowding":None,"source":"unavailable"}
     try:
-        oi=binance("/fapi/v1/openInterest",{"symbol":symbol})
-        fr=binance("/fapi/v1/premiumIndex",{"symbol":symbol})
-        out["open_interest"]=f(oi.get("openInterest"))
-        out["funding"]=f(fr.get("lastFundingRate"))
-        out["source"]="Binance"
+        if source == "Binance":
+            oi=binance("/fapi/v1/openInterest",{"symbol":symbol})
+            fr=binance("/fapi/v1/premiumIndex",{"symbol":symbol})
+            out["open_interest"]=f(oi.get("openInterest"))
+            out["funding"]=f(fr.get("lastFundingRate"))
+            out["source"]="Binance"
+        else:
+            oi=bitget("/api/v2/mix/market/open-interest",{"productType":"USDT-FUTURES","symbol":symbol})
+            fr=bitget("/api/v2/mix/market/current-fund-rate",{"productType":"USDT-FUTURES","symbol":symbol})
+            oirows=oi.get("data",[]) if isinstance(oi,dict) else []
+            frrows=fr.get("data",[]) if isinstance(fr,dict) else []
+            out["open_interest"]=f((oirows[0] if oirows else {}).get("openInterest"))
+            out["funding"]=f((frrows[0] if frrows else {}).get("fundingRate"))
+            out["source"]="Bitget"
         # Crowding uses account long/short ratio when available.
         try:
             ls=binance("/futures/data/globalLongShortAccountRatio",{"symbol":symbol,"period":"5m","limit":1})
@@ -155,17 +164,27 @@ def external_features(symbol):
         except Exception: pass
     return out
 
-def mtf(symbol):
+def fetch_candles(source, symbol, interval, limit):
+    if source == "Binance":
+        return candles(binance("/fapi/v1/klines",{"symbol":symbol,"interval":interval,"limit":limit})[:-1])
+    gran={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[interval]
+    j=bitget("/api/v2/mix/market/candles",{"productType":"USDT-FUTURES","symbol":symbol,"granularity":gran,"limit":limit})
+    rows=j.get("data",[]) if isinstance(j,dict) else j
+    return candles([x for x in reversed(rows)])
+
+def mtf(symbol, source):
     data={}
     for interval,limit in (("15m",160),("1h",120),("4h",80)):
-        data[interval]=candles(binance("/fapi/v1/klines",{"symbol":symbol,"interval":interval,"limit":limit})[:-1])
+        data[interval]=fetch_candles(source,symbol,interval,limit)
     return data
 
-def candidate(symbol, ticker):
+def candidate(symbol, ticker, source):
     try:
-        r=candles(binance("/fapi/v1/klines",{"symbol":symbol,"interval":"5m","limit":220})[:-1])
+        r=fetch_candles(source,symbol,"5m",220)
         if len(r)<160:return None
-        p=f(ticker.get("lastPrice")); reg=regime(r); tfs=mtf(symbol)
+        p=f(ticker.get("lastPrice",ticker.get("lastPr")))
+        reg=regime(r); tfs=mtf(symbol,source)
+        ext=external_features(symbol,source)
         a5=atr(r); e20=ema([x["c"] for x in r],20); e50=ema([x["c"] for x in r],50)
         results=[]
         for direction in ("LONG","SHORT"):
@@ -177,7 +196,7 @@ def candidate(symbol, ticker):
             flow_ok=flow["delta"]>0.05 if direction=="LONG" else flow["delta"]<-0.05
             sweep_bonus=liq["strength"]
             # OI/funding/crowding are evidence layers, not binary blockers.
-            ext=external_features(symbol)
+            ext=ext
             funding=ext["funding"]
             crowd=ext["crowding"]
             crowd_score=0.5
@@ -287,7 +306,7 @@ def scan():
     ticks,source=universe(); out=[]
     for t in ticks:
         sym=t.get("symbol","")
-        x=candidate(sym,t)
+        x=candidate(sym,t,source)
         if x:out.append(x)
     out.sort(key=lambda x:(x["quality"],x["timing"]),reverse=True)
     return {"timestamp":datetime.now(timezone.utc).isoformat(),"version":VERSION,"transport":source,
