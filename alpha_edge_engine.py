@@ -135,7 +135,7 @@ def pullback_calibration(r, direction):
             "trigger":trigger,"leg":leg,"atr":a,"disp":round(disp,4)}
 
 def external_features(symbol, source="Binance"):
-    out={"open_interest":None,"funding":None,"crowding":None,"source":"unavailable"}
+    out={"open_interest":None,"funding":None,"crowding":None,"taker_ratio":None,"source":"unavailable"}
     try:
         if source == "Binance":
             oi=binance("/fapi/v1/openInterest",{"symbol":symbol})
@@ -155,6 +155,8 @@ def external_features(symbol, source="Binance"):
         try:
             ls=binance("/futures/data/globalLongShortAccountRatio",{"symbol":symbol,"period":"5m","limit":1})
             out["crowding"]=f(ls[-1].get("longShortRatio")) if ls else None
+            taker=binance("/futures/data/takerlongshortRatio",{"symbol":symbol,"period":"5m","limit":1})
+            out["taker_ratio"]=f(taker[-1].get("buySellRatio")) if taker else None
         except Exception: pass
     except Exception:
         try:
@@ -204,6 +206,10 @@ def candidate(symbol, ticker, source):
             fund_score=0.5
             if funding is not None:
                 fund_score=max(0,min(1,0.5-(funding*1000 if direction=="LONG" else -funding*1000)*0.15))
+            taker=ext.get("taker_ratio")
+            taker_score=0.5
+            if taker is not None:
+                taker_score=max(0,min(1,0.5+(taker-1.0)*0.35*(1 if direction=="LONG" else -1)))
             mtf_score=0
             for rr in tfs.values():
                 q=rr[-1]["c"]; ee=ema([x["c"] for x in rr],min(50,len(rr)))
@@ -211,7 +217,7 @@ def candidate(symbol, ticker, source):
             score=(20*(1 if structure else 0)+18*min(1,max(0,flow["delta"]*5+0.5))
                    +15*min(1,max(0,flow["impulse"]*150))
                    +15*min(1,sweep_bonus+0.15)+12*(mtf_score/3)
-                   +10*fund_score+10*crowd_score)
+                   +7*fund_score+8*crowd_score+5*taker_score)
             if pb["trigger"]:score+=8
             quality=max(0,min(100,round(score,2)))
             # The entry zone is calibration only. Geometry is applied later.
