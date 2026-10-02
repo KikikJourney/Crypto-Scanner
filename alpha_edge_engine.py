@@ -260,16 +260,21 @@ def universe():
         rows=[x for x in rows if f(x.get("usdtVolume",x.get("quoteVolume",0)))>=MIN_TURNOVER]
         return sorted(rows,key=lambda x:f(x.get("usdtVolume",x.get("quoteVolume",0))),reverse=True)[:MAX_SYMBOLS],"Bitget"
 
-def load_edge_evidence(path="data/edge_evidence.csv"):
-    if not Path(path).exists():return {"status":"NO_EVIDENCE","n":0,"expectancy_r":0}
-    with open(path,newline="",encoding="utf-8") as fh: rows=list(csv.DictReader(fh))
+def load_edge_evidence():
+    p=Path("edge_evidence.json")
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8")).get("summary",[])
+        except Exception: pass
+    p=Path("data/edge_evidence.csv")
+    if not p.exists():return {"status":"NO_EVIDENCE","n":0,"expectancy_r":0}
+    with open(p,newline="",encoding="utf-8") as fh: rows=list(csv.DictReader(fh))
     vals=[]
     for x in rows:
         try: vals.append(float(x.get("net_r","")))
         except: pass
     if not vals:return {"status":"NO_EVIDENCE","n":0,"expectancy_r":0}
-    wins=sum(v>0 for v in vals); losses=sum(v<0 for v in vals)
-    gross_win=sum(v for v in vals if v>0); gross_loss=-sum(v for v in vals if v<0)
+    wins=sum(v>0 for v in vals); gross_win=sum(v for v in vals if v>0); gross_loss=-sum(v for v in vals if v<0)
     return {"status":"OBSERVED","n":len(vals),"win_rate":wins/len(vals),"expectancy_r":sum(vals)/len(vals),
             "profit_factor":gross_win/gross_loss if gross_loss else float("inf")}
 
