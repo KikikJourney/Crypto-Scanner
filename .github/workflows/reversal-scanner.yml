@@ -1,4 +1,4 @@
-name: Zorathvael Alpha Edge Scanner
+name: Zorathvael Qwen Alpha Hunter Scanner
 
 on:
   workflow_dispatch:
@@ -40,9 +40,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
-          key: kronos-small-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          key: qwen-kronos-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            kronos-small-${{ runner.os }}-
+            qwen-kronos-${{ runner.os }}-
       - name: Validate engine
         run: |
           python -m py_compile alpha_edge_engine.py scanner_council.py
@@ -65,6 +65,9 @@ jobs:
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
           AI_MODEL_ID: NeoQuasar/Kronos-small
+          QWEN_MODEL_ID: Qwen/Qwen3-4B-Instruct-2507
+          QWEN_SCREEN_SYMBOLS: 30
+          QWEN_MAX_PICKS: 8
           AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
           KRONOS_VENDOR_PATH: .vendor/kronos
           AI_CONTEXT: 256
