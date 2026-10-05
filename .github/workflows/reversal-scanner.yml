@@ -65,14 +65,15 @@ jobs:
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
           AI_MODEL_ID: NeoQuasar/Kronos-small
-          QWEN_MODEL_ID: Qwen/Qwen3-4B-Instruct-2507
-          QWEN_SCREEN_SYMBOLS: 16
-          QWEN_MAX_PICKS: 6
+          QWEN_MODEL_ID: Qwen/Qwen3-0.6B
+          QWEN_SCREEN_SYMBOLS: 12
+          QWEN_MAX_PICKS: 4
           AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
           KRONOS_VENDOR_PATH: .vendor/kronos
-          AI_CONTEXT: 256
-          AI_HORIZON: 12
-          AI_SAMPLES: 2
+          AI_ON_QWEN_CANDIDATES: "0"
+          AI_CONTEXT: 192
+          AI_HORIZON: 8
+          AI_SAMPLES: 1
         run: python scanner_council.py | tee scanner_result.log
       - name: Upload evidence
         if: always()
