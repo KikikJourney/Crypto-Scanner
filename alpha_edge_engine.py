@@ -385,10 +385,11 @@ def candidate(symbol, ticker, source, qwen_pick=None):
             results.append((quality,direction,liq,flow,pb,ext,mtf_score))
         if not results:return None
         results.sort(reverse=True,key=lambda x:x[0]); q,d,liq,flow,pb,ext,mtfs=results[0]
-        if q<58:return None
+        if q<52:return None
         # Require event sequence, but do not require every data source to exist.
         event_score=sum([liq["sweep"],flow["impulse"]>0,flow["exhaustion"]>0.25,pb["trigger"]])
-        if event_score<2:return None
+        if event_score<1:return None
+        if pb["timing"]<45: return None
         entry=(pb["zone_low"]+pb["zone_high"])/2
         # Use current price only for execution state; never redefine calibration.
         zone_lo,zone_hi=pb["zone_low"],pb["zone_high"]
