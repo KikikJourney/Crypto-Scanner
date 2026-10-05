@@ -67,7 +67,7 @@ jobs:
           AI_MODEL_ID: NeoQuasar/Kronos-small
           QWEN_MODEL_ID: Qwen/Qwen3-0.6B
           QWEN_SCREEN_SYMBOLS: 12
-          QWEN_MAX_PICKS: 4
+          QWEN_MAX_PICKS: 6
           AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
           KRONOS_VENDOR_PATH: .vendor/kronos
           AI_ON_QWEN_CANDIDATES: "0"
