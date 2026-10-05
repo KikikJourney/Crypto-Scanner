@@ -33,21 +33,36 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
+      - name: Install Hugging Face Kronos engine
+        run: |
+          git clone --depth 1 https://github.com/shiyu-coder/Kronos.git .vendor/kronos
       - name: Validate engine
         run: |
           python -m py_compile alpha_edge_engine.py scanner_council.py
           python -m unittest -v tests/test_alpha_edge_engine.py
-      - name: Binance preflight
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, ".vendor/kronos")
+          from model import Kronos, KronosTokenizer, KronosPredictor
+          print("KRONOS_IMPORT_OK")
+          PY
+      - name: Market transport preflight
         run: |
-          curl -4 -sS --max-time 15 'https://fapi.binance.com/fapi/v1/ping'
+          echo "Bitget Futures:"
+          curl -4 -sS --max-time 15 'https://api.bitget.com/api/v3/market/tickers?category=USDT-FUTURES' | head -c 500
           echo
-          curl -4 -sS --max-time 15 'https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT'
       - name: Run Alpha Edge Scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
+          AI_MODEL_ID: NeoQuasar/Kronos-small
+          AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
+          KRONOS_VENDOR_PATH: .vendor/kronos
+          AI_CONTEXT: 256
+          AI_HORIZON: 12
+          AI_SAMPLES: 2
         run: python scanner_council.py | tee scanner_result.log
       - name: Upload evidence
         if: always()
