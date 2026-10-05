@@ -66,8 +66,8 @@ jobs:
           BITGET_BASE_URL: https://api.bitget.com
           AI_MODEL_ID: NeoQuasar/Kronos-small
           QWEN_MODEL_ID: Qwen/Qwen3-4B-Instruct-2507
-          QWEN_SCREEN_SYMBOLS: 30
-          QWEN_MAX_PICKS: 8
+          QWEN_SCREEN_SYMBOLS: 16
+          QWEN_MAX_PICKS: 6
           AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
           KRONOS_VENDOR_PATH: .vendor/kronos
           AI_CONTEXT: 256
