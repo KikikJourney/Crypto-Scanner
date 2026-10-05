@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import requests
 
-VERSION = "alpha-edge-council-v1"
+VERSION = "qwen-alpha-hunter-v1"
 BINANCE = os.getenv("BINANCE_BASE_URL", "https://fapi.binance.com").rstrip("/")
 BITGET = os.getenv("BITGET_BASE_URL", "https://api.bitget.com").rstrip("/")
 MARGIN = 10.0
@@ -34,6 +34,12 @@ AI_CONTEXT = int(os.getenv("AI_CONTEXT", "256"))
 AI_HORIZON = int(os.getenv("AI_HORIZON", "12"))
 AI_SAMPLES = int(os.getenv("AI_SAMPLES", "2"))
 AI_MIN_EDGE = float(os.getenv("AI_MIN_EDGE", "0.0015"))
+QWEN_MODEL_ID = os.getenv("QWEN_MODEL_ID", "Qwen/Qwen3-4B-Instruct-2507")
+QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "30"))
+QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "8"))
+_QWEN_MODEL = None
+_QWEN_TOKENIZER = None
+_QWEN_LOCK = __import__("threading").Lock()
 _AI_PREDICTOR = None
 _AI_LOCK = __import__("threading").Lock()
 
@@ -87,6 +93,90 @@ def ai_market_forecast(rows):
             "return":ret,"path_return":path_ret,"upside":upside,"downside":downside,
             "forecast_close":float(closes[-1]),"forecast_high":float(highs.max()),
             "forecast_low":float(lows.min()),"horizon":AI_HORIZON}
+
+def load_qwen_engine():
+    global _QWEN_MODEL, _QWEN_TOKENIZER
+    if _QWEN_MODEL is not None:
+        return _QWEN_TOKENIZER, _QWEN_MODEL
+    with _QWEN_LOCK:
+        if _QWEN_MODEL is not None:
+            return _QWEN_TOKENIZER, _QWEN_MODEL
+        import torch
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        tok = AutoTokenizer.from_pretrained(QWEN_MODEL_ID)
+        model = AutoModelForCausalLM.from_pretrained(
+            QWEN_MODEL_ID, torch_dtype=torch.bfloat16, device_map="auto"
+        )
+        model.eval()
+        _QWEN_TOKENIZER, _QWEN_MODEL = tok, model
+        print(f"QWEN_ENGINE_READY model={QWEN_MODEL_ID}")
+    return _QWEN_TOKENIZER, _QWEN_MODEL
+
+def _qwen_json(text):
+    text=text.strip()
+    if "</think>" in text:
+        text=text.split("</think>")[-1].strip()
+    start=text.find("["); end=text.rfind("]")
+    if start<0 or end<=start: return []
+    try:
+        obj=json.loads(text[start:end+1])
+        return obj if isinstance(obj,list) else []
+    except Exception:
+        return []
+
+def qwen_screen(ticks, source):
+    """Qwen is the primary intelligence layer that screens the liquid universe before entry calibration."""
+    packets=[]
+    for t in ticks[:QWEN_SCREEN_SYMBOLS]:
+        sym=t.get("symbol","")
+        try:
+            rr=fetch_candles(source,sym,"15m",90)
+            if len(rr)<60: continue
+            closes=[x["c"] for x in rr]; vols=[x["v"] for x in rr]; p=closes[-1] or 1
+            e20=ema(closes,20); e50=ema(closes,50); a=atr(rr,14)
+            vr=(sum(vols[-5:])/5)/(sum(vols[-25:-5])/20 or 1)
+            hi=max(x["h"] for x in rr[-48:]); lo=min(x["l"] for x in rr[-48:])
+            packets.append({
+                "symbol":sym,"price":p,"chg_3":(p/closes[-4]-1)*100,
+                "chg_12":(p/closes[-13]-1)*100,"chg_24":(p/closes[-25]-1)*100,
+                "atr_pct":(a/p*100) if p else 0,"rsi":rsi(rr),"volume_ratio":vr,
+                "ema20_50_pct":((e20/e50)-1)*100 if e50 else 0,
+                "range_pos":(p-lo)/(hi-lo) if hi>lo else .5,
+                "last_body_pct":abs(rr[-1]["c"]-rr[-1]["o"])/p*100 if p else 0,
+                "turnover":f(t.get("quoteVolume",t.get("usdtVolume",0)))
+            })
+        except Exception:
+            continue
+    if not packets: return {}
+    prompt = """You are Qwen, the primary crypto-futures screening intelligence for a 15m scalping Alpha Hunter.
+Select only coins with a credible LONG bottom-entry or SHORT top-entry setup forming now.
+Prefer exhaustion/reversal, liquidity location, favorable trend transition, volume confirmation and non-chasing price location.
+Reject extended moves, weak liquidity, contradictory structure and noise. The next stage calculates exact pullback entry/SL/TP.
+Return ONLY JSON array, max PICKS objects, ranked best first:
+{"symbol":"XXXUSDT","direction":"LONG|SHORT","score":0-100,"reason":"brief evidence"}
+Do not force picks.
+MARKET TABLE:
+""".replace("PICKS",str(QWEN_MAX_PICKS))+json.dumps(packets,separators=(",",":"))
+    tok,model=load_qwen_engine()
+    messages=[{"role":"system","content":"You are a disciplined quantitative crypto-futures market screener. Output strict JSON when requested."},
+              {"role":"user","content":prompt}]
+    inputs=tok.apply_chat_template(messages,add_generation_prompt=True,tokenize=True,
+                                   return_dict=True,return_tensors="pt",enable_thinking=True)
+    inputs={k:v.to(model.device) for k,v in inputs.items()}
+    import torch
+    with torch.inference_mode():
+        out=model.generate(**inputs,max_new_tokens=700,do_sample=False)
+    text_out=tok.decode(out[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=False)
+    picks=_qwen_json(text_out)
+    allowed={p["symbol"] for p in packets}; clean={}
+    for p in picks:
+        if not isinstance(p,dict): continue
+        sym=str(p.get("symbol","")).upper(); direction=str(p.get("direction","")).upper()
+        if sym in allowed and direction in ("LONG","SHORT"):
+            clean[sym]={"direction":direction,"score":max(0,min(100,f(p.get("score"),0))),
+                        "reason":str(p.get("reason",""))[:240],"model":QWEN_MODEL_ID}
+    print(f"QWEN_SCREEN_DONE universe={len(packets)} picks={len(clean)}")
+    return clean
 
 def f(x, d=0.0):
     try:
@@ -243,18 +333,19 @@ def mtf(symbol, source):
         data[interval]=fetch_candles(source,symbol,interval,limit)
     return data
 
-def candidate(symbol, ticker, source):
+def candidate(symbol, ticker, source, qwen_pick=None):
     try:
         r=fetch_candles(source,symbol,"5m",220)
         if len(r)<160:return None
         p=f(ticker.get("lastPrice",ticker.get("lastPr")))
         reg=regime(r); tfs=mtf(symbol,source)
         ai=ai_market_forecast(r)
-        if not ai or ai["direction"]=="NEUTRAL": return None
+        if not ai and not qwen_pick: return None
         ext=external_features(symbol,source)
         a5=atr(r); e20=ema([x["c"] for x in r],20); e50=ema([x["c"] for x in r],50)
         results=[]
-        for direction in (ai["direction"],):
+        directions=[qwen_pick["direction"]] if qwen_pick else ([ai["direction"]] if ai and ai["direction"]!="NEUTRAL" else [])
+        for direction in directions:
             liq=liquidity_event(r,direction); flow=flow_features(r,direction); pb=pullback_calibration(r,direction)
             if not pb:continue
             closes=[x["c"] for x in r]
@@ -284,8 +375,11 @@ def candidate(symbol, ticker, source):
                    +15*min(1,sweep_bonus+0.15)+12*(mtf_score/3)
                    +7*fund_score+8*crowd_score+5*taker_score)
             if pb["trigger"]:score+=8
-            score += 25*(ai["confidence"]/100)
-            if direction==ai["direction"]: score += 15
+            if ai:
+                score += 15*(ai["confidence"]/100)
+                if direction==ai["direction"]: score += 8
+            if qwen_pick:
+                score += 28*(qwen_pick["score"]/100)
             quality=max(0,min(100,round(score,2)))
             # The entry zone is calibration only. Geometry is applied later.
             results.append((quality,direction,liq,flow,pb,ext,mtf_score))
@@ -306,7 +400,8 @@ def candidate(symbol, ticker, source):
             sl=entry*(1+sl_move); tps=[entry*(1-x) for x in tp_moves]
         return {"symbol":symbol.replace("USDT",""),"symbol_full":symbol,"direction":d,"price":p,
                 "entry":entry,"entry_zone_low":zone_lo,"entry_zone_high":zone_hi,"stop":sl,
-                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":pb["timing"],"ai_engine":ai,
+                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":pb["timing"],"ai_engine":ai or {},
+                "qwen_screen":qwen_pick or {},
                 "regime":reg,"liquidity":liq,"flow":flow,"pullback":pb,"external":ext,
                 "mtf_score":mtfs,"calibration":"pullback-50/78.6% displacement retracement",
                 "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,"sl_margin_pct":SL_MARGIN_PCT,
@@ -360,8 +455,9 @@ def telegram_text(x):
         f"Entry zone: {format_price(x['entry_zone_low'])} – {format_price(x['entry_zone_high'])}",
         f"Calibrated entry: {format_price(x['entry'])}",
         f"Pullback timing: {x['timing']}/100",
-        f"AI Engine: {x['ai_engine']['model']} | {x['ai_engine']['direction']} {x['ai_engine']['confidence']}/100",
-        f"AI forecast return: {x['ai_engine']['return']*100:.3f}% | Path: {x['ai_engine']['path_return']*100:.3f}%",
+        f"Qwen Screen: {x['qwen_screen'].get('model','n/a')} | {x['qwen_screen'].get('direction',x['direction'])} {x['qwen_screen'].get('score',0):.0f}/100",
+        f"Qwen rationale: {x['qwen_screen'].get('reason','')}",
+        f"Kronos forecast: {x['ai_engine'].get('return',0)*100:.3f}% | Path: {x['ai_engine'].get('path_return',0)*100:.3f}%",
         f"Quality: {x['quality']}/100",
         "",
         "EXECUTION GEOMETRY",
@@ -382,14 +478,19 @@ def telegram_text(x):
     ])
 
 def scan():
-    ticks,source=universe(); out=[]
+    ticks,source=universe()
+    qwen=qwen_screen(ticks,source)
+    out=[]
     for t in ticks:
         sym=t.get("symbol","")
-        x=candidate(sym,t,source)
-        if x:out.append(x)
-    out.sort(key=lambda x:(x["quality"],x["timing"]),reverse=True)
+        pick=qwen.get(sym)
+        if not pick: continue
+        x=candidate(sym,t,source,pick)
+        if x: out.append(x)
+    out.sort(key=lambda x:(x["quality"],x["timing"],x["qwen_screen"].get("score",0)),reverse=True)
     return {"timestamp":datetime.now(timezone.utc).isoformat(),"version":VERSION,"transport":source,
-            "universe":len(ticks),"results":out[:10],"edge_evidence":load_edge_evidence()}
+            "universe":len(ticks),"qwen_screened":len(qwen),"qwen_picks":list(qwen.values()),
+            "results":out[:10],"edge_evidence":load_edge_evidence()}
 
 def notify(result):
     tok,chat=os.getenv("TELEGRAM_BOT_TOKEN"),os.getenv("TELEGRAM_CHAT_ID")
