@@ -19,7 +19,7 @@ MARGIN = 10.0
 LEVERAGE = 20
 SL_MARGIN_PCT = -10.0
 TP_MARGIN_PCTS = (30.0, 60.0, 120.0)
-MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "80"))
+MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "40"))
 MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "10000000"))
 TIMEOUT = 12
 SESSION = requests.Session()
@@ -32,11 +32,11 @@ AI_MODEL_ID = os.getenv("AI_MODEL_ID", "NeoQuasar/Kronos-small")
 AI_TOKENIZER_ID = os.getenv("AI_TOKENIZER_ID", "NeoQuasar/Kronos-Tokenizer-base")
 AI_CONTEXT = int(os.getenv("AI_CONTEXT", "256"))
 AI_HORIZON = int(os.getenv("AI_HORIZON", "12"))
-AI_SAMPLES = int(os.getenv("AI_SAMPLES", "2"))
+AI_SAMPLES = int(os.getenv("AI_SAMPLES", "1"))
 AI_MIN_EDGE = float(os.getenv("AI_MIN_EDGE", "0.0015"))
 QWEN_MODEL_ID = os.getenv("QWEN_MODEL_ID", "Qwen/Qwen3-4B-Instruct-2507")
-QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "30"))
-QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "8"))
+QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "16"))
+QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "6"))
 _QWEN_MODEL = None
 _QWEN_TOKENIZER = None
 _QWEN_LOCK = __import__("threading").Lock()
@@ -161,11 +161,11 @@ MARKET TABLE:
     messages=[{"role":"system","content":"You are a disciplined quantitative crypto-futures market screener. Output strict JSON when requested."},
               {"role":"user","content":prompt}]
     inputs=tok.apply_chat_template(messages,add_generation_prompt=True,tokenize=True,
-                                   return_dict=True,return_tensors="pt",enable_thinking=True)
+                                   return_dict=True,return_tensors="pt",enable_thinking=False)
     inputs={k:v.to(model.device) for k,v in inputs.items()}
     import torch
     with torch.inference_mode():
-        out=model.generate(**inputs,max_new_tokens=700,do_sample=False)
+        out=model.generate(**inputs,max_new_tokens=220,do_sample=False)
     text_out=tok.decode(out[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=False)
     picks=_qwen_json(text_out)
     allowed={p["symbol"] for p in packets}; clean={}
