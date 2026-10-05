@@ -33,10 +33,11 @@ AI_TOKENIZER_ID = os.getenv("AI_TOKENIZER_ID", "NeoQuasar/Kronos-Tokenizer-base"
 AI_CONTEXT = int(os.getenv("AI_CONTEXT", "256"))
 AI_HORIZON = int(os.getenv("AI_HORIZON", "12"))
 AI_SAMPLES = int(os.getenv("AI_SAMPLES", "1"))
+AI_ON_QWEN_CANDIDATES = os.getenv("AI_ON_QWEN_CANDIDATES", "0") == "1"
 AI_MIN_EDGE = float(os.getenv("AI_MIN_EDGE", "0.0015"))
-QWEN_MODEL_ID = os.getenv("QWEN_MODEL_ID", "Qwen/Qwen3-4B-Instruct-2507")
-QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "16"))
-QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "6"))
+QWEN_MODEL_ID = os.getenv("QWEN_MODEL_ID", "Qwen/Qwen3-0.6B")
+QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "12"))
+QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "4"))
 _QWEN_MODEL = None
 _QWEN_TOKENIZER = None
 _QWEN_LOCK = __import__("threading").Lock()
@@ -105,7 +106,7 @@ def load_qwen_engine():
         from transformers import AutoTokenizer, AutoModelForCausalLM
         tok = AutoTokenizer.from_pretrained(QWEN_MODEL_ID)
         model = AutoModelForCausalLM.from_pretrained(
-            QWEN_MODEL_ID, torch_dtype=torch.bfloat16, device_map="auto"
+            QWEN_MODEL_ID, torch_dtype=torch.bfloat16, device_map="auto", low_cpu_mem_usage=True
         )
         model.eval()
         _QWEN_TOKENIZER, _QWEN_MODEL = tok, model
@@ -165,7 +166,7 @@ MARKET TABLE:
     inputs={k:v.to(model.device) for k,v in inputs.items()}
     import torch
     with torch.inference_mode():
-        out=model.generate(**inputs,max_new_tokens=220,do_sample=False)
+        out=model.generate(**inputs,max_new_tokens=96,do_sample=False)
     text_out=tok.decode(out[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=False)
     picks=_qwen_json(text_out)
     allowed={p["symbol"] for p in packets}; clean={}
@@ -339,7 +340,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
         if len(r)<160:return None
         p=f(ticker.get("lastPrice",ticker.get("lastPr")))
         reg=regime(r); tfs=mtf(symbol,source)
-        ai=ai_market_forecast(r)
+        ai=ai_market_forecast(r) if AI_ON_QWEN_CANDIDATES else None
         if not ai and not qwen_pick: return None
         ext=external_features(symbol,source)
         a5=atr(r); e20=ema([x["c"] for x in r],20); e50=ema([x["c"] for x in r],50)
@@ -482,7 +483,9 @@ def scan():
     ticks,source=universe()
     qwen=qwen_screen(ticks,source)
     out=[]
-    for t in ticks:
+    ranked=[t for t in ticks if t.get("symbol","") in qwen]
+    ranked.sort(key=lambda t: qwen[t.get("symbol","")].get("score",0), reverse=True)
+    for t in ranked[:QWEN_MAX_PICKS]:
         sym=t.get("symbol","")
         pick=qwen.get(sym)
         if not pick: continue
