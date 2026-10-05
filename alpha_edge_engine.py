@@ -7,7 +7,7 @@ REGIME -> LIQUIDITY -> FLOW -> STRUCTURE -> DISPLACEMENT -> PULLBACK
 Calibration and margin geometry are deliberately independent.
 No 40-candle rule is used.
 """
-import csv, json, math, os, time
+import csv, json, math, os, time, sys
 from datetime import datetime, timezone
 from pathlib import Path
 import requests
@@ -23,7 +23,70 @@ MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "80"))
 MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "10000000"))
 TIMEOUT = 12
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "Zorathvael-Alpha-Edge-Council/1.0"})
+SESSION.headers.update({"User-Agent": "Zorathvael-AI-Market-Engine/1.0"})
+
+# Hugging Face financial foundation model: Kronos-small.
+# The model is the market-decision engine; deterministic features are context
+# and execution/risk guards, not the primary signal generator.
+AI_MODEL_ID = os.getenv("AI_MODEL_ID", "NeoQuasar/Kronos-small")
+AI_TOKENIZER_ID = os.getenv("AI_TOKENIZER_ID", "NeoQuasar/Kronos-Tokenizer-base")
+AI_CONTEXT = int(os.getenv("AI_CONTEXT", "256"))
+AI_HORIZON = int(os.getenv("AI_HORIZON", "12"))
+AI_SAMPLES = int(os.getenv("AI_SAMPLES", "2"))
+AI_MIN_EDGE = float(os.getenv("AI_MIN_EDGE", "0.0015"))
+_AI_PREDICTOR = None
+_AI_LOCK = __import__("threading").Lock()
+
+def load_ai_engine():
+    global _AI_PREDICTOR
+    if _AI_PREDICTOR is not None:
+        return _AI_PREDICTOR
+    with _AI_LOCK:
+        if _AI_PREDICTOR is not None:
+            return _AI_PREDICTOR
+        vendor=os.getenv("KRONOS_VENDOR_PATH",".vendor/kronos")
+        if vendor not in sys.path:
+            sys.path.insert(0,vendor)
+        from model import Kronos, KronosTokenizer, KronosPredictor
+        import torch
+        device="cuda:0" if torch.cuda.is_available() else "cpu"
+        tok=KronosTokenizer.from_pretrained(AI_TOKENIZER_ID)
+        model=Kronos.from_pretrained(AI_MODEL_ID)
+        model.eval(); tok.eval()
+        _AI_PREDICTOR=KronosPredictor(model,tok,device=device,max_context=AI_CONTEXT)
+        print(f"AI_ENGINE_READY model={AI_MODEL_ID} device={device} context={AI_CONTEXT}")
+    return _AI_PREDICTOR
+
+def ai_market_forecast(rows):
+    """Run the Hugging Face financial foundation model and turn its forecast into market intelligence."""
+    import pandas as pd
+    if len(rows)<AI_CONTEXT+20:return None
+    data=rows[-AI_CONTEXT:]
+    ts=pd.Series(pd.to_datetime([x["t"] for x in data],unit="ms",utc=True))
+    df=pd.DataFrame({
+        "open":[x["o"] for x in data],"high":[x["h"] for x in data],
+        "low":[x["l"] for x in data],"close":[x["c"] for x in data],
+        "volume":[x["v"] for x in data],
+    })
+    step=ts.iloc[-1]-ts.iloc[-2]
+    yts=pd.Series([ts.iloc[-1]+step*(i+1) for i in range(AI_HORIZON)])
+    predictor=load_ai_engine()
+    pred=predictor.predict(df,ts,yts,pred_len=AI_HORIZON,T=0.9,top_p=0.9,sample_count=AI_SAMPLES,verbose=False)
+    last=df["close"].iloc[-1]
+    closes=pred["close"].astype(float).values
+    highs=pred["high"].astype(float).values
+    lows=pred["low"].astype(float).values
+    ret=(closes[-1]/last)-1 if last else 0
+    path_ret=(float(closes.mean())/last)-1 if last else 0
+    upside=(float(highs.max())/last)-1 if last else 0
+    downside=(float(lows.min())/last)-1 if last else 0
+    direction="LONG" if ret>AI_MIN_EDGE and path_ret>0 else "SHORT" if ret<-AI_MIN_EDGE and path_ret<0 else "NEUTRAL"
+    separation=abs(ret)/(abs(upside-downside)+1e-9)
+    confidence=max(0,min(100,round(50+separation*50+min(25,abs(ret)*10000))))
+    return {"model":AI_MODEL_ID,"direction":direction,"confidence":confidence,
+            "return":ret,"path_return":path_ret,"upside":upside,"downside":downside,
+            "forecast_close":float(closes[-1]),"forecast_high":float(highs.max()),
+            "forecast_low":float(lows.min()),"horizon":AI_HORIZON}
 
 def f(x, d=0.0):
     try:
@@ -186,10 +249,12 @@ def candidate(symbol, ticker, source):
         if len(r)<160:return None
         p=f(ticker.get("lastPrice",ticker.get("lastPr")))
         reg=regime(r); tfs=mtf(symbol,source)
+        ai=ai_market_forecast(r)
+        if not ai or ai["direction"]=="NEUTRAL": return None
         ext=external_features(symbol,source)
         a5=atr(r); e20=ema([x["c"] for x in r],20); e50=ema([x["c"] for x in r],50)
         results=[]
-        for direction in ("LONG","SHORT"):
+        for direction in (ai["direction"],):
             liq=liquidity_event(r,direction); flow=flow_features(r,direction); pb=pullback_calibration(r,direction)
             if not pb:continue
             closes=[x["c"] for x in r]
@@ -219,6 +284,8 @@ def candidate(symbol, ticker, source):
                    +15*min(1,sweep_bonus+0.15)+12*(mtf_score/3)
                    +7*fund_score+8*crowd_score+5*taker_score)
             if pb["trigger"]:score+=8
+            score += 25*(ai["confidence"]/100)
+            if direction==ai["direction"]: score += 15
             quality=max(0,min(100,round(score,2)))
             # The entry zone is calibration only. Geometry is applied later.
             results.append((quality,direction,liq,flow,pb,ext,mtf_score))
@@ -239,7 +306,7 @@ def candidate(symbol, ticker, source):
             sl=entry*(1+sl_move); tps=[entry*(1-x) for x in tp_moves]
         return {"symbol":symbol.replace("USDT",""),"symbol_full":symbol,"direction":d,"price":p,
                 "entry":entry,"entry_zone_low":zone_lo,"entry_zone_high":zone_hi,"stop":sl,
-                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":pb["timing"],
+                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":pb["timing"],"ai_engine":ai,
                 "regime":reg,"liquidity":liq,"flow":flow,"pullback":pb,"external":ext,
                 "mtf_score":mtfs,"calibration":"pullback-50/78.6% displacement retracement",
                 "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,"sl_margin_pct":SL_MARGIN_PCT,
@@ -293,6 +360,8 @@ def telegram_text(x):
         f"Entry zone: {format_price(x['entry_zone_low'])} – {format_price(x['entry_zone_high'])}",
         f"Calibrated entry: {format_price(x['entry'])}",
         f"Pullback timing: {x['timing']}/100",
+        f"AI Engine: {x['ai_engine']['model']} | {x['ai_engine']['direction']} {x['ai_engine']['confidence']}/100",
+        f"AI forecast return: {x['ai_engine']['return']*100:.3f}% | Path: {x['ai_engine']['path_return']*100:.3f}%",
         f"Quality: {x['quality']}/100",
         "",
         "EXECUTION GEOMETRY",
