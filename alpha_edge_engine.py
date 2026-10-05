@@ -19,8 +19,8 @@ MARGIN = 10.0
 LEVERAGE = 20
 SL_MARGIN_PCT = -10.0
 TP_MARGIN_PCTS = (30.0, 60.0, 120.0)
-MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "40"))
-MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "10000000"))
+MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "24"))
+MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "5000000"))
 TIMEOUT = 12
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "Zorathvael-AI-Market-Engine/1.0"})
@@ -37,7 +37,7 @@ AI_ON_QWEN_CANDIDATES = os.getenv("AI_ON_QWEN_CANDIDATES", "0") == "1"
 AI_MIN_EDGE = float(os.getenv("AI_MIN_EDGE", "0.0015"))
 QWEN_MODEL_ID = os.getenv("QWEN_MODEL_ID", "Qwen/Qwen3-0.6B")
 QWEN_SCREEN_SYMBOLS = int(os.getenv("QWEN_SCREEN_SYMBOLS", "12"))
-QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "4"))
+QWEN_MAX_PICKS = int(os.getenv("QWEN_MAX_PICKS", "6"))
 _QWEN_MODEL = None
 _QWEN_TOKENIZER = None
 _QWEN_LOCK = __import__("threading").Lock()
@@ -144,7 +144,8 @@ def qwen_screen(ticks, source):
                 "ema20_50_pct":((e20/e50)-1)*100 if e50 else 0,
                 "range_pos":(p-lo)/(hi-lo) if hi>lo else .5,
                 "last_body_pct":abs(rr[-1]["c"]-rr[-1]["o"])/p*100 if p else 0,
-                "turnover":f(t.get("quoteVolume",t.get("usdtVolume",0)))
+                "turnover":f(t.get("quoteVolume",t.get("usdtVolume",0)),0),
+                "liquidity_rank":len(packets)+1
             })
         except Exception:
             continue
@@ -156,6 +157,7 @@ Reject extended moves, weak liquidity, contradictory structure and noise. The ne
 Return ONLY JSON array, max PICKS objects, ranked best first:
 {"symbol":"XXXUSDT","direction":"LONG|SHORT","score":0-100,"reason":"brief evidence"}
 Do not force picks.
+If evidence is mixed, still rank the best 1-6 setups rather than returning an empty list.
 MARKET TABLE:
 """.replace("PICKS",str(QWEN_MAX_PICKS))+json.dumps(packets,separators=(",",":"))
     tok,model=load_qwen_engine()
@@ -386,11 +388,11 @@ def candidate(symbol, ticker, source, qwen_pick=None):
             results.append((quality,direction,liq,flow,pb,ext,mtf_score))
         if not results:return None
         results.sort(reverse=True,key=lambda x:x[0]); q,d,liq,flow,pb,ext,mtfs=results[0]
-        if q<52:return None
+        if q<45:return None
         # Require event sequence, but do not require every data source to exist.
         event_score=sum([liq["sweep"],flow["impulse"]>0,flow["exhaustion"]>0.25,pb["trigger"]])
         if event_score<1:return None
-        if pb["timing"]<45: return None
+        if pb["timing"]<35: return None
         entry=(pb["zone_low"]+pb["zone_high"])/2
         # Use current price only for execution state; never redefine calibration.
         zone_lo,zone_hi=pb["zone_low"],pb["zone_high"]
