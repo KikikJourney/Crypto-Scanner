@@ -4,7 +4,7 @@ This is research only: it never emits live Telegram actions and never changes
 production geometry. It evaluates the exact event family used by the scanner
 on closed 5m candles and separates train/test periods.
 """
-import csv, json, math, os
+import json, os
 from pathlib import Path
 from datetime import datetime, timezone
 import requests
@@ -41,7 +41,6 @@ def event(r,i,d):
         impulse=x["c"]<x["o"] and (x["o"]-x["c"])/x["o"]>.0015
         zlo,zhi=lo+span*.50,lo+span*.786
     zone_lo,zone_hi=min(zlo,zhi),max(zlo,zhi)
-    # Require the next bars to enter the calibrated pullback zone.
     fill=None
     for j in range(i+1,min(i+7,len(r))):
         if zone_lo<=r[j]["c"]<=zone_hi:
@@ -56,16 +55,15 @@ def event(r,i,d):
     mae=max(((entry-z["l"])/entry if d=="LONG" else (z["h"]-entry)/entry) for z in fut)
     outcome="UNRESOLVED"
     net=0
-    ts=""
     for z in fut:
         hit_tp=z["h"]>=tp if d=="LONG" else z["l"]<=tp
         hit_sl=z["l"]<=sl if d=="LONG" else z["h"]>=sl
         if hit_tp and hit_sl:
-            outcome="AMBIGUOUS"; net=0; ts=str(z["t"]); break
+            outcome="AMBIGUOUS"; net=0; break
         if hit_tp:
-            outcome="WIN"; net=1; ts=str(z["t"]); break
+            outcome="WIN"; net=1; break
         if hit_sl:
-            outcome="LOSS"; net=-1; ts=str(z["t"]); break
+            outcome="LOSS"; net=-1; break
     return {"timestamp":r[fill]["t"],"direction":d,"regime":"unknown","net_r":net,
             "outcome":outcome,"mfe_pct":mfe*100,"mae_pct":mae*100,"symbol":""}
 
@@ -81,7 +79,7 @@ def main():
             r=bars(s)
             split=int(len(r)*.70)
             for d in ("LONG","SHORT"):
-                for i in range(60,split): 
+                for i in range(60,split):
                     x=event(r,i,d)
                     if x:x.update(symbol=s,regime="train");rows.append(x)
                 for i in range(split,len(r)-HORIZON-1):
