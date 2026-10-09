@@ -1,0 +1,5807 @@
+{
+  "version": "edge-research-v1",
+  "generated_at": "2026-10-09T13:18:00.047015+00:00",
+  "summary": [
+    {
+      "sample": 391,
+      "resolved": 373,
+      "wins": 103,
+      "losses": 270,
+      "win_rate_pct": 27.614,
+      "expectancy_r": -0.44772,
+      "profit_factor": 0.3815,
+      "max_drawdown_r": 169,
+      "avg_mfe_pct": 2.6869,
+      "avg_mae_pct": 3.0099,
+      "regime": "train"
+    },
+    {
+      "sample": 185,
+      "resolved": 175,
+      "wins": 33,
+      "losses": 142,
+      "win_rate_pct": 18.857,
+      "expectancy_r": -0.62286,
+      "profit_factor": 0.2324,
+      "max_drawdown_r": 110,
+      "avg_mfe_pct": 3.6393,
+      "avg_mae_pct": 4.7084,
+      "regime": "test"
+    },
+    {
+      "sample": 576,
+      "resolved": 548,
+      "wins": 136,
+      "losses": 412,
+      "win_rate_pct": 24.818,
+      "expectancy_r": -0.50365,
+      "profit_factor": 0.3301,
+      "max_drawdown_r": 277,
+      "avg_mfe_pct": 2.9911,
+      "avg_mae_pct": 3.5523,
+      "regime": "all"
+    }
+  ],
+  "events": [
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.018830284959060837,
+      "mae_pct": 0.9395911515644284,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791440700000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.8855645049610722,
+      "mae_pct": 0.06942167835215172,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791480900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7733834304726679,
+      "mae_pct": 0.8854812678650509,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791279000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.043202241534606514,
+      "mae_pct": 0.7258903932813746,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791420000000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.3423575008557285,
+      "mae_pct": 0.2634262336008311,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791454200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6070502481686622,
+      "mae_pct": -0.020649816203444023,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791505800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2655691863645482,
+      "mae_pct": 0.8639266202055984,
+      "symbol": "BTCUSDT"
+    },
+    {
+      "timestamp": 1791295200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5452708402719524,
+      "mae_pct": 0.7077630671539703,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.07690123661386722,
+      "mae_pct": 1.064916994959374,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791433800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.39764381573956836,
+      "mae_pct": 0.49240345434361343,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791440400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.793099554394004,
+      "mae_pct": 0.10045351808902384,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791467400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5251705011408111,
+      "mae_pct": 4.647126313954586,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791160200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.090631428474993,
+      "mae_pct": 0.4672362661558503,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791300000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.216780994632888,
+      "mae_pct": 0.12323791977643156,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791442800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9123162844691293,
+      "mae_pct": 0.5041415788449474,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791469500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.884896752851435,
+      "mae_pct": 0.2745025035623092,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791505800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.42722742611838477,
+      "mae_pct": 0.7716817286636068,
+      "symbol": "ETHUSDT"
+    },
+    {
+      "timestamp": 1791339300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3448779905758648,
+      "mae_pct": 0.7613392118785206,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791373500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.16468418022206552,
+      "mae_pct": 1.5664098848711534,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791395400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7561794324602359,
+      "mae_pct": 0.7853039964637338,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.33447714117362476,
+      "mae_pct": 0.9133132300440211,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791439500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.699136739061222,
+      "mae_pct": 0.40534468125667056,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791474300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.31463449412111283,
+      "mae_pct": 3.8998498304347833,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791509100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.3628731443048352,
+      "mae_pct": 0.4104515369103433,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791442800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1924004596323927,
+      "mae_pct": 0.5001049787347637,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791469500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.415911049657079,
+      "mae_pct": -0.13325608651029655,
+      "symbol": "SOLUSDT"
+    },
+    {
+      "timestamp": 1791130200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6961040666343914,
+      "mae_pct": 0.07627339959260696,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791159900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1653183137038816,
+      "mae_pct": 1.6144605197886817,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791162900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.28323861826225255,
+      "mae_pct": 3.0849596233074537,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791241500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.2757811404447241,
+      "mae_pct": 0.9567705096339785,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791256800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.17872321592445753,
+      "mae_pct": 2.0378835199194274,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.20394312222759645,
+      "mae_pct": 2.2934923720496294,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791321900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.128617803183181,
+      "mae_pct": 0.3783048250241758,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791396000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.2919697205628,
+      "mae_pct": 0.9334527481035955,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791410100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.7636490287878812,
+      "mae_pct": 0.6334004418826349,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791480600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.190658648645085,
+      "mae_pct": 1.7755550751795781,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791126600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9718415832787539,
+      "mae_pct": 1.2583428334226836,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791162600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.3658215593237646,
+      "mae_pct": 0.03908636613127044,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791168000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.036726939829456,
+      "mae_pct": -0.07023076083639422,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791200100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.7237639902629325,
+      "mae_pct": 2.9665481294215743,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791203400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.4341296249748554,
+      "mae_pct": 3.3374881447542672,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791203400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.454782131469495,
+      "mae_pct": 3.3153873949058896,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791210300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.794800875951023,
+      "mae_pct": 0.36367557131022177,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791249300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0423734090024532,
+      "mae_pct": 0.5741155862514421,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791331200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.310055762894506,
+      "mae_pct": 0.9549476393458316,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791335400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.518061161645723,
+      "mae_pct": 0.3927621627807325,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791402000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9218168415838481,
+      "mae_pct": 0.9798334030400823,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791415800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9748196500433204,
+      "mae_pct": 0.8861303140875197,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791485700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.002683079396512497,
+      "mae_pct": 4.47350003147797,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791528300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6240276967499611,
+      "mae_pct": 0.9171284701080041,
+      "symbol": "ZECUSDT"
+    },
+    {
+      "timestamp": 1791258300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5561811762614005,
+      "mae_pct": 0.7233460810679171,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791272100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.1657177313434153,
+      "mae_pct": 0.08381920496841798,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.21930949775163597,
+      "mae_pct": 1.1295549963792149,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791429900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.011172546043124863,
+      "mae_pct": 2.4512903727831157,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791464100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6728515540517905,
+      "mae_pct": 4.481975941898154,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9476326186240842,
+      "mae_pct": 3.4347038101190774,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791512700000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.3375940939036783,
+      "mae_pct": 0.006540007320471803,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791152700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.04832044171440253,
+      "mae_pct": 1.1676206517549874,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791200100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.0075016856054395,
+      "mae_pct": 0.27292637578685974,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791210000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.0695476399394312,
+      "mae_pct": -0.03785025836198209,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791297900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.2290223079412554,
+      "mae_pct": 0.5931012027203503,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791299100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.37137366253755,
+      "mae_pct": 0.32286849832923054,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791443100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7870411222889163,
+      "mae_pct": 0.7986028130461055,
+      "symbol": "XRPUSDT"
+    },
+    {
+      "timestamp": 1791211500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.1981852455350075,
+      "mae_pct": 2.0935173647720426,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791212700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.597462881740763,
+      "mae_pct": 1.4004849608750587,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791288600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.14432728045512871,
+      "mae_pct": 3.1638863789600165,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791297300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.26244427303905743,
+      "mae_pct": 2.5899999514890566,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791303600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8188303607812277,
+      "mae_pct": 1.8404716037389932,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791337200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2980430772328446,
+      "mae_pct": 5.030474796503696,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791346500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.4130892958879135,
+      "mae_pct": 0.8754784641044157,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791372300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2254579207504377,
+      "mae_pct": 1.833464967832527,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791384300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.726017235602551,
+      "mae_pct": 1.033615800302009,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791408600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.7501633842168953,
+      "mae_pct": 0.9735138296558538,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791420600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.3982460299724475,
+      "mae_pct": 0.5342526305201999,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791424800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.7623278482282565,
+      "mae_pct": 1.7116300306934025,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791425100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.7623278482282565,
+      "mae_pct": 1.7116300306934025,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791430800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.396814703155072,
+      "mae_pct": 1.5460507540307387,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791434100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.663662356569846,
+      "mae_pct": 0.9215552370302993,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.2885667710864087,
+      "mae_pct": 10.019063403079024,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791127800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.409513746061089,
+      "mae_pct": 3.6564005673824096,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791131400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.057512134772782685,
+      "mae_pct": 3.8464912974626633,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791241500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.000879352059576,
+      "mae_pct": 2.2546678208559197,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791322800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.686443635638422,
+      "mae_pct": 0.3779852420601348,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791346200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.8001729585157693,
+      "mae_pct": 4.3468731474757245,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791362700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.1864478258789255,
+      "mae_pct": 0.3853270049121459,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791377700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.136515021689643,
+      "mae_pct": 2.1664780652953617,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791377700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.495394195506373,
+      "mae_pct": 1.7918192101772912,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.7807108930115363,
+      "mae_pct": 2.2586915475887066,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791387000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5877787306611226,
+      "mae_pct": 5.799523165380275,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791388800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8804838682741875,
+      "mae_pct": 7.115877492600423,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791393600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.555554359734902,
+      "mae_pct": 6.684596149296601,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791411600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.511889347639177,
+      "mae_pct": 1.8592052113769564,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791414900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.7373338696728482,
+      "mae_pct": 1.8958136266134282,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791434100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.686575088670119,
+      "mae_pct": 4.84779570168716,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791440400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.200555143787419,
+      "mae_pct": 3.350846579595275,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791444300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.411697877142064,
+      "mae_pct": 1.2955740623874124,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791484500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.9994280728650384,
+      "mae_pct": -0.274935860912511,
+      "symbol": "NEARUSDT"
+    },
+    {
+      "timestamp": 1791213600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.2756707124104647,
+      "mae_pct": 5.2377747369077845,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791215100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.7163304779346027,
+      "mae_pct": 5.75100621662107,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791222600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2209790802141347,
+      "mae_pct": 6.117288095513299,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791380100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.693468522809415,
+      "mae_pct": -0.41178348935231224,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791418800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.7206279573981975,
+      "mae_pct": 2.4323012325282054,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791418800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.7206279573981975,
+      "mae_pct": 2.4323012325282054,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791438600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 22.55525494368874,
+      "mae_pct": 0.8054579120035553,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791474000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 30.779081670968335,
+      "mae_pct": 7.239242222424239,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791475500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 30.779081670968335,
+      "mae_pct": 7.239242222424239,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791478500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 32.81504761805721,
+      "mae_pct": 3.6570935343287467,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791513000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 11.45604030272854,
+      "mae_pct": 5.74497577250909,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791513900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 12.573748906483775,
+      "mae_pct": 4.799763191476408,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791204600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.768268794971366,
+      "mae_pct": 15.251158342743249,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791210600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.192066302961484,
+      "mae_pct": 14.748820750958162,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791211800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 9.614031507545281,
+      "mae_pct": 1.9924451615234564,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791224100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.495200189470256,
+      "mae_pct": 0.4912956610345567,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791237300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7717750826901753,
+      "mae_pct": 1.2411534080251896,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791237900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5083751398455897,
+      "mae_pct": 1.8768551472581565,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791265200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9498977914225728,
+      "mae_pct": 3.534793849772492,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791298500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.33465569348499324,
+      "mae_pct": 2.3454971388232964,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791302700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.638037037741818,
+      "mae_pct": 1.12570305470302,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791330900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 7.269987522358612,
+      "mae_pct": 0.5029694059142671,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791340800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.4629840745356,
+      "mae_pct": 0.5603378306409372,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791351300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.806372979037987,
+      "mae_pct": 0.2424153861403817,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791451200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0485685932702513,
+      "mae_pct": 81.62742229085957,
+      "symbol": "OGNUSDT"
+    },
+    {
+      "timestamp": 1791154200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6230489292697363,
+      "mae_pct": 0.6927323527348145,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791174300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.7276522232938003,
+      "mae_pct": 0.2794842179434462,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791202800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7414633676091361,
+      "mae_pct": 0.9799876158816263,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791207000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4444610625930645,
+      "mae_pct": 0.6645579283026478,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791207300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4627693180549617,
+      "mae_pct": 0.646630299422575,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791215700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9240820169925708,
+      "mae_pct": 0.4461952460553007,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791250800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4714474369329858,
+      "mae_pct": 1.2642232506899584,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791255600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.031066432263385613,
+      "mae_pct": 1.7181669403471482,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791292500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4189674422627117,
+      "mae_pct": 1.8167431734145003,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791321900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4759070762195365,
+      "mae_pct": 0.6203918664993016,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791347100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.2204872385878962,
+      "mae_pct": 0.13648058665176951,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791362100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.0117334660016062,
+      "mae_pct": 2.2944691539678064,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791367800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.024120629068125628,
+      "mae_pct": 2.247976934393215,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791389400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3931836469864839,
+      "mae_pct": 1.501709994532836,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791403500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.07076254453903,
+      "mae_pct": 0.42433331279002373,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791429900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.07667720893142344,
+      "mae_pct": 1.6944596005110664,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791439500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5699664386001154,
+      "mae_pct": 0.6652663080370389,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.1950021318753233,
+      "mae_pct": 2.152494696842412,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.30117979892622315,
+      "mae_pct": 2.048804696155894,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791171900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6959614976310026,
+      "mae_pct": 2.215928288420717,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791181500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.008696503849578187,
+      "mae_pct": 2.9529054567081845,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791214500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9357122287315842,
+      "mae_pct": 1.018881873315638,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791218700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.20717193121204755,
+      "mae_pct": 1.9032309365288742,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791228000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.07992256603694994,
+      "mae_pct": 2.0408633239503557,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791249000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8171869568963956,
+      "mae_pct": 0.19061562573521174,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791269700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.8964422767457181,
+      "mae_pct": 0.3502780802258659,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791299400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.0946062585170626,
+      "mae_pct": -0.10841516367397791,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.2251346183246086,
+      "mae_pct": 0.04079115308955293,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791419100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.7020369886229447,
+      "mae_pct": 0.882809724972067,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791485100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4582641503388181,
+      "mae_pct": 1.1152732234268201,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791507600000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.14700290447079936,
+      "mae_pct": 1.3900174756965524,
+      "symbol": "HYPEUSDT"
+    },
+    {
+      "timestamp": 1791215700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 37.10140999791084,
+      "mae_pct": 3.8473480720438644,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791218100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 35.91875454609275,
+      "mae_pct": 2.3060980033762877,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791233400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 25.094597809713125,
+      "mae_pct": -0.904330360650122,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791234900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 17.249403671026553,
+      "mae_pct": 1.3910110782016205,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791240900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 15.28534950913842,
+      "mae_pct": 2.749909275632974,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791247500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 10.127099908650896,
+      "mae_pct": 7.101201471581757,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791248100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 9.41010090474164,
+      "mae_pct": 7.706033034970727,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791252900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 30.829564657355284,
+      "mae_pct": 7.879373203170148,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791261300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 36.86585370322917,
+      "mae_pct": 1.854074218786323,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791293100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -1.0674617436991733,
+      "mae_pct": 17.913226336356214,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791297000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -2.52523214528232,
+      "mae_pct": 19.609892658433925,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791305100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.083152213254578,
+      "mae_pct": 11.619364363033917,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791317100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2478284323120534,
+      "mae_pct": 7.124143337212101,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791324900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.785291021856374,
+      "mae_pct": 12.951836624548626,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791330600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.289384309539575,
+      "mae_pct": 11.702342950757544,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791364200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.251156106372216,
+      "mae_pct": 4.792812425400088,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791379800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5335557523803389,
+      "mae_pct": 9.629672561384881,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791432600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 26.32774871550604,
+      "mae_pct": 2.463921512143887,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791434100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 26.32774871550604,
+      "mae_pct": 2.1202741767853297,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791471600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 50.68963729406328,
+      "mae_pct": 2.335925047223932,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791505500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 12.917613416712731,
+      "mae_pct": 3.8959750092607495,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791511200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 40.510113460492086,
+      "mae_pct": 1.3184786207286334,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791536400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5976032816428811,
+      "mae_pct": 9.497983361455898,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791169200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2693035973939635,
+      "mae_pct": 2.0936739205795245,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791170400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.484842408539959,
+      "mae_pct": 1.2352975320433384,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791181800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.33441053508062324,
+      "mae_pct": 16.461380376336628,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791191700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.10102085329226543,
+      "mae_pct": 46.02626959627138,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791239700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.0003316708704375,
+      "mae_pct": 10.482256168686012,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791245400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 8.868552542538628,
+      "mae_pct": 8.031989411550235,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791250800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 11.214037949260447,
+      "mae_pct": 26.093679197398366,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791264300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.34883280557726026,
+      "mae_pct": 17.11384213247058,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791267600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 2.1713262275852396,
+      "mae_pct": 14.17264691468117,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791282000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 8.712871157267642,
+      "mae_pct": 17.825101643277634,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791283800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 8.034221576083333,
+      "mae_pct": 18.701040638149145,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791285300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 18.771969234530626,
+      "mae_pct": 7.823660193518221,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791352800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.345353910839329,
+      "mae_pct": 10.793883684899173,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791357000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.2552534813648695,
+      "mae_pct": 8.627010941604956,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791360900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.2690442319467365,
+      "mae_pct": 1.757530957160548,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791420300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.711246198834171,
+      "mae_pct": 3.684074464627194,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791439200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.08264861642912234,
+      "mae_pct": 22.530957725442843,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791447300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 7.028447142994944,
+      "mae_pct": 5.015977986576635,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791512700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.6957805037759632,
+      "mae_pct": 55.69804491458614,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791515400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.834215476444859,
+      "mae_pct": 62.96076068642525,
+      "symbol": "RLCUSDT"
+    },
+    {
+      "timestamp": 1791160800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6866281655183082,
+      "mae_pct": 1.6609606063177713,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791170100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6280766706374964,
+      "mae_pct": 1.40281496160989,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791171600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6801508150541049,
+      "mae_pct": 1.40281496160989,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791301800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.05098792504669524,
+      "mae_pct": 2.3550897854050725,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791302700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.053624149320776075,
+      "mae_pct": 2.3550897854050725,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791321900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.060356065603342196,
+      "mae_pct": 0.696626915819978,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791465300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.40826194273415284,
+      "mae_pct": 6.289445078917101,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791474000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.23548663865147362,
+      "mae_pct": 3.5335854811259484,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791513000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.4824896404281103,
+      "mae_pct": -0.16468941229433406,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791136200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.20359306962512524,
+      "mae_pct": 2.473743465592728,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791147000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.30511790373322306,
+      "mae_pct": 1.8764578849925482,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791150900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0225732991007415,
+      "mae_pct": 0.6147875446582435,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791210000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.5655079192965657,
+      "mae_pct": -0.07892558002393886,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791297000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.6538656363937116,
+      "mae_pct": 0.5267350512780261,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791300000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.44965433541742,
+      "mae_pct": 0.3759275024515178,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791442800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5079140184337645,
+      "mae_pct": 1.0932921015132706,
+      "symbol": "DOGEUSDT"
+    },
+    {
+      "timestamp": 1791440400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.7478318136806476,
+      "mae_pct": 0.11047355342021575,
+      "symbol": "BNBUSDT"
+    },
+    {
+      "timestamp": 1791454200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.212361439010061,
+      "mae_pct": -0.053782746907558646,
+      "symbol": "BNBUSDT"
+    },
+    {
+      "timestamp": 1791170400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.38879136939301073,
+      "mae_pct": 1.9139553468901611,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791190800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.12268429657595974,
+      "mae_pct": 2.011821178872985,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791285900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.110450214132887,
+      "mae_pct": 0.9031613475269629,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791315000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3901899276682815,
+      "mae_pct": 1.557108526072418,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791332400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.1641839957029669,
+      "mae_pct": 5.6685760171431525,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791339000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.01117044721284259,
+      "mae_pct": 2.3009909713224728,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791360600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.38231651763904684,
+      "mae_pct": 2.856614252424108,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791395400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8284079400419647,
+      "mae_pct": 1.8205932585350977,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791425100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9644949327360841,
+      "mae_pct": 2.7168317212453905,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.03315719341564833,
+      "mae_pct": 2.433275751653002,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791458400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.10150594205322154,
+      "mae_pct": 8.002992350848249,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791467100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7305132560329484,
+      "mae_pct": 8.135034659162436,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6237005102533034,
+      "mae_pct": 4.723979885627841,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791504000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.7516656387784373,
+      "mae_pct": 1.0524033494757645,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791131400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.5908858261025847,
+      "mae_pct": 0.29481738515833544,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791133800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.5908858261025847,
+      "mae_pct": 0.3501738358621515,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791151800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.46580412536535626,
+      "mae_pct": 1.2137249346862167,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791159900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4781524300340277,
+      "mae_pct": 1.8919403067341012,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791162300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5187688491920301,
+      "mae_pct": 1.7621039158097338,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791185700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.054630332200068,
+      "mae_pct": 0.544999348013013,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791236400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.202581742387702,
+      "mae_pct": 0.3477034791034614,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791294000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.563541242066983,
+      "mae_pct": 0.16759782186890232,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791329700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.268893294455212,
+      "mae_pct": -0.08920398968188992,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.3983116730488008,
+      "mae_pct": -0.22379884876514786,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791388800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.0048642959413665,
+      "mae_pct": -0.08439031945055177,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791401400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1832057994001117,
+      "mae_pct": 1.5020331734422763,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791404700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9878283445659432,
+      "mae_pct": 1.9461503444990684,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791423900000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.989377904562982,
+      "mae_pct": 0.6816352332487374,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791443400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4960668823274785,
+      "mae_pct": 0.7566218168292755,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791487800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.21631686446117662,
+      "mae_pct": 2.394329288010513,
+      "symbol": "UNIUSDT"
+    },
+    {
+      "timestamp": 1791134700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5784608947995433,
+      "mae_pct": 1.4381514331168983,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791173400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4068198378318308,
+      "mae_pct": 1.9277031602759214,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791189900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.5278291865441607,
+      "mae_pct": 0.4146148908757957,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791267300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5476929349329203,
+      "mae_pct": 0.3552737817581903,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.05522653671058967,
+      "mae_pct": 1.584337412891878,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791303300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.053567266630093285,
+      "mae_pct": 1.435894291022884,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791315300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6743763600948404,
+      "mae_pct": 0.5677869204938684,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791320400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2913846165296419,
+      "mae_pct": 1.3324934275227762,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791347100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.42065094181509,
+      "mae_pct": -0.366492721701891,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791395700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 0.794486686259359,
+      "mae_pct": 0.46477457749773565,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791425100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5808525720036253,
+      "mae_pct": 1.1130826266258178,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7221216061052877,
+      "mae_pct": 1.4244733377890988,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791435000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1415009693244775,
+      "mae_pct": 0.9253267561493604,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791439500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.2255194843588966,
+      "mae_pct": 0.8430251604276076,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791448800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.189271662089327,
+      "mae_pct": 2.969922008897653,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791454500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.16303651406027908,
+      "mae_pct": 4.031484625483803,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791465300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.022003646447535916,
+      "mae_pct": 8.58148531746422,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791474300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.45233213200631595,
+      "mae_pct": 5.252444064913477,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791476100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.16236756761389531,
+      "mae_pct": 5.102321080317908,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791512700000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.611018531299329,
+      "mae_pct": 0.1725935123855785,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791197100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.934294194502327,
+      "mae_pct": 0.14629023535021524,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791238800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.197467274321001,
+      "mae_pct": 0.44850949745421687,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791294000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.691122743392823,
+      "mae_pct": 0.5594620335517124,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791344700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5218995130505564,
+      "mae_pct": -0.19205402545096642,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7468219303738977,
+      "mae_pct": 1.1541696107492239,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791405900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8069216743150779,
+      "mae_pct": 1.8008461093929136,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791443100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.3858323074654293,
+      "mae_pct": 0.806772461025581,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791453000000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.503773918729375,
+      "mae_pct": 0.2348578873732116,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791507900000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4878915810048231,
+      "mae_pct": 0.942428106887969,
+      "symbol": "SUIUSDT"
+    },
+    {
+      "timestamp": 1791169800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.614240713037339,
+      "mae_pct": 1.7009474875868262,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791185100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6400814556157959,
+      "mae_pct": 1.3089476194703844,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791202200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1814989285054425,
+      "mae_pct": 2.166188265480356,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791206400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.079825713876265,
+      "mae_pct": 3.5772225332998473,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791266700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.835274504299599,
+      "mae_pct": 0.7453409032317163,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791270300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.864494414324232,
+      "mae_pct": 0.4942812466820261,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.205769367376142,
+      "mae_pct": 2.6413269129925707,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791303300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.6527349103235487,
+      "mae_pct": 2.6413269129925707,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791305100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5068701246057534,
+      "mae_pct": 2.7810300109970982,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791366300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1924597391170555,
+      "mae_pct": 4.760947504091999,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791381600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.21528020970562428,
+      "mae_pct": 4.549313144163105,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791425100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.0826133149008728,
+      "mae_pct": 5.9655927191736,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791435600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2317941374677073,
+      "mae_pct": 2.1069119877790294,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791439500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.7121510612815496,
+      "mae_pct": 2.0115802687919206,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791451800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2838306133936318,
+      "mae_pct": 5.920661140023943,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791464100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6457383713858781,
+      "mae_pct": 8.416168233090145,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791467100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9561979363599217,
+      "mae_pct": 9.014997922811544,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791473700000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.505328796096432,
+      "mae_pct": 4.890032713926078,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791482100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.088576754289403,
+      "mae_pct": 2.8737909676661744,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791486300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.199609515490946,
+      "mae_pct": -0.1901043004675549,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791509100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.543315118814623,
+      "mae_pct": 1.7519176822192073,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791511200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.0161315705933744,
+      "mae_pct": 1.3292493306989954,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791150300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.396893175236076,
+      "mae_pct": 0.6306319459225619,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791156000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9003012962876584,
+      "mae_pct": 1.0499494441326025,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791178500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.4850058169813947,
+      "mae_pct": 0.8759852868760104,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791200400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.5770551642860626,
+      "mae_pct": 0.49896828930529175,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791224700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.996815920650367,
+      "mae_pct": 6.088426359764189,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791228000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4082435000951842,
+      "mae_pct": 6.446443030000467,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791277500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.0279171066215644,
+      "mae_pct": 0.573805139467198,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791287100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.2829769114529395,
+      "mae_pct": 0.5531361946979406,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791317400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.3232085956852204,
+      "mae_pct": 0.5313457980082154,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791339900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.009968683469749716,
+      "mae_pct": 5.519403145677051,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791341400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.3497471967604114,
+      "mae_pct": 5.418079289374658,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791371100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 8.007101668071567,
+      "mae_pct": -0.12418275942876998,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791387600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.2716619120653463,
+      "mae_pct": 3.6135979419448336,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791395700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.174789211497839,
+      "mae_pct": 4.9025455835174,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791404700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.697960225376444,
+      "mae_pct": 1.1445511121581702,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791422400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.754129731517123,
+      "mae_pct": 2.31217497242143,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791425700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.47914757103575,
+      "mae_pct": 1.5251043894490244,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791470100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 9.031178595782876,
+      "mae_pct": 0.11063495338713417,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791485400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.6857865517758848,
+      "mae_pct": 2.4049900327953204,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791499800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.8196817955719995,
+      "mae_pct": 0.4397382827390976,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791528000000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6151935523106494,
+      "mae_pct": 1.6609301237144356,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791533700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5763320026603915,
+      "mae_pct": 2.9600529821524173,
+      "symbol": "PUMPUSDT"
+    },
+    {
+      "timestamp": 1791128100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.4398045753848376,
+      "mae_pct": 3.9906539763441233,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791130500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7031484720540805,
+      "mae_pct": 4.20963281127789,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791165300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.205812425330577,
+      "mae_pct": 3.1737748953227745,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791165000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9461244997808742,
+      "mae_pct": 2.465499136741007,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791171000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.2835023504446843,
+      "mae_pct": 2.6573981320994413,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791176700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.4135859489112317,
+      "mae_pct": 2.1066902503163263,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791186000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.9222034020851084,
+      "mae_pct": 1.3431035448341935,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791192000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.395154324187758,
+      "mae_pct": 5.748279940785796,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791216600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1355689184149758,
+      "mae_pct": 2.773968930561095,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791267600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.156077592333434,
+      "mae_pct": 0.7560552595529908,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791296400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8634913286577637,
+      "mae_pct": 1.9815076801440104,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791313800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8800213527430274,
+      "mae_pct": 0.8149500373088597,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791322800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.375788517959565,
+      "mae_pct": 0.23063948221054809,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791346500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.715554880218758,
+      "mae_pct": -0.23594028770671532,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791351000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8620613001871746,
+      "mae_pct": 1.8953071255246388,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791351300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8620613001871746,
+      "mae_pct": 1.9739954695186004,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791355500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1059071626492765,
+      "mae_pct": 3.268679041710602,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791368400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.11020676889019732,
+      "mae_pct": 4.264827024671682,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791384000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.8034068566491084,
+      "mae_pct": 1.1697037162036852,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791392700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6507848423363273,
+      "mae_pct": 0.9077847680991921,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791395400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7437756131504648,
+      "mae_pct": 0.816233952171337,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791463500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 10.047523965954165,
+      "mae_pct": 0.7193354645018744,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791475200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.918336671202195,
+      "mae_pct": 5.368549861631249,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791486000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8533985834363098,
+      "mae_pct": 6.737533603552285,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791490200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.32337585779925127,
+      "mae_pct": 3.836932823002125,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791124800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.307355593717276,
+      "mae_pct": 2.48015628223834,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791144900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.42548098242053106,
+      "mae_pct": 9.705018599020393,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791166800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.3388758704415538,
+      "mae_pct": 1.0332436992334235,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791168000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.3388758704415538,
+      "mae_pct": 1.0332436992334235,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791172800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.432470210687069,
+      "mae_pct": 1.298896247090344,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791191100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.432616034885131,
+      "mae_pct": 0.3819595354965523,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791236400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4618226373202394,
+      "mae_pct": 0.5576343590035968,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791262800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4191919936905308,
+      "mae_pct": 1.4734823181930239,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791267900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.147313554343817,
+      "mae_pct": 1.7533385352974822,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791273900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.48947173993350923,
+      "mae_pct": 1.915558428764929,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791279300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.118844735349922,
+      "mae_pct": 0.2461714869448281,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791291900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9350442424898275,
+      "mae_pct": 1.1563910039886958,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791299100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.8681997663923644,
+      "mae_pct": 1.1813576035525515,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791343500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.2473169386550924,
+      "mae_pct": 1.1956051635946847,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791345300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.2100739526567028,
+      "mae_pct": 1.233769458369999,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791387000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.112581092212395,
+      "mae_pct": 0.8321649122749911,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791403800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3913986249664498,
+      "mae_pct": 1.1880623111697903,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791405300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4701636974760351,
+      "mae_pct": 1.2515221034737214,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791411000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.11577722193243306,
+      "mae_pct": 1.3383502780148337,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791417000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.23773612697594784,
+      "mae_pct": 1.2719586637405667,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791454800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.7930131759923229,
+      "mae_pct": 16.43588000075325,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791465600000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.719424995403364,
+      "mae_pct": 6.0239425660918,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791526200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.581141263458394,
+      "mae_pct": 11.668531932877205,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791529200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0645557743694463,
+      "mae_pct": 10.759189858315722,
+      "symbol": "STRKUSDT"
+    },
+    {
+      "timestamp": 1791175200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 8.030948238664177,
+      "mae_pct": 0.952435516789785,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791216300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.826632981050478,
+      "mae_pct": 1.6099046999585236,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791250500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.1279500428143365,
+      "mae_pct": 2.3923043054872926,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791285300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5558094906530319,
+      "mae_pct": 1.609714357448,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791292800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5098297565094309,
+      "mae_pct": 2.772684241499014,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791297000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8197589198692772,
+      "mae_pct": 2.464802502076216,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791309000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.7433986390891438,
+      "mae_pct": 0.13557763889868674,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791347400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 8.238131438153511,
+      "mae_pct": -0.7116090967840615,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791366900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.1946929905652273,
+      "mae_pct": 3.8034915973656527,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791381600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.812243839124705,
+      "mae_pct": 2.620477971662187,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791424200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2785204215881605,
+      "mae_pct": 4.836012088202023,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791426000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.16719323874543449,
+      "mae_pct": 4.941661220616016,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791426000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.26137705850773923,
+      "mae_pct": 4.8522810836967105,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791439500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6779396390686798,
+      "mae_pct": 0.30087054852252654,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791441000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9657356814768028,
+      "mae_pct": -0.1508931568750351,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791454500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.11541366298092319,
+      "mae_pct": 3.690979724323555,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791474300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.016430213732036344,
+      "mae_pct": 7.152302242420255,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791483600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.141339022943309,
+      "mae_pct": -0.008344752511755494,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791126600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5178084134036711,
+      "mae_pct": 2.0689563319611057,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791132900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.017505808697631686,
+      "mae_pct": 2.277001020573874,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791159900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.643668172858051,
+      "mae_pct": 0.6806884620055353,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791189300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.029210484545301,
+      "mae_pct": 4.925876164042669,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791193200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.074514063254424,
+      "mae_pct": 4.8773564194031565,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791301200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.629892847884386,
+      "mae_pct": 0.3032930928554332,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791312600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7206244538815817,
+      "mae_pct": 1.1473440091019196,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791319200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.045515553510130494,
+      "mae_pct": 1.8235417513649235,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791318600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.19376085252247296,
+      "mae_pct": 1.6725244010477622,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791322800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9191338531436851,
+      "mae_pct": 0.933587589727331,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791329400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 10.98421796903276,
+      "mae_pct": 0.44934616156148044,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791344700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.9276329466550384,
+      "mae_pct": 4.326916413731922,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.444513530575075,
+      "mae_pct": -0.19633755200267025,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791405000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.3662767580628525,
+      "mae_pct": 0.9335993051543638,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791407100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5842156633568472,
+      "mae_pct": 0.7105786442999512,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791427500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.3053481353704965,
+      "mae_pct": -0.24250069029808388,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791442800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7979918227410328,
+      "mae_pct": 1.0968065195966852,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791486600000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.21673762043910136,
+      "mae_pct": 2.874914953120403,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791498300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3846064627774892,
+      "mae_pct": 3.450852539725201,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791499800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5116227284655968,
+      "mae_pct": 3.6091403943028677,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791503100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7464379334472337,
+      "mae_pct": 3.3645992508358464,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791519900000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0222120236741012,
+      "mae_pct": 2.177906644255797,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791525000000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.12712890796663706,
+      "mae_pct": 1.731102659682237,
+      "symbol": "ENAUSDT"
+    },
+    {
+      "timestamp": 1791121200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.16000840320319817,
+      "mae_pct": 25.533718047105797,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791129600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 2.599313132842621,
+      "mae_pct": 11.889902843932871,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791159900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.71127069978078,
+      "mae_pct": 3.7622291989630483,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791165900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.208487804157992,
+      "mae_pct": 4.988248488833052,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791198900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.925370243907408,
+      "mae_pct": 14.398740234526262,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791203100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.05004910978578752,
+      "mae_pct": 19.322504934662383,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791216900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.421944459239832,
+      "mae_pct": 8.015340599489967,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791254100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.378971948928054,
+      "mae_pct": 4.073861731515616,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791255300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.378971948928054,
+      "mae_pct": 3.199692366781,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791303300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.73568688174188,
+      "mae_pct": 1.190126384836157,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791324900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.832788813507939,
+      "mae_pct": 2.8763135388892294,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791330000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.35559759546213,
+      "mae_pct": 4.551900470130711,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791349800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.3540489118256973,
+      "mae_pct": 5.225097759102218,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791354900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.9907864447624375,
+      "mae_pct": 1.914946544549943,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791363600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.7363640922473165,
+      "mae_pct": 4.748324060769458,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791371400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.244402578582205,
+      "mae_pct": 8.93806531175829,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791378300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 8.246325337939005,
+      "mae_pct": 6.73836205197961,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791444300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.6660577895210864,
+      "mae_pct": 3.8936985463412177,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791466200000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 11.18708424612186,
+      "mae_pct": 1.185551205769562,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791496500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.9134013884394943,
+      "mae_pct": 1.6638994227922457,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791162000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.665900966218265,
+      "mae_pct": 0.43357787891403554,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791219300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 11.882594055095353,
+      "mae_pct": 0.03179801326853946,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791219900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 11.882594055095353,
+      "mae_pct": -0.20491176292411392,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791234000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.8742212802483462,
+      "mae_pct": 5.206338282477468,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791236400000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9338308443610575,
+      "mae_pct": 6.380064035885778,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791250200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.032468952338277,
+      "mae_pct": 5.315907673698734,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791250500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.869150121369081,
+      "mae_pct": 5.497022953141937,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791260100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.046745182808903,
+      "mae_pct": 16.94002845295877,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791266700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.2593193747070236,
+      "mae_pct": 26.191256845408272,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791272100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6628338344146273,
+      "mae_pct": 31.960194806336474,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791276000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.8001983717748214,
+      "mae_pct": 26.112921952818024,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791285900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.792834203521275,
+      "mae_pct": 12.416624336950086,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791292200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.0822984102999245,
+      "mae_pct": 5.581807239416184,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791308100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.4402806311089265,
+      "mae_pct": 3.9364437050577026,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791328200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.480384251718927,
+      "mae_pct": 3.3404649698511655,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791335100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 5.525262896404627,
+      "mae_pct": 4.035402625632305,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791341700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 6.964123170325805,
+      "mae_pct": 1.8410219941629253,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791365100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 7.392647480102873,
+      "mae_pct": 2.8009706612416854,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791396600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 21.647865974776153,
+      "mae_pct": 2.394115161733497,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791396300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 21.66732410583982,
+      "mae_pct": 2.812844061264396,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791417300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5403527606866013,
+      "mae_pct": 11.53985985105536,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791422400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.43023406579968976,
+      "mae_pct": 12.57007142148055,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791422400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.024918515573033928,
+      "mae_pct": 12.059900763516836,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791425700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.48694310040270705,
+      "mae_pct": 14.134492538376135,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791434100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 4.5595592180125415,
+      "mae_pct": 8.166295224288502,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791454500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.829050553172528,
+      "mae_pct": 1.7243965595677848,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791468000000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.18157276318817778,
+      "mae_pct": 10.53815737295516,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791470400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.07067954605061506,
+      "mae_pct": 9.517392400051019,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791473100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8580720678758341,
+      "mae_pct": 6.083181264074083,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791500400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.0697789780324123,
+      "mae_pct": 7.368572585025053,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791505500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.9609028017497083,
+      "mae_pct": 7.489173564912845,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791532200000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.2655099881022833,
+      "mae_pct": 30.835757802286874,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791533400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 0,
+      "outcome": "AMBIGUOUS",
+      "mfe_pct": 6.574707636411299,
+      "mae_pct": 26.35998724743302,
+      "symbol": "USUSDT"
+    },
+    {
+      "timestamp": 1791147000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 7.0341385922800095,
+      "mae_pct": 0.0563253710344024,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791157800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 6.033967473311408,
+      "mae_pct": -0.3097687151120812,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791175500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.2339499946467183,
+      "mae_pct": 0.41004314563010746,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791200100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.7890678982359423,
+      "mae_pct": 2.6605264715930135,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791208800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0947409474754561,
+      "mae_pct": 4.146937063941865,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791267000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.424884676371711,
+      "mae_pct": 0.32217098386234655,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791290700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6515214226379986,
+      "mae_pct": 2.279022515260518,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791293400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.010053238770194801,
+      "mae_pct": 2.3244679196811258,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791305400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2595968126689345,
+      "mae_pct": 1.2806018216149269,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791346200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9017588204152007,
+      "mae_pct": 0.2663637076787415,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791383700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.149656373307119,
+      "mae_pct": 0.3446957009248104,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791395400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.5164062404631222,
+      "mae_pct": 0.41311428156273244,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791425100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0578168221311908,
+      "mae_pct": 2.3107770719398473,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791429900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.21870890385983074,
+      "mae_pct": 2.212261343416888,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5228288288146489,
+      "mae_pct": 1.4435801858335269,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791446700000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9964934524635162,
+      "mae_pct": 1.5789369415773369,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791462000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.28737179448828987,
+      "mae_pct": 8.902542871444505,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791465000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.24734374673542975,
+      "mae_pct": 9.074252946347784,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791513300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.3198327604339664,
+      "mae_pct": -0.2215287376304437,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791130800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4041990171275682,
+      "mae_pct": 4.038436063211422,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791172200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.4948722795289386,
+      "mae_pct": 2.3900474333755026,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791178500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3824985198518031,
+      "mae_pct": 2.0689388767513943,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791198300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.111480245613837,
+      "mae_pct": 1.253894872997341,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791264900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1654762778607068,
+      "mae_pct": 4.7290058195962015,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791351000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7028000321324596,
+      "mae_pct": 1.4524272757731125,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791360000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.6965807540203266,
+      "mae_pct": 0.7950702684520361,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791362700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9418998960778162,
+      "mae_pct": 0.03867955156575796,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791381900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9949282026390182,
+      "mae_pct": 1.4831486838265242,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791391500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.7279687782801793,
+      "mae_pct": 0.995776041670741,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791396600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.156110029782151,
+      "mae_pct": 0.7590147660029952,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791422400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.613693826668761,
+      "mae_pct": 0.7444546620667972,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791469500000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 10.313361503364744,
+      "mae_pct": -0.040529532385500056,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791520800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.3319852513495991,
+      "mae_pct": 2.6081998780462397,
+      "symbol": "ADAUSDT"
+    },
+    {
+      "timestamp": 1791133500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8467683734888981,
+      "mae_pct": 1.237340759421803,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791144900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8947530933410245,
+      "mae_pct": 1.0889871367383348,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791194700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.2754454143747461,
+      "mae_pct": 2.2557120943560234,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791243600000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1793262667742315,
+      "mae_pct": 1.943815551082727,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791245400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0093444530123534,
+      "mae_pct": 2.108550469748317,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791268200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.661254419274578,
+      "mae_pct": 1.5092427597907256,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791300900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.025078213790873792,
+      "mae_pct": 2.8174750685204377,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791312300000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6150488881529828,
+      "mae_pct": 0.942908296647379,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791315000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6150488881529828,
+      "mae_pct": 0.942908296647379,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791400800000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.4558614455076153,
+      "mae_pct": 0.47088520385077226,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791426000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.3978541902313084,
+      "mae_pct": 2.3654443178704523,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791429900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.7397985191536924,
+      "mae_pct": 2.1479911088412744,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791432600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.9690535468007715,
+      "mae_pct": 1.9296427635358993,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.1893012466597312,
+      "mae_pct": 1.0820670948858402,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791451500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6761605709568934,
+      "mae_pct": 2.9931289023110366,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791459600000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.1516244503589504,
+      "mae_pct": 9.267130578761696,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791501000000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.1691537401215486,
+      "mae_pct": 0.265922851362299,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791513300000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.3355131368503543,
+      "mae_pct": -0.3564713166888979,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791124800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9034485531181916,
+      "mae_pct": 1.2269211381809262,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791132300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8849922366970528,
+      "mae_pct": 0.1854500268815408,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791156600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.5555715127799217,
+      "mae_pct": 1.3580670694208745,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791162000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.336023980088526,
+      "mae_pct": 0.8734808412549293,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791166800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 3.5360898647224843,
+      "mae_pct": 0.5275337936601715,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791169200000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.5360898647224843,
+      "mae_pct": 0.01315105209274743,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791214500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.3776271579415806,
+      "mae_pct": 0.08891898858218603,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791273900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.9895796652455742,
+      "mae_pct": 0.5952327207504884,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791288300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9339317832464387,
+      "mae_pct": 1.3521074524172763,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791289500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.9339317832464387,
+      "mae_pct": 1.3521074524172763,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791300000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.4559040495866484,
+      "mae_pct": -0.15177777895572894,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791334500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 7.955020856036414,
+      "mae_pct": 0.4374221025408104,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791360900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.310415004142797,
+      "mae_pct": 0.7632655087227512,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791381600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.356244875649079,
+      "mae_pct": 1.419445203607545,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791390900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.549121669231739,
+      "mae_pct": 0.6558685330683686,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791390300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.5980743381117133,
+      "mae_pct": 0.8378083010627208,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791405300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.4209222970247844,
+      "mae_pct": 2.7474145496636684,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791435600000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.13280868944972563,
+      "mae_pct": 3.091827998265267,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791442800000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.6160077758176576,
+      "mae_pct": 2.153273917718704,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791516300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.13127002727763495,
+      "mae_pct": 2.6493943808566836,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791525300000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.17673958169338305,
+      "mae_pct": 1.7456625548845892,
+      "symbol": "WLDUSDT"
+    },
+    {
+      "timestamp": 1791189900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 0,
+      "outcome": "UNRESOLVED",
+      "mfe_pct": 1.4540616009071077,
+      "mae_pct": 0.2251780393837614,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791209100000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.13290476290329217,
+      "mae_pct": 3.4019026050731385,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791249900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.12776929662651715,
+      "mae_pct": 2.1204885544605343,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791259200000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.07352429355898009,
+      "mae_pct": 1.7579063982776304,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791267900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.886446296806562,
+      "mae_pct": 0.31656420455081724,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791278700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.4239749766030703,
+      "mae_pct": -0.2271966733833088,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791302700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9091191856129629,
+      "mae_pct": 2.101605374163279,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791316500000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8967503350299765,
+      "mae_pct": 1.3794191175271047,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791320400000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.17505358071220234,
+      "mae_pct": 1.301082654934148,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791321900000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.17505358071220234,
+      "mae_pct": 1.4426299652016012,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791384000000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.7157748379276698,
+      "mae_pct": 0.4912043225634313,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791395700000,
+      "direction": "LONG",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.299384693578614,
+      "mae_pct": 0.030504287211458078,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791424800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.58244600078364,
+      "mae_pct": 2.4822751638614866,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791429900000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5146983301817183,
+      "mae_pct": 2.3620208291514477,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791433500000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.3299340609101205,
+      "mae_pct": 2.295084623928839,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791433800000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.8948977287858846,
+      "mae_pct": 1.7503321983802802,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791440400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.2197190827951685,
+      "mae_pct": 0.2033095598704577,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791458100000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 5.102851547207603,
+      "mae_pct": 0.1659352988777005,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791464400000,
+      "direction": "LONG",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 4.328366605754634,
+      "mae_pct": 8.31939024059909,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791141000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5867268783035953,
+      "mae_pct": 1.3800460143752824,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791152700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.102727796006578,
+      "mae_pct": 1.5753684583814869,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791163800000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.8485240801617423,
+      "mae_pct": 2.210961169496289,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791164700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.1908250686459025,
+      "mae_pct": 1.8580979093414847,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791167100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.3053894950947225,
+      "mae_pct": 1.73999840517845,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791171900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.1679549408559193,
+      "mae_pct": 1.1090015014418453,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791192900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6475662960023,
+      "mae_pct": 0.2890498388162153,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791192900000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.6475662960023,
+      "mae_pct": 0.2890498388162153,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791199500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.8711132398286012,
+      "mae_pct": 0.2274819320262857,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791201300000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.8711132398286012,
+      "mae_pct": -0.010117788081239823,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791234000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": -0.267508362549325,
+      "mae_pct": 1.6657416036600605,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791245100000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.2819842128088417,
+      "mae_pct": 0.5437418384614636,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791249000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.4425184155752735,
+      "mae_pct": -0.021588294222650267,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791276600000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.6403494266506229,
+      "mae_pct": 2.7809297896483587,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791284700000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.36673648771628414,
+      "mae_pct": 1.6645432084364407,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791301500000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 3.003225587235473,
+      "mae_pct": 0.47364453428114905,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791351000000,
+      "direction": "SHORT",
+      "regime": "train",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.9560589346662077,
+      "mae_pct": 1.6902346856960757,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791419100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 2.648483902049336,
+      "mae_pct": 0.7722044636796164,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791422700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 2.7856514846510847,
+      "mae_pct": 0.2695353739718458,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791443100000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.012645774703730019,
+      "mae_pct": 4.3812250969330755,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791455700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 0.5874246436583802,
+      "mae_pct": 4.659117916148549,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791456600000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 1.0129521929606402,
+      "mae_pct": 4.211132962541229,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791465900000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 9.181238871340017,
+      "mae_pct": 3.5830380344420423,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791470400000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": -1,
+      "outcome": "LOSS",
+      "mfe_pct": 10.619866495806066,
+      "mae_pct": 0.7206196914003107,
+      "symbol": "ONDOUSDT"
+    },
+    {
+      "timestamp": 1791536700000,
+      "direction": "SHORT",
+      "regime": "test",
+      "net_r": 1,
+      "outcome": "WIN",
+      "mfe_pct": 1.8859562986000944,
+      "mae_pct": 1.6364013546332132,
+      "symbol": "ONDOUSDT"
+    }
+  ]
+}
