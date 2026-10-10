@@ -150,7 +150,17 @@ def qwen_screen(ticks, source):
         except Exception:
             continue
     if not packets: return {}
-    prompt = """You are Qwen, the primary crypto-futures screening intelligence for a 15m scalping Alpha Hunter.
+    # Gemini is the primary reasoning/screening layer; Qwen is the bounded fallback.
+    try:
+        from gemini_market_screen import screen_market_packets
+        gemini_picks = screen_market_packets(packets)
+        if gemini_picks:
+            print(f"GEMINI_SCREEN_DONE universe={len(packets)} picks={len(gemini_picks)}")
+            return gemini_picks
+        print("GEMINI_SCREEN_EMPTY_OR_UNAVAILABLE fallback=QWEN")
+    except Exception as exc:
+        print(f"GEMINI_SCREEN_ERROR type={type(exc).__name__} fallback=QWEN")
+    prompt = """You are Qwen, the fallback crypto-futures screening intelligence for a 15m scalping Alpha Hunter.
 Select only coins with a credible LONG bottom-entry or SHORT top-entry setup forming now.
 Prefer exhaustion/reversal, liquidity location, favorable trend transition, volume confirmation and non-chasing price location.
 Reject extended moves, weak liquidity, contradictory structure and noise. The next stage calculates exact pullback entry/SL/TP.
