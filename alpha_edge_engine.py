@@ -297,6 +297,8 @@ def pullback_calibration(r, direction):
         hi=max(x["h"] for x in recent[:-4]); lo=min(x["l"] for x in recent[:-4])
         leg=max(0,hi-lo); current=r[-1]["c"]
         if leg<=0:return None
+        # For SHORT, measure displacement downward from the recent swing high.
+        disp=(hi-current)/leg
         z1=lo+leg*0.50; z2=lo+leg*0.786
         zone_lo,zone_hi=min(z1,z2),max(z1,z2)
         inside=zone_lo<=current<=zone_hi
