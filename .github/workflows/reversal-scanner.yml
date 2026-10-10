@@ -90,7 +90,7 @@ jobs:
           python - <<'PY'
           import json, os
           from pathlib import Path
-          from telegram_signal_dedup import filter_new_signals, signal_key
+          from telegram_signal_dedup import filter_new_signals, migrate_legacy_batch
           result = json.load(open("scanner_result.json", encoding="utf-8"))
           rows = result.get("results", [])
           state = Path(".telegram-signal-dedup")
@@ -101,11 +101,11 @@ jobs:
               seen = set(json.loads(seen_path.read_text(encoding="utf-8")))
               pending, updated = filter_new_signals(rows, seen)
           elif legacy_marker.exists():
-              # One-time migration from the earlier batch-only cache: suppress this
-              # first batch to avoid duplicate delivery, then persist its signal keys.
-              pending = []
-              updated = {signal_key(row) for row in rows if signal_key(row)}
-              migration = True
+              # Only suppress the exact legacy batch. If membership changed, there
+              # is no per-signal delivery history, so send it rather than permanently
+              # marking potentially unsent signals as delivered.
+              legacy_fingerprint = legacy_marker.read_text(encoding="utf-8").strip()
+              pending, updated, migration = migrate_legacy_batch(rows, legacy_fingerprint)
           else:
               pending, updated = filter_new_signals(rows, set())
           Path("scanner_pending.json").write_text(json.dumps({"results": pending}, ensure_ascii=False), encoding="utf-8")
