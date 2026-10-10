@@ -133,6 +133,21 @@ def qwen_screen(ticks, source):
         try:
             rr=fetch_candles(source,sym,"15m",90)
             if len(rr)<60: continue
+            try:
+                r5=fetch_candles(source,sym,"5m",220)
+            except Exception:
+                r5=[]
+            live_price=f(t.get("lastPrice",t.get("lastPr")))
+            def entry_context(direction):
+                pb=pullback_calibration(r5,direction) if len(r5)>=160 else None
+                if not pb:
+                    return {"ready":False,"timing":0.0,"zone_low":0.0,"zone_high":0.0}
+                entry=(pb["zone_low"]+pb["zone_high"])/2
+                state=live_entry_timing(live_price,pb["zone_low"],pb["zone_high"],entry,atr(r5),direction)
+                return {"ready":state["ready"],"timing":state["timing"],
+                        "zone_low":pb["zone_low"],"zone_high":pb["zone_high"]}
+            long_context=entry_context("LONG")
+            short_context=entry_context("SHORT")
             closes=[x["c"] for x in rr]; vols=[x["v"] for x in rr]; p=closes[-1] or 1
             e20=ema(closes,20); e50=ema(closes,50); a=atr(rr,14)
             vr=(sum(vols[-5:])/5)/(sum(vols[-25:-5])/20 or 1)
@@ -145,7 +160,16 @@ def qwen_screen(ticks, source):
                 "range_pos":(p-lo)/(hi-lo) if hi>lo else .5,
                 "last_body_pct":abs(rr[-1]["c"]-rr[-1]["o"])/p*100 if p else 0,
                 "turnover":f(t.get("quoteVolume",t.get("usdtVolume",0)),0),
-                "liquidity_rank":len(packets)+1
+                "liquidity_rank":len(packets)+1,
+                "live_price":live_price,
+                "long_entry_ready":long_context["ready"],
+                "long_entry_timing":long_context["timing"],
+                "long_entry_zone_low":long_context["zone_low"],
+                "long_entry_zone_high":long_context["zone_high"],
+                "short_entry_ready":short_context["ready"],
+                "short_entry_timing":short_context["timing"],
+                "short_entry_zone_low":short_context["zone_low"],
+                "short_entry_zone_high":short_context["zone_high"]
             })
         except Exception:
             continue
