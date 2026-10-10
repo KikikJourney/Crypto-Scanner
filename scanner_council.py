@@ -5,6 +5,7 @@ Legacy engines are not part of the production path.
 """
 from alpha_edge_engine import scan, notify, VERSION
 import json
+import os
 from pathlib import Path
 
 if __name__ == "__main__":
@@ -13,4 +14,7 @@ if __name__ == "__main__":
         json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
-    notify(result)
+    if os.getenv("DEFER_TELEGRAM", "0") == "1":
+        print("TELEGRAM_DEFERRED_TO_DEDUP_STEP")
+    else:
+        notify(result)
