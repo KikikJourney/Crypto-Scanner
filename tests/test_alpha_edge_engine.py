@@ -21,17 +21,31 @@ class EdgeEngineTests(unittest.TestCase):
         self.assertLess(pb["zone_low"],pb["zone_high"])
 
     def test_live_entry_timing_rejects_price_outside_calibrated_zone(self):
-        timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0)
+        timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0, "LONG")
         self.assertFalse(timing["ready"])
-        self.assertIn("outside", timing["reason"])
+        self.assertIn("passed entry zone", timing["reason"])
 
     def test_live_entry_timing_accepts_price_inside_calibrated_zone(self):
-        timing = live_entry_timing(101.0, 100.0, 102.0, 101.0, 1.0)
+        timing = live_entry_timing(101.0, 100.0, 102.0, 101.0, 1.0, "LONG")
         self.assertTrue(timing["ready"])
         self.assertEqual(timing["timing"], 100.0)
 
+    def test_live_entry_timing_accepts_reachable_pending_long_limit(self):
+        timing = live_entry_timing(103.0, 100.0, 102.0, 101.0, 1.0, "LONG")
+        self.assertTrue(timing["ready"])
+        self.assertEqual(timing["reason"], "pending limit zone remains reachable")
+
+    def test_live_entry_timing_accepts_reachable_pending_short_limit(self):
+        timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0, "SHORT")
+        self.assertTrue(timing["ready"])
+        self.assertEqual(timing["reason"], "pending limit zone remains reachable")
+
+    def test_live_entry_timing_rejects_price_that_has_passed_zone(self):
+        self.assertFalse(live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0, "LONG")["ready"])
+        self.assertFalse(live_entry_timing(103.0, 100.0, 102.0, 101.0, 1.0, "SHORT")["ready"])
+
     def test_live_entry_timing_rejects_invalid_inputs(self):
-        timing = live_entry_timing(0.0, 100.0, 102.0, 101.0, 1.0)
+        timing = live_entry_timing(0.0, 100.0, 102.0, 101.0, 1.0, "LONG")
         self.assertFalse(timing["ready"])
 
     def test_regime_has_required_measurements(self):
