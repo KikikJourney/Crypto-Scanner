@@ -499,7 +499,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
                 "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,"sl_margin_pct":SL_MARGIN_PCT,
                             "tp_margin_pcts":TP_MARGIN_PCTS}}
     except Exception as e:
-        print(f"CANDIDATE_ERROR symbol={symbol} error={type(e).__name__}")
+        print(f"CANDIDATE_ERROR symbol={symbol} error={type(e).__name__} detail={str(e)[:180]}")
         return None
 
 def universe():
