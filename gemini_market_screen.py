@@ -15,7 +15,7 @@ MAX_PICKS = 6
 
 def _extract_json(text):
     text = (text or "").strip()
-    text = re.sub(r"^\`\`\`(?:json)?\\s*|\\s*\`\`\`$", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
     start = text.find("[")
     end = text.rfind("]")
     if start < 0 or end < start:
