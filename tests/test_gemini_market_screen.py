@@ -3,7 +3,7 @@ import unittest
 import io
 import contextlib
 import urllib.error
-from gemini_market_screen import _extract_json, normalize_picks, screen_market_packets, should_use_qwen_fallback
+from gemini_market_screen import DEFAULT_MODEL, _extract_json, normalize_picks, screen_market_packets, should_use_qwen_fallback
 
 
 class GeminiMarketScreenTests(unittest.TestCase):
@@ -12,6 +12,9 @@ class GeminiMarketScreenTests(unittest.TestCase):
             {"symbol": "PEPEUSDT", "price": 0.00001, "range_pos": 0.1},
             {"symbol": "SHIBUSDT", "price": 0.00002, "range_pos": 0.9},
         ]
+
+    def test_default_model_is_available_gemini_flash_lite(self):
+        self.assertEqual(DEFAULT_MODEL, "gemini-3.5-flash-lite")
 
     def test_extracts_json_array_from_model_text(self):
         self.assertEqual(_extract_json('[{"symbol":"PEPEUSDT"}]')[0]["symbol"], "PEPEUSDT")
