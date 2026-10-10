@@ -306,28 +306,48 @@ def pullback_calibration(r, direction):
     return {"zone_low":zone_lo,"zone_high":zone_hi,"inside":inside,"timing":round(timing,2),
             "trigger":trigger,"leg":leg,"atr":a,"disp":round(disp,4)}
 
-def live_entry_timing(price, zone_low, zone_high, calibrated_entry, atr_value):
-    """Validate the latest ticker price against the calibrated entry zone."""
+def live_entry_timing(price, zone_low, zone_high, calibrated_entry, atr_value, direction):
+    """Validate current price and whether a calibrated limit zone remains reachable."""
     price, zone_low, zone_high, calibrated_entry, atr_value = (
         f(price, float("nan")), f(zone_low, float("nan")), f(zone_high, float("nan")),
         f(calibrated_entry, float("nan")), f(atr_value, float("nan"))
     )
     values = (price, zone_low, zone_high, calibrated_entry, atr_value)
-    if not all(math.isfinite(v) and v > 0 for v in values) or zone_low > zone_high:
+    direction = str(direction).upper()
+    if (not all(math.isfinite(v) and v > 0 for v in values)
+            or zone_low > zone_high or direction not in {"LONG", "SHORT"}):
         return {"ready": False, "timing": 0.0, "distance_atr": float("inf"),
                 "reason": "live timing inputs invalid"}
-    if not zone_low <= price <= zone_high:
-        return {"ready": False, "timing": 0.0,
-                "distance_atr": abs(price - calibrated_entry) / atr_value,
-                "reason": "live price outside calibrated entry zone"}
-    distance_atr = abs(price - calibrated_entry) / atr_value
-    timing = round(max(0.0, min(100.0, 100.0 - distance_atr * 28.0)), 2)
+    if zone_low <= price <= zone_high:
+        distance_atr = abs(price - calibrated_entry) / atr_value
+        timing = round(max(0.0, min(100.0, 100.0 - distance_atr * 28.0)), 2)
+        ready = timing >= 35.0
+        return {
+            "ready": ready,
+            "timing": timing,
+            "distance_atr": distance_atr,
+            "reason": "live price inside calibrated entry zone" if ready else "live price too far from calibrated entry",
+        }
+    # A pullback limit remains actionable only if price is still on the approach side:
+    # LONG limit below market; SHORT limit above market. Once price has crossed the
+    # entire zone in the wrong direction, the setup is invalidated rather than chased.
+    if direction == "LONG" and price > zone_high:
+        distance_atr = (price - zone_high) / atr_value
+    elif direction == "SHORT" and price < zone_low:
+        distance_atr = (zone_low - price) / atr_value
+    else:
+        return {
+            "ready": False, "timing": 0.0,
+            "distance_atr": abs(price - calibrated_entry) / atr_value,
+            "reason": "live price has passed entry zone",
+        }
+    timing = round(max(0.0, min(100.0, 70.0 - distance_atr * 28.0)), 2)
     ready = timing >= 35.0
     return {
         "ready": ready,
         "timing": timing,
         "distance_atr": distance_atr,
-        "reason": "live price inside calibrated entry zone" if ready else "live price too far from calibrated entry",
+        "reason": "pending limit zone remains reachable" if ready else "pending limit zone too far from live price",
     }
 
 
@@ -395,7 +415,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
                 print(f"CANDIDATE_REJECT symbol={symbol} direction={direction} stage=calibration reason=no_pullback_zone")
                 continue
             calibrated_entry = (pb["zone_low"] + pb["zone_high"]) / 2
-            live_timing = live_entry_timing(p, pb["zone_low"], pb["zone_high"], calibrated_entry, a5)
+            live_timing = live_entry_timing(p, pb["zone_low"], pb["zone_high"], calibrated_entry, a5, direction)
             if not live_timing["ready"]:
                 print(f"CANDIDATE_REJECT symbol={symbol} direction={direction} stage=live_timing reason={live_timing['reason']}")
                 continue
@@ -543,7 +563,7 @@ def scan():
         if x: out.append(x)
     out.sort(key=lambda x:(x["quality"],x["timing"],x["qwen_screen"].get("score",0)),reverse=True)
     return {"timestamp":datetime.now(timezone.utc).isoformat(),"version":VERSION,"transport":source,
-            "universe":len(ticks),"qwen_screened":len(qwen),"qwen_picks":list(qwen.values()),
+            "universe":len(ticks),"qwen_screened":len(qwen),"qwen_picks":[{"symbol":sym, **pick} for sym, pick in qwen.items()],
             "results":out[:10],"edge_evidence":load_edge_evidence()}
 
 def notify(result):
