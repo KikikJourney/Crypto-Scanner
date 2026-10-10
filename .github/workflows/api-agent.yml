@@ -1,0 +1,43 @@
+name: Phone API Agent — Crypto-Scanner
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Instruksi agent: audit engine, kalibrasi, test, atau kualitas sinyal"
+        required: false
+        type: string
+        default: "Audit scanner. Pisahkan bug kode, masalah data, kalibrasi, dan bukti edge; prioritaskan perbaikan yang dapat diuji."
+  schedule:
+    - cron: "47 3 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phone-api-agent-crypto-scanner
+  cancel-in-progress: false
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Run bounded Gemini agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          AGENT_TASK: ${{ inputs.task }}
+        run: python tools/api_agent.py
+      - name: Upload agent report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-scanner-api-agent-report
+          path: api_agent_report.md
+          if-no-files-found: warn
+          retention-days: 14
