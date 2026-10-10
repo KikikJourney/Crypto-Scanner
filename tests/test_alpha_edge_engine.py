@@ -23,7 +23,7 @@ class EdgeEngineTests(unittest.TestCase):
     def test_live_entry_timing_rejects_price_outside_calibrated_zone(self):
         timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0, "LONG")
         self.assertFalse(timing["ready"])
-        self.assertIn("outside", timing["reason"])
+        self.assertIn("passed entry zone", timing["reason"])
 
     def test_live_entry_timing_accepts_price_inside_calibrated_zone(self):
         timing = live_entry_timing(101.0, 100.0, 102.0, 101.0, 1.0, "LONG")
