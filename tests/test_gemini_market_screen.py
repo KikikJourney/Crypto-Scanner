@@ -27,6 +27,19 @@ class GeminiMarketScreenTests(unittest.TestCase):
         ], self.packets)
         self.assertEqual(list(picks), ["SHIBUSDT"])
 
+    def test_rejects_candidates_not_ready_for_directional_entry(self):
+        packets = [
+            {"symbol": "PEPEUSDT", "long_entry_ready": False, "short_entry_ready": True},
+            {"symbol": "SHIBUSDT", "long_entry_ready": True, "short_entry_ready": False},
+        ]
+        picks = normalize_picks([
+            {"symbol": "PEPEUSDT", "direction": "LONG", "score": 95},
+            {"symbol": "SHIBUSDT", "direction": "LONG", "score": 80},
+            {"symbol": "SHIBUSDT", "direction": "SHORT", "score": 90},
+        ], packets)
+        self.assertEqual(list(picks), ["SHIBUSDT"])
+        self.assertEqual(picks["SHIBUSDT"]["direction"], "LONG")
+
     def test_clamps_score_and_limits_to_six(self):
         packets = [{"symbol": f"T{i}USDT"} for i in range(10)]
         raw = [{"symbol": p["symbol"], "direction": "LONG", "score": 140} for p in packets]
