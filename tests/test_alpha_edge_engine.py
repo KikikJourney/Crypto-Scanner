@@ -1,10 +1,16 @@
 import unittest
-from alpha_edge_engine import live_entry_timing, pullback_calibration, regime
+from alpha_edge_engine import crowding_score, live_entry_timing, pullback_calibration, regime
 
 def bar(o,h,l,c,v=100):
     return {"o":o,"h":h,"l":l,"c":c,"v":v}
 
 class EdgeEngineTests(unittest.TestCase):
+    def test_crowding_score_handles_zero_or_missing_ratio(self):
+        self.assertEqual(crowding_score(0, "SHORT"), 0.5)
+        self.assertEqual(crowding_score(None, "LONG"), 0.5)
+        self.assertGreaterEqual(crowding_score(1.2, "LONG"), 0.0)
+        self.assertLessEqual(crowding_score(1.2, "LONG"), 1.0)
+
     def test_pullback_returns_directional_zone(self):
         rows=[]
         p=100.0
