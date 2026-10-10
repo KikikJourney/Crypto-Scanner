@@ -1,4 +1,4 @@
-name: Zorathvael Qwen Alpha Hunter Scanner
+name: Gemini Alpha Edge Crypto Scanner
 
 on:
   workflow_dispatch:
@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - 'alpha_edge_engine.py'
+      - 'gemini_market_screen.py'
+      - 'tests/test_gemini_market_screen.py'
       - 'scanner_council.py'
       - 'tests/test_alpha_edge_engine.py'
       - '.github/workflows/reversal-scanner.yml'
@@ -62,11 +64,13 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-flash-lite' }}
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
           AI_MODEL_ID: NeoQuasar/Kronos-small
           QWEN_MODEL_ID: Qwen/Qwen3-0.6B
-          QWEN_SCREEN_SYMBOLS: 12
+          QWEN_SCREEN_SYMBOLS: 24
           QWEN_MAX_PICKS: 6
           AI_TOKENIZER_ID: NeoQuasar/Kronos-Tokenizer-base
           KRONOS_VENDOR_PATH: .vendor/kronos
