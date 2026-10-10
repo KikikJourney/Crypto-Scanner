@@ -48,7 +48,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-flash-lite' }}
+          GEMINI_MODEL: gemini-3.5-flash-lite
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
           QWEN_MODEL_ID: Qwen/Qwen3-0.6B
