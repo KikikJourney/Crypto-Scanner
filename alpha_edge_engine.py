@@ -618,10 +618,16 @@ def notify(result):
     tok,chat=os.getenv("TELEGRAM_BOT_TOKEN"),os.getenv("TELEGRAM_CHAT_ID")
     if not tok or not chat:return False
     texts=[telegram_text(x) for x in result["results"]]
-    if not texts:texts=["🏛️ ZORATHVAEL ALPHA EDGE\nNO ACTIONABLE SETUP — event sequence/calibration did not qualify."]
-    for msg in texts:
+    if not texts:
+        print("TELEGRAM_SKIPPED reason=no_actionable_signals")
+        return False
+    for row, msg in zip(result["results"], texts):
         r=SESSION.post(f"https://api.telegram.org/bot{tok}/sendMessage",json={"chat_id":chat,"text":msg},timeout=15)
         r.raise_for_status()
+        payload=r.json()
+        if not payload.get("ok"):
+            raise RuntimeError("Telegram API did not confirm message acceptance")
+        print(f"TELEGRAM_SENT symbol={row.get('symbol_full',row.get('symbol','?'))} direction={row.get('direction','?')} message_id={payload.get('result',{}).get('message_id','unknown')}")
     return True
 
 if __name__=="__main__":
