@@ -81,6 +81,8 @@ jobs:
         with:
           path: .telegram-signal-dedup
           key: telegram-signal-${{ steps.signal.outputs.day }}-${{ steps.signal.outputs.fingerprint }}
+          restore-keys: |
+            telegram-signal-${{ steps.signal.outputs.day }}-
       - name: Filter previously sent signals
         id: pending
         if: steps.signal.outputs.fingerprint != 'none'
