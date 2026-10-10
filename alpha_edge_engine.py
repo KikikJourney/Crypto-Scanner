@@ -162,6 +162,9 @@ def qwen_screen(ticks, source):
             return {}
         print("GEMINI_SCREEN_EMPTY_OR_UNAVAILABLE fallback=QWEN")
     except Exception as exc:
+        if os.getenv("GEMINI_ONLY", "0") == "1":
+            print(f"GEMINI_SCREEN_ERROR type={type(exc).__name__} mode=GEMINI_ONLY")
+            return {}
         print(f"GEMINI_SCREEN_ERROR type={type(exc).__name__} fallback=QWEN")
     prompt = """You are Qwen, the fallback crypto-futures screening intelligence for a 15m scalping Alpha Hunter.
 Select only coins with a credible LONG bottom-entry or SHORT top-entry setup forming now.
