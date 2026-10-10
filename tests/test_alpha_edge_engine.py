@@ -80,5 +80,23 @@ class EdgeEngineTests(unittest.TestCase):
         for key in ("type","atr_pct","volume_ratio","ema_drift_pct"):
             self.assertIn(key,r)
 
+    def test_tradfi_assets_are_blocked_from_scanning(self):
+        for symbol in ('TSLAUSDT', 'NVDAUSDT', 'XAUUSDT', 'XAGUSDT', 'SPXUSDT', 'EURUSDUSDT', 'MSTRUSDT'):
+            self.assertTrue(is_tradfi_symbol(symbol), symbol)
+        for symbol in ('PEPEUSDT', 'DOGEUSDT', 'SOLUSDT', 'STRKUSDT', '1000SHIBUSDT'):
+            self.assertFalse(is_tradfi_symbol(symbol), symbol)
+
+    def test_universe_prioritizes_memecoins_then_other_altcoins_by_turnover(self):
+        rows = [
+            {'symbol': 'ETHUSDT', 'quoteVolume': '90000000'},
+            {'symbol': 'TSLAUSDT', 'quoteVolume': '500000000'},
+            {'symbol': 'STRKUSDT', 'quoteVolume': '10000000'},
+            {'symbol': 'PEPEUSDT', 'quoteVolume': '5000000'},
+            {'symbol': 'DOGEUSDT', 'quoteVolume': '20000000'},
+            {'symbol': 'BTCUSDT', 'quoteVolume': '900000000'},
+        ]
+        result = prioritize_crypto_tickers(rows, max_symbols=4, min_turnover=1, excluded={'BTCUSDT'})
+        self.assertEqual([row['symbol'] for row in result], ['DOGEUSDT', 'PEPEUSDT', 'ETHUSDT', 'STRKUSDT'])
+
 if __name__=="__main__":
     unittest.main()
