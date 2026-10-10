@@ -7,6 +7,7 @@ def bar(o,h,l,c,v=100):
 class EdgeEngineTests(unittest.TestCase):
     def test_btc_is_excluded_from_production_signal_universe(self):
         self.assertIn("BTCUSDT", EXCLUDED_SYMBOLS)
+        self.assertIn("MSTRUSDT", EXCLUDED_SYMBOLS)
         self.assertNotIn("STRKUSDT", EXCLUDED_SYMBOLS)
 
     def test_crowding_score_handles_zero_or_missing_ratio(self):
