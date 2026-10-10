@@ -22,6 +22,63 @@ TP_MARGIN_PCTS = (30.0, 60.0, 120.0)
 MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "24"))
 EXCLUDED_SYMBOLS = {s.strip().upper() for s in os.getenv("EDGE_EXCLUDED_SYMBOLS", "BTCUSDT,MSTRUSDT").split(",") if s.strip()}
 MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "5000000"))
+
+# Hard block for TradFi-linked tickers (equities, indices, FX, commodities and
+# tokenized stock/commodity contracts). Keep this explicit to avoid broad rules
+# accidentally excluding legitimate crypto assets with short tickers.
+TRADFI_BASES = {
+    "MSTR", "TSLA", "NVDA", "AAPL", "MSFT", "AMZN", "META", "GOOG", "GOOGL",
+    "COIN", "PLTR", "HOOD", "CRCL", "ORCL", "AMD", "INTC", "NFLX", "BABA",
+    "TSM", "QQQ", "SPY", "IWM", "DIA", "GLD", "SLV", "USO", "UNG", "TLT",
+    "XAU", "XAG", "XPT", "XPD", "XAUT", "GOLD", "SILVER", "USOIL", "UKOIL",
+    "WTI", "BRENT", "SPX", "SP500", "US500", "US30", "DJI", "DJ30", "NAS100",
+    "NASDAQ", "NDX", "US100", "DXY", "EURUSD", "GBPUSD", "AUDUSD", "NZDUSD",
+    "USDJPY", "USDCHF", "USDCAD", "EURGBP", "EURJPY", "GBPJPY",
+}
+MEMECOIN_BASES = {
+    "DOGE", "SHIB", "PEPE", "FLOKI", "BONK", "WIF", "BOME", "MEME", "TURBO",
+    "POPCAT", "BRETT", "NEIRO", "PENGU", "1000SATS", "1000BONK", "1000SHIB",
+    "1000PEPE", "1000FLOKI", "1000CHEEMS", "PNUT", "MOODENG", "FARTCOIN",
+    "TRUMP", "MOG", "ACT", "GOAT", "MEW", "CAT", "BABYDOGE", "BABYDOGE",
+}
+
+
+def _base_asset(symbol):
+    symbol = str(symbol or "").strip().upper()
+    for quote in ("USDT", "USDC", "BUSD", "USD"):
+        if symbol.endswith(quote):
+            return symbol[:-len(quote)]
+    return symbol
+
+
+def is_tradfi_symbol(symbol):
+    """Return True for known TradFi, FX, index, equity or commodity contracts."""
+    base = _base_asset(symbol)
+    return base in TRADFI_BASES or base.startswith(("XAU", "XAG", "XPT", "XPD"))
+
+
+def prioritize_crypto_tickers(rows, max_symbols=MAX_SYMBOLS, min_turnover=MIN_TURNOVER, excluded=None):
+    """Filter TradFi and prioritize liquid memecoins, then other crypto altcoins."""
+    excluded = set(EXCLUDED_SYMBOLS if excluded is None else excluded)
+    eligible = []
+    for row in rows:
+        symbol = str(row.get("symbol", "")).strip().upper()
+        turnover = f(row.get("quoteVolume") or row.get("usdtVolume", 0))
+        if not symbol.endswith("USDT") or symbol in excluded or is_tradfi_symbol(symbol):
+            continue
+        if turnover < min_turnover:
+            continue
+        eligible.append((row, symbol, turnover))
+    memes = sorted((x for x in eligible if _base_asset(x[1]) in MEMECOIN_BASES),
+                   key=lambda x: x[2], reverse=True)
+    alts = sorted((x for x in eligible if _base_asset(x[1]) not in MEMECOIN_BASES),
+                  key=lambda x: x[2], reverse=True)
+    limit = max(0, int(max_symbols))
+    meme_cap = min(len(memes), max(4, limit // 2)) if limit else 0
+    selected = memes[:meme_cap] + alts[:max(0, limit - meme_cap)]
+    if len(selected) < limit:
+        selected += memes[meme_cap: meme_cap + (limit - len(selected))]
+    return [item[0] for item in selected[:limit]]
 TIMEOUT = 12
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "Zorathvael-AI-Market-Engine/1.0"})
@@ -533,14 +590,14 @@ def universe():
     try:
         info=binance("/fapi/v1/exchangeInfo")
         ticks=binance("/fapi/v1/ticker/24hr")
-        active={x["symbol"] for x in info["symbols"] if x.get("status")=="TRADING" and x.get("contractType")=="PERPETUAL" and x.get("quoteAsset")=="USDT" and x["symbol"] not in EXCLUDED_SYMBOLS}
-        rows=[x for x in ticks if x.get("symbol") in active and f(x.get("quoteVolume"))>=MIN_TURNOVER]
-        return sorted(rows,key=lambda x:f(x.get("quoteVolume")),reverse=True)[:MAX_SYMBOLS],"Binance"
+        active={x["symbol"] for x in info["symbols"] if x.get("status")=="TRADING" and x.get("contractType")=="PERPETUAL" and x.get("quoteAsset")=="USDT" and x["symbol"] not in EXCLUDED_SYMBOLS and not is_tradfi_symbol(x["symbol"])}
+        rows=[x for x in ticks if x.get("symbol") in active]
+        return prioritize_crypto_tickers(rows), "Binance"
     except Exception:
         data=bitget("/api/v2/mix/market/tickers",{"productType":"USDT-FUTURES"})
         rows=data.get("data",[]) if isinstance(data,dict) else data
-        rows=[x for x in rows if f(x.get("usdtVolume",x.get("quoteVolume",0)))>=MIN_TURNOVER and str(x.get("symbol","")).upper() not in EXCLUDED_SYMBOLS]
-        return sorted(rows,key=lambda x:f(x.get("usdtVolume",x.get("quoteVolume",0))),reverse=True)[:MAX_SYMBOLS],"Bitget"
+        normalized=[{**x,"symbol":str(x.get("symbol","")).upper(),"usdtVolume":x.get("usdtVolume",x.get("quoteVolume",0))} for x in rows]
+        return prioritize_crypto_tickers(normalized), "Bitget"
 
 def load_edge_evidence():
     p=Path("edge_evidence.json")
