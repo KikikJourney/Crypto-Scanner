@@ -397,14 +397,30 @@ def mtf(symbol, source):
         data[interval]=fetch_candles(source,symbol,interval,limit)
     return data
 
+def crowding_score(crowd, direction):
+    """Convert a valid long/short ratio to a bounded directional crowding score."""
+    try:
+        ratio = float(crowd)
+    except (TypeError, ValueError):
+        return 0.5
+    if not math.isfinite(ratio) or ratio <= 0 or direction not in {"LONG", "SHORT"}:
+        return 0.5
+    pressure = ratio - 1.0 if direction == "LONG" else (1.0 / ratio) - 1.0
+    return max(0.0, min(1.0, 0.5 - 0.35 * pressure))
+
+
 def candidate(symbol, ticker, source, qwen_pick=None):
     try:
         r=fetch_candles(source,symbol,"5m",220)
-        if len(r)<160:return None
+        if len(r)<160:
+            print(f"CANDIDATE_REJECT symbol={symbol} stage=candles reason=insufficient_5m_history count={len(r)}")
+            return None
         p=f(ticker.get("lastPrice",ticker.get("lastPr")))
         reg=regime(r); tfs=mtf(symbol,source)
         ai=ai_market_forecast(r) if AI_ON_QWEN_CANDIDATES else None
-        if not ai and not qwen_pick: return None
+        if not ai and not qwen_pick:
+            print(f"CANDIDATE_REJECT symbol={symbol} stage=screen reason=no_valid_ai_pick")
+            return None
         ext=external_features(symbol,source)
         a5=atr(r); e20=ema([x["c"] for x in r],20); e50=ema([x["c"] for x in r],50)
         results=[]
@@ -427,9 +443,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
             # OI/funding/crowding are evidence layers, not binary blockers.
             funding=ext["funding"]
             crowd=ext["crowding"]
-            crowd_score=0.5
-            if crowd is not None:
-                crowd_score=max(0,min(1,0.5-0.35*(crowd-1 if direction=="LONG" else 1/crowd-1)))
+            crowd_score=crowding_score(crowd, direction)
             fund_score=0.5
             if funding is not None:
                 fund_score=max(0,min(1,0.5-(funding*1000 if direction=="LONG" else -funding*1000)*0.15))
@@ -456,11 +470,17 @@ def candidate(symbol, ticker, source, qwen_pick=None):
             results.append((quality,direction,liq,flow,pb,ext,mtf_score,live_timing))
         if not results:return None
         results.sort(reverse=True,key=lambda x:x[0]); q,d,liq,flow,pb,ext,mtfs,live_timing=results[0]
-        if q<45:return None
+        if q<45:
+            print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=quality score={q:.2f} threshold=45")
+            return None
         # Require event sequence, but do not require every data source to exist.
         event_score=sum([liq["sweep"],flow["impulse"]>0,flow["exhaustion"]>0.25,pb["trigger"]])
-        if event_score<1:return None
-        if live_timing["timing"]<35: return None
+        if event_score<1:
+            print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=event reason=no_confirming_event")
+            return None
+        if live_timing["timing"]<35:
+            print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=live_timing reason=timing_below_threshold")
+            return None
         entry=(pb["zone_low"]+pb["zone_high"])/2
         # Use current price only for execution state; never redefine calibration.
         zone_lo,zone_hi=pb["zone_low"],pb["zone_high"]
@@ -479,6 +499,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
                 "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,"sl_margin_pct":SL_MARGIN_PCT,
                             "tp_margin_pcts":TP_MARGIN_PCTS}}
     except Exception as e:
+        print(f"CANDIDATE_ERROR symbol={symbol} error={type(e).__name__}")
         return None
 
 def universe():
