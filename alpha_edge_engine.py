@@ -20,6 +20,7 @@ LEVERAGE = 20
 SL_MARGIN_PCT = -10.0
 TP_MARGIN_PCTS = (30.0, 60.0, 120.0)
 MAX_SYMBOLS = int(os.getenv("EDGE_MAX_SYMBOLS", "24"))
+EXCLUDED_SYMBOLS = {s.strip().upper() for s in os.getenv("EDGE_EXCLUDED_SYMBOLS", "BTCUSDT").split(",") if s.strip()}
 MIN_TURNOVER = float(os.getenv("EDGE_MIN_TURNOVER", "5000000"))
 TIMEOUT = 12
 SESSION = requests.Session()
@@ -532,13 +533,13 @@ def universe():
     try:
         info=binance("/fapi/v1/exchangeInfo")
         ticks=binance("/fapi/v1/ticker/24hr")
-        active={x["symbol"] for x in info["symbols"] if x.get("status")=="TRADING" and x.get("contractType")=="PERPETUAL" and x.get("quoteAsset")=="USDT"}
+        active={x["symbol"] for x in info["symbols"] if x.get("status")=="TRADING" and x.get("contractType")=="PERPETUAL" and x.get("quoteAsset")=="USDT" and x["symbol"] not in EXCLUDED_SYMBOLS}
         rows=[x for x in ticks if x.get("symbol") in active and f(x.get("quoteVolume"))>=MIN_TURNOVER]
         return sorted(rows,key=lambda x:f(x.get("quoteVolume")),reverse=True)[:MAX_SYMBOLS],"Binance"
     except Exception:
         data=bitget("/api/v2/mix/market/tickers",{"productType":"USDT-FUTURES"})
         rows=data.get("data",[]) if isinstance(data,dict) else data
-        rows=[x for x in rows if f(x.get("usdtVolume",x.get("quoteVolume",0)))>=MIN_TURNOVER]
+        rows=[x for x in rows if f(x.get("usdtVolume",x.get("quoteVolume",0)))>=MIN_TURNOVER and str(x.get("symbol","")).upper() not in EXCLUDED_SYMBOLS]
         return sorted(rows,key=lambda x:f(x.get("usdtVolume",x.get("quoteVolume",0))),reverse=True)[:MAX_SYMBOLS],"Bitget"
 
 def load_edge_evidence():
