@@ -63,7 +63,7 @@ def prioritize_crypto_tickers(rows, max_symbols=MAX_SYMBOLS, min_turnover=MIN_TU
     eligible = []
     for row in rows:
         symbol = str(row.get("symbol", "")).strip().upper()
-        turnover = f(row.get("quoteVolume", row.get("usdtVolume", 0)))
+        turnover = f(row.get("quoteVolume") or row.get("usdtVolume", 0))
         if not symbol.endswith("USDT") or symbol in excluded or is_tradfi_symbol(symbol):
             continue
         if turnover < min_turnover:
