@@ -1,5 +1,5 @@
 import unittest
-from alpha_edge_engine import pullback_calibration, regime
+from alpha_edge_engine import live_entry_timing, pullback_calibration, regime
 
 def bar(o,h,l,c,v=100):
     return {"o":o,"h":h,"l":l,"c":c,"v":v}
@@ -19,6 +19,20 @@ class EdgeEngineTests(unittest.TestCase):
         pb=pullback_calibration(rows,"LONG")
         self.assertIsNotNone(pb)
         self.assertLess(pb["zone_low"],pb["zone_high"])
+
+    def test_live_entry_timing_rejects_price_outside_calibrated_zone(self):
+        timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0)
+        self.assertFalse(timing["ready"])
+        self.assertIn("outside", timing["reason"])
+
+    def test_live_entry_timing_accepts_price_inside_calibrated_zone(self):
+        timing = live_entry_timing(101.0, 100.0, 102.0, 101.0, 1.0)
+        self.assertTrue(timing["ready"])
+        self.assertEqual(timing["timing"], 100.0)
+
+    def test_live_entry_timing_rejects_invalid_inputs(self):
+        timing = live_entry_timing(0.0, 100.0, 102.0, 101.0, 1.0)
+        self.assertFalse(timing["ready"])
 
     def test_regime_has_required_measurements(self):
         rows=[bar(100+i,101+i,99+i,100.5+i,100+i) for i in range(80)]

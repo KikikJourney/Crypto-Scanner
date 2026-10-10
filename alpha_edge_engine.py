@@ -306,6 +306,31 @@ def pullback_calibration(r, direction):
     return {"zone_low":zone_lo,"zone_high":zone_hi,"inside":inside,"timing":round(timing,2),
             "trigger":trigger,"leg":leg,"atr":a,"disp":round(disp,4)}
 
+def live_entry_timing(price, zone_low, zone_high, calibrated_entry, atr_value):
+    """Validate the latest ticker price against the calibrated entry zone."""
+    price, zone_low, zone_high, calibrated_entry, atr_value = (
+        f(price, float("nan")), f(zone_low, float("nan")), f(zone_high, float("nan")),
+        f(calibrated_entry, float("nan")), f(atr_value, float("nan"))
+    )
+    values = (price, zone_low, zone_high, calibrated_entry, atr_value)
+    if not all(math.isfinite(v) and v > 0 for v in values) or zone_low > zone_high:
+        return {"ready": False, "timing": 0.0, "distance_atr": float("inf"),
+                "reason": "live timing inputs invalid"}
+    if not zone_low <= price <= zone_high:
+        return {"ready": False, "timing": 0.0,
+                "distance_atr": abs(price - calibrated_entry) / atr_value,
+                "reason": "live price outside calibrated entry zone"}
+    distance_atr = abs(price - calibrated_entry) / atr_value
+    timing = round(max(0.0, min(100.0, 100.0 - distance_atr * 28.0)), 2)
+    ready = timing >= 35.0
+    return {
+        "ready": ready,
+        "timing": timing,
+        "distance_atr": distance_atr,
+        "reason": "live price inside calibrated entry zone" if ready else "live price too far from calibrated entry",
+    }
+
+
 def external_features(symbol, source="Binance"):
     out={"open_interest":None,"funding":None,"crowding":None,"taker_ratio":None,"source":"unavailable"}
     try:
@@ -366,7 +391,14 @@ def candidate(symbol, ticker, source, qwen_pick=None):
         directions=[qwen_pick["direction"]] if qwen_pick else ([ai["direction"]] if ai and ai["direction"]!="NEUTRAL" else [])
         for direction in directions:
             liq=liquidity_event(r,direction); flow=flow_features(r,direction); pb=pullback_calibration(r,direction)
-            if not pb:continue
+            if not pb:
+                print(f"CANDIDATE_REJECT symbol={symbol} direction={direction} stage=calibration reason=no_pullback_zone")
+                continue
+            calibrated_entry = (pb["zone_low"] + pb["zone_high"]) / 2
+            live_timing = live_entry_timing(p, pb["zone_low"], pb["zone_high"], calibrated_entry, a5)
+            if not live_timing["ready"]:
+                print(f"CANDIDATE_REJECT symbol={symbol} direction={direction} stage=live_timing reason={live_timing['reason']}")
+                continue
             closes=[x["c"] for x in r]
             structure=(p>e50 and e20>e50) if direction=="LONG" else (p<e50 and e20<e50)
             displacement=flow["impulse"]>0.0015
@@ -401,14 +433,14 @@ def candidate(symbol, ticker, source, qwen_pick=None):
                 score += 28*(qwen_pick["score"]/100)
             quality=max(0,min(100,round(score,2)))
             # The entry zone is calibration only. Geometry is applied later.
-            results.append((quality,direction,liq,flow,pb,ext,mtf_score))
+            results.append((quality,direction,liq,flow,pb,ext,mtf_score,live_timing))
         if not results:return None
-        results.sort(reverse=True,key=lambda x:x[0]); q,d,liq,flow,pb,ext,mtfs=results[0]
+        results.sort(reverse=True,key=lambda x:x[0]); q,d,liq,flow,pb,ext,mtfs,live_timing=results[0]
         if q<45:return None
         # Require event sequence, but do not require every data source to exist.
         event_score=sum([liq["sweep"],flow["impulse"]>0,flow["exhaustion"]>0.25,pb["trigger"]])
         if event_score<1:return None
-        if pb["timing"]<35: return None
+        if live_timing["timing"]<35: return None
         entry=(pb["zone_low"]+pb["zone_high"])/2
         # Use current price only for execution state; never redefine calibration.
         zone_lo,zone_hi=pb["zone_low"],pb["zone_high"]
@@ -420,7 +452,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
             sl=entry*(1+sl_move); tps=[entry*(1-x) for x in tp_moves]
         return {"symbol":symbol.replace("USDT",""),"symbol_full":symbol,"direction":d,"price":p,
                 "entry":entry,"entry_zone_low":zone_lo,"entry_zone_high":zone_hi,"stop":sl,
-                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":pb["timing"],"ai_engine":ai or {},
+                "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":live_timing["timing"],"live_timing":live_timing,"ai_engine":ai or {},
                 "qwen_screen":qwen_pick or {},
                 "regime":reg,"liquidity":liq,"flow":flow,"pullback":pb,"external":ext,
                 "mtf_score":mtfs,"calibration":"pullback-50/78.6% displacement retracement",
