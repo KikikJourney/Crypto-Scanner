@@ -10,7 +10,7 @@ import re
 import urllib.request
 import urllib.error
 
-DEFAULT_MODEL = "gemini-2.5-flash-lite"
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MAX_PICKS = 6
 
 
