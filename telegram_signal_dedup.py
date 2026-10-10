@@ -43,3 +43,17 @@ def filter_new_signals(results, seen_keys):
             new_rows.append(item)
             updated.add(key)
     return new_rows, updated
+
+
+def migrate_legacy_batch(results, legacy_fingerprint):
+    """Migrate a batch-only cache without permanently dropping a changed batch.
+
+    A matching fingerprint is the only evidence available that this exact batch
+    may already have been sent. If membership differs, deliver current rows and
+    transition to per-signal deduplication instead of treating all as sent.
+    """
+    keys = {signal_key(row) for row in results if signal_key(row)}
+    if legacy_fingerprint and legacy_fingerprint == signal_fingerprint(results):
+        return [], keys, True
+    pending, updated = filter_new_signals(results, set())
+    return pending, updated, False
