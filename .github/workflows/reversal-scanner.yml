@@ -50,7 +50,7 @@ jobs:
           DEFER_TELEGRAM: "1"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-3.5-flash-lite
-          EDGE_EXCLUDED_SYMBOLS: BTCUSDT
+          EDGE_EXCLUDED_SYMBOLS: BTCUSDT,MSTRUSDT
           BINANCE_BASE_URL: https://fapi.binance.com
           BITGET_BASE_URL: https://api.bitget.com
           QWEN_MODEL_ID: Qwen/Qwen3-0.6B
@@ -81,8 +81,40 @@ jobs:
         with:
           path: .telegram-signal-dedup
           key: telegram-signal-${{ steps.signal.outputs.day }}-${{ steps.signal.outputs.fingerprint }}
+      - name: Filter previously sent signals
+        id: pending
+        if: steps.signal.outputs.fingerprint != 'none'
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from telegram_signal_dedup import filter_new_signals, signal_key
+          result = json.load(open("scanner_result.json", encoding="utf-8"))
+          rows = result.get("results", [])
+          state = Path(".telegram-signal-dedup")
+          seen_path = state / "seen.json"
+          legacy_marker = state / "fingerprint"
+          migration = False
+          if seen_path.exists():
+              seen = set(json.loads(seen_path.read_text(encoding="utf-8")))
+              pending, updated = filter_new_signals(rows, seen)
+          elif legacy_marker.exists():
+              # One-time migration from the earlier batch-only cache: suppress this
+              # first batch to avoid duplicate delivery, then persist its signal keys.
+              pending = []
+              updated = {signal_key(row) for row in rows if signal_key(row)}
+              migration = True
+          else:
+              pending, updated = filter_new_signals(rows, set())
+          Path("scanner_pending.json").write_text(json.dumps({"results": pending}, ensure_ascii=False), encoding="utf-8")
+          Path("scanner_seen_next.json").write_text(json.dumps(sorted(updated), ensure_ascii=False), encoding="utf-8")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"pending_count={len(pending)}\n")
+              out.write(f"migration={'true' if migration else 'false'}\n")
+          print(f"TELEGRAM_PENDING count={len(pending)} seen={len(updated)} migration={migration}")
+          PY
       - name: Send new Telegram signals
-        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit != 'true'
+        if: steps.signal.outputs.fingerprint != 'none' && steps.pending.outputs.pending_count != '0'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -90,17 +122,24 @@ jobs:
           python - <<'PY'
           import json
           from alpha_edge_engine import notify
-          result = json.load(open("scanner_result.json", encoding="utf-8"))
+          result = json.load(open("scanner_pending.json", encoding="utf-8"))
           if not notify(result):
               raise SystemExit("Telegram delivery was skipped; credentials or actionable results missing")
           PY
       - name: Mark Telegram signal batch as sent
-        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit != 'true'
+        if: steps.signal.outputs.fingerprint != 'none' && steps.pending.outputs.pending_count != '0'
         run: |
           mkdir -p .telegram-signal-dedup
+          cp scanner_seen_next.json .telegram-signal-dedup/seen.json
           printf '%s\n' '${{ steps.signal.outputs.fingerprint }}' > .telegram-signal-dedup/fingerprint
-      - name: Log duplicate Telegram batch suppression
-        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit == 'true'
+      - name: Migrate legacy Telegram cache without resending
+        if: steps.signal.outputs.fingerprint != 'none' && steps.pending.outputs.migration == 'true'
+        run: |
+          mkdir -p .telegram-signal-dedup
+          cp scanner_seen_next.json .telegram-signal-dedup/seen.json
+          printf '%s\n' '${{ steps.signal.outputs.fingerprint }}' > .telegram-signal-dedup/fingerprint
+      - name: Log duplicate Telegram signal suppression
+        if: steps.signal.outputs.fingerprint != 'none' && steps.pending.outputs.pending_count == '0'
         run: echo "TELEGRAM_DEDUP_SKIP fingerprint=${{ steps.signal.outputs.fingerprint }}"
       - name: Upload evidence
         if: always()
