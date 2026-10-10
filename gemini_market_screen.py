@@ -106,3 +106,8 @@ def screen_market_packets(packets, api_key=None, model=None, opener=None):
         # Log only error class; never print the API key or request headers.
         print(f"GEMINI_MARKET_SCREEN_UNAVAILABLE error={type(exc).__name__}")
         return {}
+
+
+def should_use_qwen_fallback(gemini_picks, gemini_only=False):
+    """Keep production runtime lightweight when Gemini-only mode is enabled."""
+    return not bool(gemini_picks) and not gemini_only

@@ -1,6 +1,6 @@
 import json
 import unittest
-from gemini_market_screen import _extract_json, normalize_picks, screen_market_packets
+from gemini_market_screen import _extract_json, normalize_picks, screen_market_packets, should_use_qwen_fallback
 
 
 class GeminiMarketScreenTests(unittest.TestCase):
@@ -27,6 +27,11 @@ class GeminiMarketScreenTests(unittest.TestCase):
         picks = normalize_picks(raw, packets)
         self.assertEqual(len(picks), 6)
         self.assertEqual(picks["T0USDT"]["score"], 100)
+
+    def test_gemini_only_mode_skips_heavy_qwen_fallback(self):
+        self.assertFalse(should_use_qwen_fallback({}, gemini_only=True))
+        self.assertTrue(should_use_qwen_fallback({}, gemini_only=False))
+        self.assertFalse(should_use_qwen_fallback({"PEPEUSDT": {"direction": "LONG"}}, gemini_only=False))
 
     def test_missing_key_does_not_call_api(self):
         self.assertEqual(screen_market_packets(self.packets, api_key="  "), {})
