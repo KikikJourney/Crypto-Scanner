@@ -29,7 +29,8 @@ def _extract_json(text):
 
 
 def normalize_picks(raw, packets, model=DEFAULT_MODEL):
-    allowed = {str(p.get("symbol", "")).upper() for p in packets}
+    packet_by_symbol = {str(p.get("symbol", "")).upper(): p for p in packets}
+    allowed = set(packet_by_symbol)
     cleaned = {}
     for item in raw:
         if not isinstance(item, dict):
@@ -37,6 +38,10 @@ def normalize_picks(raw, packets, model=DEFAULT_MODEL):
         symbol = str(item.get("symbol", "")).strip().upper()
         direction = str(item.get("direction", "")).strip().upper()
         if symbol not in allowed or direction not in {"LONG", "SHORT"}:
+            continue
+        packet = packet_by_symbol[symbol]
+        readiness_key = f"{direction.lower()}_entry_ready"
+        if readiness_key in packet and packet.get(readiness_key) is not True:
             continue
         try:
             score = float(item.get("score", 0))
@@ -68,7 +73,9 @@ def screen_market_packets(packets, api_key=None, model=None, opener=None):
             k: p.get(k) for k in (
                 "symbol", "price", "chg_3", "chg_12", "chg_24", "atr_pct",
                 "rsi", "volume_ratio", "ema20_50_pct", "range_pos",
-                "last_body_pct", "turnover", "liquidity_rank"
+                "last_body_pct", "turnover", "liquidity_rank", "live_price",
+                "long_entry_ready", "long_entry_timing", "long_entry_zone_low", "long_entry_zone_high",
+                "short_entry_ready", "short_entry_timing", "short_entry_zone_low", "short_entry_zone_high"
             ) if k in p
         })
     prompt = (
@@ -76,9 +83,11 @@ def screen_market_packets(packets, api_key=None, model=None, opener=None):
         "targeting 5m execution with 15m context. Evaluate the supplied current feature table. "
         "Look for LONG entries near a practical local bottom and SHORT entries near a practical local top; "
         "prefer reversal/exhaustion, pullback location, participation and liquid markets; reject chasing "
-        "and contradictory evidence. Rank up to 6 best relative candidates even if none is perfect, "
-        "but never invent symbols or data. This is candidate discovery only; downstream code applies "
-        "independent timing, price geometry and risk gates. Return ONLY a JSON array with objects "
+        "and contradictory evidence. HARD RULE: select a LONG only when long_entry_ready is true, and a "
+        "SHORT only when short_entry_ready is true. These flags are deterministic live-price/pullback checks; "
+        "never override them. Rank up to 6 of the ready candidates, or return an empty array if none is ready. "
+        "Never invent symbols or data. Downstream code applies additional structure, quality and risk gates. "
+        "Return ONLY a JSON array with objects "
         '{"symbol":"XXXUSDT","direction":"LONG|SHORT","score":0-100,"reason":"brief evidence"}. '
         "Use only symbols in this table. Table: " + json.dumps(compact, separators=(",", ":"))
     )
