@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import requests
 
-VERSION = "qwen-alpha-hunter-v1"
+VERSION = "gemini-alpha-edge-v1"
 BINANCE = os.getenv("BINANCE_BASE_URL", "https://fapi.binance.com").rstrip("/")
 BITGET = os.getenv("BITGET_BASE_URL", "https://api.bitget.com").rstrip("/")
 MARGIN = 10.0
@@ -469,8 +469,8 @@ def telegram_text(x):
         f"Entry zone: {format_price(x['entry_zone_low'])} – {format_price(x['entry_zone_high'])}",
         f"Calibrated entry: {format_price(x['entry'])}",
         f"Pullback timing: {x['timing']}/100",
-        f"Qwen Screen: {x['qwen_screen'].get('model','n/a')} | {x['qwen_screen'].get('direction',x['direction'])} {x['qwen_screen'].get('score',0):.0f}/100",
-        f"Qwen rationale: {x['qwen_screen'].get('reason','')}",
+        f"Market screen: {x['qwen_screen'].get('model','n/a')} | {x['qwen_screen'].get('direction',x['direction'])} {x['qwen_screen'].get('score',0):.0f}/100",
+        f"Screen rationale: {x['qwen_screen'].get('reason','')}",
         f"Kronos forecast: {x['ai_engine'].get('return',0)*100:.3f}% | Path: {x['ai_engine'].get('path_return',0)*100:.3f}%",
         f"Quality: {x['quality']}/100",
         "",
