@@ -26,6 +26,21 @@ class EdgeEngineTests(unittest.TestCase):
         self.assertIsNotNone(pb)
         self.assertLess(pb["zone_low"],pb["zone_high"])
 
+    def test_short_pullback_calibration_returns_displacement(self):
+        rows=[]
+        p=100.0
+        for i in range(80):
+            p -= 0.20
+            rows.append(bar(p+0.1,p+0.4,p-0.2,p,100+i))
+        rows += [
+            bar(p,p+0.2,p-4.0,p-3.0,500),
+            bar(p-3.0,p-1.0,p-3.2,p-1.8,180),
+            bar(p-1.8,p-1.2,p-2.2,p-1.9,150),
+        ]
+        pb=pullback_calibration(rows,"SHORT")
+        self.assertIsNotNone(pb)
+        self.assertIn("disp", pb)
+
     def test_live_entry_timing_rejects_price_outside_calibrated_zone(self):
         timing = live_entry_timing(99.0, 100.0, 102.0, 101.0, 1.0, "LONG")
         self.assertFalse(timing["ready"])
