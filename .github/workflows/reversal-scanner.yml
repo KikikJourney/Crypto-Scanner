@@ -9,6 +9,8 @@ on:
     paths:
       - 'alpha_edge_engine.py'
       - 'gemini_market_screen.py'
+      - 'telegram_signal_dedup.py'
+      - 'tests/test_telegram_signal_dedup.py'
       - 'tests/test_gemini_market_screen.py'
       - 'scanner_council.py'
       - 'tests/test_alpha_edge_engine.py'
@@ -45,8 +47,7 @@ jobs:
           echo
       - name: Run Alpha Edge Scanner
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DEFER_TELEGRAM: "1"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-3.5-flash-lite
           EDGE_EXCLUDED_SYMBOLS: BTCUSDT
@@ -57,6 +58,50 @@ jobs:
           QWEN_MAX_PICKS: 6
           GEMINI_ONLY: "1"
         run: python scanner_council.py | tee scanner_result.log
+      - name: Fingerprint actionable signal batch
+        id: signal
+        if: success()
+        run: |
+          python - <<'PY'
+          import datetime, json, os
+          from telegram_signal_dedup import signal_fingerprint
+          result = json.load(open("scanner_result.json", encoding="utf-8"))
+          rows = result.get("results", [])
+          fingerprint = signal_fingerprint(rows)
+          day = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"fingerprint={fingerprint}\n")
+              out.write(f"day={day}\n")
+          print(f"TELEGRAM_FINGERPRINT status={'actionable' if rows else 'no_actionable_signals'} count={len(rows)} fingerprint={fingerprint}")
+          PY
+      - name: Restore Telegram duplicate-suppression cache
+        id: telegram-dedup
+        if: steps.signal.outputs.fingerprint != 'none'
+        uses: actions/cache@v4
+        with:
+          path: .telegram-signal-dedup
+          key: telegram-signal-${{ steps.signal.outputs.day }}-${{ steps.signal.outputs.fingerprint }}
+      - name: Send new Telegram signals
+        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit != 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          from alpha_edge_engine import notify
+          result = json.load(open("scanner_result.json", encoding="utf-8"))
+          if not notify(result):
+              raise SystemExit("Telegram delivery was skipped; credentials or actionable results missing")
+          PY
+      - name: Mark Telegram signal batch as sent
+        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .telegram-signal-dedup
+          printf '%s\n' '${{ steps.signal.outputs.fingerprint }}' > .telegram-signal-dedup/fingerprint
+      - name: Log duplicate Telegram batch suppression
+        if: steps.signal.outputs.fingerprint != 'none' && steps.telegram-dedup.outputs.cache-hit == 'true'
+        run: echo "TELEGRAM_DEDUP_SKIP fingerprint=${{ steps.signal.outputs.fingerprint }}"
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v6
