@@ -8,6 +8,7 @@ import math
 import os
 import re
 import urllib.request
+import urllib.error
 
 DEFAULT_MODEL = "gemini-2.5-flash-lite"
 MAX_PICKS = 6
@@ -102,8 +103,16 @@ def screen_market_packets(packets, api_key=None, model=None, opener=None):
             if isinstance(part, dict) and part.get("text")
         )
         return normalize_picks(_extract_json(text), packets, model)
+    except urllib.error.HTTPError as exc:
+        # Google API error bodies contain diagnostic status/message, not request headers.
+        try:
+            detail = exc.read().decode("utf-8", errors="replace").replace("\\n", " ")[:300]
+        except Exception:
+            detail = ""
+        print(f"GEMINI_MARKET_SCREEN_UNAVAILABLE status={exc.code} detail={detail}")
+        return {}
     except Exception as exc:
-        # Log only error class; never print the API key or request headers.
+        # Never print the API key or request headers.
         print(f"GEMINI_MARKET_SCREEN_UNAVAILABLE error={type(exc).__name__}")
         return {}
 

@@ -1,5 +1,8 @@
 import json
 import unittest
+import io
+import contextlib
+import urllib.error
 from gemini_market_screen import _extract_json, normalize_picks, screen_market_packets, should_use_qwen_fallback
 
 
@@ -53,6 +56,17 @@ class GeminiMarketScreenTests(unittest.TestCase):
         picks = screen_market_packets(self.packets, api_key=" key ", opener=fake_open)
         self.assertEqual(list(picks), ["PEPEUSDT"])
         self.assertEqual(picks["PEPEUSDT"]["score"], 77)
+
+    def test_http_error_logs_status_without_failing_scan(self):
+        error = urllib.error.HTTPError(
+            "https://generativelanguage.googleapis.com", 429, "quota", {}, io.BytesIO(b'{"error":{"message":"quota exceeded"}}')
+        )
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            picks = screen_market_packets(self.packets, api_key="key", opener=lambda *a, **k: (_ for _ in ()).throw(error))
+        self.assertEqual(picks, {})
+        self.assertIn("status=429", output.getvalue())
+        self.assertIn("quota exceeded", output.getvalue())
 
     def test_malformed_response_fails_open(self):
         class Response:
