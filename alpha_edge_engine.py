@@ -596,7 +596,7 @@ def universe():
     except Exception:
         data=bitget("/api/v2/mix/market/tickers",{"productType":"USDT-FUTURES"})
         rows=data.get("data",[]) if isinstance(data,dict) else data
-        normalized=[{"symbol":str(x.get("symbol","")).upper(),"usdtVolume":x.get("usdtVolume",x.get("quoteVolume",0)),**x} for x in rows]
+        normalized=[{**x,"symbol":str(x.get("symbol","")).upper(),"usdtVolume":x.get("usdtVolume",x.get("quoteVolume",0))} for x in rows]
         return prioritize_crypto_tickers(normalized), "Bitget"
 
 def load_edge_evidence():
