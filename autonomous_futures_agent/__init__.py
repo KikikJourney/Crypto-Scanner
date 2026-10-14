@@ -1,0 +1,1 @@
+"""Fail-closed foundation for an autonomous futures trading worker."""\n\n__version__ = "0.1.0"\n
