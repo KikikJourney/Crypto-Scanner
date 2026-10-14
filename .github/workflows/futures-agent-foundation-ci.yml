@@ -1,1 +1,27 @@
-name: Futures Agent Foundation CI\n\non:\n  pull_request:\n    paths:\n      - 'autonomous_futures_agent/**'\n      - '.github/workflows/futures-agent-foundation-ci.yml'\n  push:\n    branches: [main]\n    paths:\n      - 'autonomous_futures_agent/**'\n      - '.github/workflows/futures-agent-foundation-ci.yml'\n\npermissions:\n  contents: read\n\njobs:\n  unit-tests:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n      - name: Run risk and fail-closed tests\n        run: python -m unittest discover -s autonomous_futures_agent/tests -v\n
+name: Futures Agent Foundation CI
+
+on:
+  pull_request:
+    paths:
+      - 'autonomous_futures_agent/**'
+      - '.github/workflows/futures-agent-foundation-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'autonomous_futures_agent/**'
+      - '.github/workflows/futures-agent-foundation-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run risk and fail-closed tests
+        run: python -m unittest discover -s autonomous_futures_agent/tests -v

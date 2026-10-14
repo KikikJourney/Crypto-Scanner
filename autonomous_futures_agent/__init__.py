@@ -1,1 +1,3 @@
-"""Fail-closed foundation for an autonomous futures trading worker."""\n\n__version__ = "0.1.0"\n
+"""Fail-closed foundation for an autonomous futures trading worker."""
+
+__version__ = "0.1.0"
