@@ -106,7 +106,7 @@ class EdgeEngineTests(unittest.TestCase):
         self.assertAlmostEqual(geometry["entry"], 2.32835 * (1 - 0.10 / 20), places=8)
         self.assertEqual(geometry["stop"], 2.2488)
         self.assertGreater(geometry["entry"], geometry["stop"])
-        self.assertLessEqual(geometry["margin_loss_pct"], 10.0)
+        self.assertFalse(geometry["risk_acceptable"])
 
     def test_short_entry_moves_to_prior_sl_price_and_stop_uses_zone_high(self):
         from alpha_edge_engine import calibrated_zone_geometry
