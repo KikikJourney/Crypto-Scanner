@@ -435,6 +435,53 @@ def live_entry_timing(price, zone_low, zone_high, calibrated_entry, atr_value, d
     }
 
 
+def calibrated_zone_geometry(direction, zone_low, zone_high, sl_margin_pct=SL_MARGIN_PCT,
+                            leverage=LEVERAGE, tp_margin_pcts=TP_MARGIN_PCTS):
+    """Move entry to the former fixed-SL price; anchor SL at the far edge of the pullback zone.
+
+    LONG: entry = zone midpoint minus the configured fixed-SL price move; SL = zone low.
+    SHORT: entry = zone midpoint plus the configured fixed-SL price move; SL = zone high.
+    A setup is not risk-acceptable when this structural stop exceeds the configured
+    margin-loss budget at the selected leverage.
+    """
+    direction = str(direction or "").upper()
+    try:
+        zone_low, zone_high = float(zone_low), float(zone_high)
+        leverage, sl_margin_pct = float(leverage), abs(float(sl_margin_pct))
+        tp_margin_pcts = tuple(float(value) for value in tp_margin_pcts)
+    except (TypeError, ValueError):
+        return None
+    if (direction not in {"LONG", "SHORT"} or zone_low <= 0 or
+            zone_high <= zone_low or leverage <= 0 or sl_margin_pct <= 0):
+        return None
+
+    midpoint = (zone_low + zone_high) / 2.0
+    prior_sl_move = sl_margin_pct / leverage / 100.0
+    entry = midpoint * (1.0 - prior_sl_move if direction == "LONG" else 1.0 + prior_sl_move)
+    stop = zone_low if direction == "LONG" else zone_high
+    if not zone_low < entry < zone_high:
+        return None
+    if (direction == "LONG" and stop >= entry) or (direction == "SHORT" and stop <= entry):
+        return None
+
+    margin_loss_pct = abs(entry - stop) / entry * leverage * 100.0
+    risk_acceptable = margin_loss_pct <= sl_margin_pct + 1e-9
+    sign = 1.0 if direction == "LONG" else -1.0
+    targets = [entry * (1.0 + sign * pct / leverage / 100.0) for pct in tp_margin_pcts]
+    return {
+        "entry": entry,
+        "stop": stop,
+        "midpoint": midpoint,
+        "zone_low": zone_low,
+        "zone_high": zone_high,
+        "margin_loss_pct": margin_loss_pct,
+        "risk_acceptable": risk_acceptable,
+        "max_margin_loss_pct": sl_margin_pct,
+        "leverage": leverage,
+        "targets": targets,
+    }
+
+
 def external_features(symbol, source="Binance"):
     out={"open_interest":None,"funding":None,"crowding":None,"taker_ratio":None,"source":"unavailable"}
     try:
@@ -565,22 +612,33 @@ def candidate(symbol, ticker, source, qwen_pick=None):
         if live_timing["timing"]<35:
             print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=live_timing reason=timing_below_threshold")
             return None
-        entry=(pb["zone_low"]+pb["zone_high"])/2
-        # Use current price only for execution state; never redefine calibration.
+        # Calibrated execution geometry: the old fixed-SL price becomes entry;
+        # the structural edge of the pullback zone becomes the stop.
         zone_lo,zone_hi=pb["zone_low"],pb["zone_high"]
-        sl_move=abs(SL_MARGIN_PCT)/LEVERAGE/100
-        tp_moves=[x/LEVERAGE/100 for x in TP_MARGIN_PCTS]
-        if d=="LONG":
-            sl=entry*(1-sl_move); tps=[entry*(1+x) for x in tp_moves]
-        else:
-            sl=entry*(1+sl_move); tps=[entry*(1-x) for x in tp_moves]
+        geometry=calibrated_zone_geometry(d,zone_lo,zone_hi)
+        if geometry is None:
+            print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=geometry reason=invalid_or_unreachable_zone")
+            continue
+        if not geometry["risk_acceptable"]:
+            print(
+                f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=geometry "
+                f"reason=structural_stop_exceeds_margin_budget "
+                f"actual_margin_loss_pct={geometry['margin_loss_pct']:.2f} "
+                f"budget_pct={geometry['max_margin_loss_pct']:.2f}"
+            )
+            continue
+        entry=geometry["entry"]
+        sl=geometry["stop"]
+        tps=geometry["targets"]
         return {"symbol":symbol.replace("USDT",""),"symbol_full":symbol,"direction":d,"price":p,
                 "entry":entry,"entry_zone_low":zone_lo,"entry_zone_high":zone_hi,"stop":sl,
                 "tp1":tps[0],"tp2":tps[1],"tp3":tps[2],"quality":q,"timing":live_timing["timing"],"live_timing":live_timing,"ai_engine":ai or {},
                 "qwen_screen":qwen_pick or {},
                 "regime":reg,"liquidity":liq,"flow":flow,"pullback":pb,"external":ext,
                 "mtf_score":mtfs,"calibration":"pullback-50/78.6% displacement retracement",
-                "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,"sl_margin_pct":SL_MARGIN_PCT,
+                "geometry":{"margin_usdt":MARGIN,"leverage":LEVERAGE,
+                            "sl_margin_pct":geometry["margin_loss_pct"],
+                            "sl_margin_budget_pct":geometry["max_margin_loss_pct"],
                             "tp_margin_pcts":TP_MARGIN_PCTS}}
     except Exception as e:
         print(f"CANDIDATE_ERROR symbol={symbol} error={type(e).__name__} detail={str(e)[:180]}")
