@@ -87,7 +87,7 @@ def resolve_signal(signal, candles, now=None):
             high, low = _number(candle.get("high")), _number(candle.get("low"))
         except (TypeError, ValueError):
             continue
-        if ts <= created or ts > now or high is None or low is None:
+        if ts <= created or ts + timedelta(minutes=5) > now or high is None or low is None:
             continue
         ordered.append((ts, high, low))
     ordered.sort(key=lambda item: item[0])
@@ -204,7 +204,8 @@ def process(result, state=None, candle_fetcher=None, now=None):
     state = dict(initial_state() if not state else state)
     pending = list(state.get("pending") or [])
     observations = list(state.get("observations") or [])
-    seen = set(state.get("seen") or [])
+    seen_order = list(state.get("seen") or [])
+    seen = set(seen_order)
     candle_fetcher = candle_fetcher or _fetch_candles
 
     symbols = {}
@@ -230,7 +231,14 @@ def process(result, state=None, candle_fetcher=None, now=None):
     for item in pending:
         symbol = str(item.get("symbol_full") or item.get("symbol") or "").upper()
         if symbol not in candles_by_symbol:
-            still_pending.append(item)
+            try:
+                expired = now >= _timestamp(item["timestamp"]) + timedelta(minutes=HORIZON_MINUTES)
+            except (KeyError, TypeError, ValueError):
+                expired = True
+            if not expired:
+                still_pending.append(item)
+            else:
+                print(f"ADAPTIVE_EDGE_EXPIRED_DATA_UNAVAILABLE symbol={symbol}")
             continue
         outcome = resolve_signal(item, candles_by_symbol[symbol], now=now)
         if outcome["outcome"] == "PENDING":
@@ -260,11 +268,13 @@ def process(result, state=None, candle_fetcher=None, now=None):
         row["cohort"] = cohort_key(row)
         still_pending.append(row)
         seen.add(key)
+        seen_order.append(key)
         added += 1
 
     observations = observations[-MAX_OBSERVATIONS:]
     still_pending = still_pending[-MAX_PENDING:]
-    seen = set(list(seen)[-MAX_PENDING * 4:])
+    seen_order = list(dict.fromkeys(seen_order))[-MAX_PENDING * 4:]
+    seen = set(seen_order)
     policy = derive_policy(observations)
     kept, blocked = apply_policy(raw_results, policy)
     updated_result = dict(result)
@@ -285,7 +295,7 @@ def process(result, state=None, candle_fetcher=None, now=None):
         "version": STATE_VERSION,
         "pending": still_pending,
         "observations": observations,
-        "seen": sorted(seen),
+        "seen": seen_order,
         "updated_at": now.isoformat(),
         "policy": policy,
     }
