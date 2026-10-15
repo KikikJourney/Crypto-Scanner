@@ -61,6 +61,25 @@ class AdaptiveEdgeLearningTests(unittest.TestCase):
         self.assertEqual(result["outcome"], "NO_FILL")
         self.assertIsNone(result["outcome_r"])
 
+    def test_repeated_same_setup_within_15_minutes_is_tracked_once(self):
+        from adaptive_edge_learning import initial_state, process
+
+        first = {
+            "timestamp": "2026-10-15T10:00:00+00:00",
+            "results": [self.signal("LONG")],
+        }
+        updated, state = process(first, state=initial_state(), candle_fetcher=lambda symbol, start: [],
+                                 now="2026-10-15T10:00:00+00:00")
+        repeated = {
+            "timestamp": "2026-10-15T10:05:00+00:00",
+            "results": [self.signal("LONG")],
+        }
+        updated2, state2 = process(repeated, state=state, candle_fetcher=lambda symbol, start: [],
+                                   now="2026-10-15T10:05:00+00:00")
+        self.assertEqual(updated["adaptive_learning"]["new_signals_tracked"], 1)
+        self.assertEqual(updated2["adaptive_learning"]["new_signals_tracked"], 0)
+        self.assertEqual(len(state2["pending"]), 1)
+
     def test_policy_does_not_learn_from_small_samples(self):
         observations = [
             {"cohort": "LONG|TREND", "outcome": "LOSS", "outcome_r": -1}
