@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - 'alpha_edge_engine.py'
+      - 'adaptive_edge_learning.py'
+      - 'tests/test_adaptive_edge_learning.py'
       - 'gemini_market_screen.py'
       - 'telegram_signal_dedup.py'
       - 'tests/test_telegram_signal_dedup.py'
@@ -36,6 +38,13 @@ jobs:
           python-version: '3.12'
       - name: Install lightweight runtime dependency
         run: python -m pip install 'requests>=2.32,<3'
+      - name: Restore adaptive learning state
+        uses: actions/cache@v4
+        with:
+          path: .adaptive-edge/state.json
+          key: adaptive-edge-${{ github.run_id }}
+          restore-keys: |
+            adaptive-edge-
       - name: Validate engine
         run: |
           python -m py_compile alpha_edge_engine.py scanner_council.py gemini_market_screen.py
@@ -58,6 +67,9 @@ jobs:
           QWEN_MAX_PICKS: 6
           GEMINI_ONLY: "1"
         run: python scanner_council.py | tee scanner_result.log
+      - name: Resolve outcomes and apply adaptive edge policy
+        if: success()
+        run: python adaptive_edge_learning.py --state .adaptive-edge/state.json --result scanner_result.json
       - name: Fingerprint actionable signal batch
         id: signal
         if: success()
