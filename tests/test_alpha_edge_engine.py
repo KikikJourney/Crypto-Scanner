@@ -130,5 +130,14 @@ class EdgeEngineTests(unittest.TestCase):
         self.assertIsNone(calibrated_zone_geometry("LONG", 2.5, 2.4))
         self.assertIsNone(calibrated_zone_geometry("NEUTRAL", 2.4, 2.5))
 
+
+    def test_zone_geometry_calculates_targets_from_adjusted_entry(self):
+        from alpha_edge_engine import calibrated_zone_geometry
+
+        geometry = calibrated_zone_geometry("LONG", 2.31, 2.34)
+        self.assertIsNotNone(geometry)
+        self.assertAlmostEqual(geometry["entry"], 2.325 * (1 - 0.10 / 20), places=8)
+        self.assertAlmostEqual(geometry["targets"][0], geometry["entry"] * (1 + 0.30 / 20), places=8)
+
 if __name__=="__main__":
     unittest.main()
