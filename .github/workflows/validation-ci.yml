@@ -11,6 +11,7 @@ on:
       - 'tests/test_gemini_market_screen.py'
       - 'scanner_council.py'
       - 'tests/test_alpha_edge_engine.py'
+      - 'autonomous_futures_agent/**'
       - 'requirements.txt'
       - '.github/workflows/validation-ci.yml'
   pull_request:
@@ -36,3 +37,5 @@ jobs:
           python -m unittest discover -s tests -p 'test_alpha_edge_engine.py' -v
           python -m unittest discover -s tests -p 'test_gemini_market_screen.py' -v
           python -m unittest discover -s tests -p 'test_telegram_signal_dedup.py' -v
+      - name: Run autonomous futures agent foundation tests
+        run: python -m unittest discover -s autonomous_futures_agent/tests -v
