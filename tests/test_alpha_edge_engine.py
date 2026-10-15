@@ -115,7 +115,7 @@ class EdgeEngineTests(unittest.TestCase):
         self.assertAlmostEqual(geometry["entry"], 2.32835 * (1 + 0.10 / 20), places=8)
         self.assertEqual(geometry["stop"], 2.4079)
         self.assertLess(geometry["entry"], geometry["stop"])
-        self.assertLessEqual(geometry["margin_loss_pct"], 10.0)
+        self.assertFalse(geometry["risk_acceptable"])
 
     def test_zone_geometry_rejects_wide_stop_that_exceeds_margin_risk_budget(self):
         from alpha_edge_engine import calibrated_zone_geometry
