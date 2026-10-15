@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'alpha_edge_engine.py'
+      - 'adaptive_edge_learning.py'
+      - 'tests/test_adaptive_edge_learning.py'
       - 'gemini_market_screen.py'
       - 'telegram_signal_dedup.py'
       - 'tests/test_telegram_signal_dedup.py'
@@ -30,9 +32,10 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install 'requests>=2.32,<3'
       - name: Compile production engine
-        run: python -m py_compile alpha_edge_engine.py scanner_council.py gemini_market_screen.py telegram_signal_dedup.py
+        run: python -m py_compile alpha_edge_engine.py adaptive_edge_learning.py scanner_council.py gemini_market_screen.py telegram_signal_dedup.py
       - name: Run production unit tests
         run: |
           python -m unittest discover -s tests -p 'test_alpha_edge_engine.py' -v
+          python -m unittest discover -s tests -p 'test_adaptive_edge_learning.py' -v
           python -m unittest discover -s tests -p 'test_gemini_market_screen.py' -v
           python -m unittest discover -s tests -p 'test_telegram_signal_dedup.py' -v
