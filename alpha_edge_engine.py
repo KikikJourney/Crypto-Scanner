@@ -618,7 +618,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
         geometry=calibrated_zone_geometry(d,zone_lo,zone_hi)
         if geometry is None:
             print(f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=geometry reason=invalid_or_unreachable_zone")
-            continue
+            return None
         if not geometry["risk_acceptable"]:
             print(
                 f"CANDIDATE_REJECT symbol={symbol} direction={d} stage=geometry "
@@ -626,7 +626,7 @@ def candidate(symbol, ticker, source, qwen_pick=None):
                 f"actual_margin_loss_pct={geometry['margin_loss_pct']:.2f} "
                 f"budget_pct={geometry['max_margin_loss_pct']:.2f}"
             )
-            continue
+            return None
         entry=geometry["entry"]
         sl=geometry["stop"]
         tps=geometry["targets"]
