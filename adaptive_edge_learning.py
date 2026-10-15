@@ -198,6 +198,35 @@ def _fetch_candles(symbol, start_time):
     ]
 
 
+def _duplicate_setup(signal, scan_timestamp, seen_keys, window_minutes=15):
+    """Avoid counting the same unchanged setup repeatedly on 5-minute scans."""
+    symbol = str(signal.get("symbol_full") or signal.get("symbol") or "").upper()
+    direction = str(signal.get("direction") or "").upper()
+    entry = _number(signal.get("entry"))
+    timestamp = signal.get("timestamp") or scan_timestamp
+    if not symbol or direction not in {"LONG", "SHORT"} or entry is None or not timestamp:
+        return False
+    try:
+        current_ts = _timestamp(timestamp)
+    except (TypeError, ValueError):
+        return False
+    tolerance = max(abs(entry) * 1e-9, 1e-10)
+    for existing in seen_keys or []:
+        parts = str(existing).split("|")
+        if len(parts) != 4 or parts[0] != symbol or parts[1] != direction:
+            continue
+        old_entry = _number(parts[2])
+        if old_entry is None or abs(old_entry - entry) > tolerance:
+            continue
+        try:
+            age = abs((current_ts - _timestamp(parts[3])).total_seconds())
+        except (TypeError, ValueError):
+            continue
+        if age <= window_minutes * 60:
+            return True
+    return False
+
+
 def process(result, state=None, candle_fetcher=None, now=None):
     """Resolve previous signals, update bounded learning state, and filter current results."""
     now = _timestamp(now or datetime.now(timezone.utc).isoformat())
@@ -260,7 +289,7 @@ def process(result, state=None, candle_fetcher=None, now=None):
     added = 0
     for signal in raw_results:
         key = signal_key(signal, scan_timestamp)
-        if not key or key in seen:
+        if not key or key in seen or _duplicate_setup(signal, scan_timestamp, seen_order):
             continue
         row = dict(signal)
         row["timestamp"] = _iso(signal.get("timestamp") or scan_timestamp)
