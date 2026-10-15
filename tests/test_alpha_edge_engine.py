@@ -98,5 +98,37 @@ class EdgeEngineTests(unittest.TestCase):
         result = prioritize_crypto_tickers(rows, max_symbols=4, min_turnover=1, excluded={'BTCUSDT'})
         self.assertEqual([row['symbol'] for row in result], ['DOGEUSDT', 'PEPEUSDT', 'ETHUSDT', 'STRKUSDT'])
 
+
+    def test_long_entry_moves_to_prior_sl_price_and_stop_uses_zone_low(self):
+        from alpha_edge_engine import calibrated_zone_geometry
+
+        geometry = calibrated_zone_geometry("LONG", 2.2488, 2.4079)
+        self.assertAlmostEqual(geometry["entry"], 2.32835 * (1 - 0.10 / 20), places=8)
+        self.assertEqual(geometry["stop"], 2.2488)
+        self.assertGreater(geometry["entry"], geometry["stop"])
+        self.assertLessEqual(geometry["margin_loss_pct"], 10.0)
+
+    def test_short_entry_moves_to_prior_sl_price_and_stop_uses_zone_high(self):
+        from alpha_edge_engine import calibrated_zone_geometry
+
+        geometry = calibrated_zone_geometry("SHORT", 2.2488, 2.4079)
+        self.assertAlmostEqual(geometry["entry"], 2.32835 * (1 + 0.10 / 20), places=8)
+        self.assertEqual(geometry["stop"], 2.4079)
+        self.assertLess(geometry["entry"], geometry["stop"])
+        self.assertLessEqual(geometry["margin_loss_pct"], 10.0)
+
+    def test_zone_geometry_rejects_wide_stop_that_exceeds_margin_risk_budget(self):
+        from alpha_edge_engine import calibrated_zone_geometry
+
+        geometry = calibrated_zone_geometry("LONG", 2.2488, 2.4079)
+        self.assertFalse(geometry["risk_acceptable"])
+        self.assertGreater(geometry["margin_loss_pct"], 10.0)
+
+    def test_zone_geometry_rejects_invalid_or_directionless_zone(self):
+        from alpha_edge_engine import calibrated_zone_geometry
+
+        self.assertIsNone(calibrated_zone_geometry("LONG", 2.5, 2.4))
+        self.assertIsNone(calibrated_zone_geometry("NEUTRAL", 2.4, 2.5))
+
 if __name__=="__main__":
     unittest.main()
