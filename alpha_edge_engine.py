@@ -696,7 +696,7 @@ def telegram_text(x):
         f"Quality: {x['quality']}/100",
         "",
         "EXECUTION GEOMETRY",
-        f"SL: {format_price(x['stop'])}  (-10% margin)",
+        f"SL: {format_price(x['stop'])}  (-{x['geometry'].get('sl_margin_pct', abs(SL_MARGIN_PCT)):.2f}% margin)",
         f"TP1: {format_price(x['tp1'])} (+30% margin)",
         f"TP2: {format_price(x['tp2'])} (+60% margin)",
         f"TP3: {format_price(x['tp3'])} (+120% margin)",
